@@ -2,6 +2,7 @@ import discord
 import os
 import time
 from discord.ext import commands
+from discord.ext.commands import errors
 from dotenv import load_dotenv
 
 # Create a new 'bot' with prefix
@@ -11,7 +12,12 @@ bot = commands.Bot(command_prefix="!", description="PyBot")
 if __name__ == '__main__':
     for file in os.listdir("commands"):
         if file.endswith("py"):
-            bot.load_extension('commands.{0}'.format(file.split(".")[0]))
+            filename = file.split(".")[0]
+            try:
+                bot.load_extension(f"commands.{filename}")
+                print(f"Command Loaded: {filename}")
+            except (errors.ExtensionNotFound, errors.ExtensionAlreadyLoaded, errors.NoEntryPointError, errors.ExtensionFailed) as e:
+                print(f"Error loading command: {filename}, Error: {e}")
 
 
 # Ready event
