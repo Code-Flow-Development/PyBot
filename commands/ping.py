@@ -16,7 +16,7 @@ class PingCog(commands.Cog):
         # calculates the ping using the current time and the time the message was sent
         ping = (time.monotonic() - before) * 1000
         # creates a new embed, sets title to blank with a description and color (color int generator: https://www.shodor.org/stella2java/rgbint.html)
-        embed = discord.Embed(title="Bot Response Time", description=None, color=discord.Colour(value=16711680))
+        embed = discord.Embed(title="Bot Response Time", description=None, color=discord.Colour.red())
         # adds a new field to the embed
         embed.add_field(name="🤖 Bot Latency:", value=f"{int(ping)}ms", inline=False)
         # adds a footer to the embed with the bot name and avatar
