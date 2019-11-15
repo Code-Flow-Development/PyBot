@@ -1,5 +1,6 @@
 import discord
 import os
+from dotenv import load_dotenv
 
 class Client(discord.Client):
     async def on_ready(self):
@@ -9,5 +10,7 @@ class Client(discord.Client):
     async def on_message(self, message):
         print('Message from {0.author}: {0.content}'.format(message))
 
+
+load_dotenv()
 client = Client()
-client.run('NjQ0OTI3MjQxODU1MzAzNjkx.Xc7JVw.7XODjfC1EJ__G8Ux7vXOQ1QD6Y4')
+client.run(os.getenv("TOKEN"))
