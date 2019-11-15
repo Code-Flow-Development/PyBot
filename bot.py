@@ -1,7 +1,6 @@
 import discord
 import os
 import time
-from datetime import datetime
 from discord.ext import commands
 from dotenv import load_dotenv
 
@@ -18,7 +17,7 @@ if __name__ == '__main__':
 # Ready event
 @bot.event
 async def on_ready():
-    bot.startedAt = datetime.now()
+    bot.startedAt = time.time()
     print(f'Logged in as {bot.user.name}#{bot.user.discriminator}')
     await bot.change_presence(activity=discord.Activity(name='in ' + str(len(bot.guilds)) + " server!", type=discord.ActivityType.playing))
 
