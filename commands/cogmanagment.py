@@ -1,13 +1,7 @@
 import discord
-from config import ADMINS
+import utils
+from .utils import checks
 from discord.ext import commands
-
-
-def isAdmin(ctx):
-    if str(ctx.message.author.id) in ADMINS:
-        return True
-    else:
-        return False
 
 
 class CogManagementCog(commands.Cog):
@@ -15,8 +9,7 @@ class CogManagementCog(commands.Cog):
         self.bot = bot
 
     @commands.command(name="reloadcog")
-    @commands.guild_only()
-    @commands.check(isAdmin)
+    @checks.isAdmin()
     async def reload(self, ctx, *, cog: str):
         # to reload we need to unload it first
         try:
@@ -28,8 +21,7 @@ class CogManagementCog(commands.Cog):
             await ctx.send(f"Cog Reloaded!")
 
     @commands.command(name="loadcog")
-    @commands.guild_only()
-    @commands.check(isAdmin)
+    @checks.isAdmin()
     async def load(self, ctx, *, cog: str):
         # try to load cog
         try:
@@ -40,8 +32,7 @@ class CogManagementCog(commands.Cog):
             await ctx.send(f"Cog Loaded!")
 
     @commands.command(name="unloadcog")
-    @commands.guild_only()
-    @commands.check(isAdmin)
+    @checks.isAdmin()
     async def unload(self, ctx, *, cog: str):
         try:
             self.bot.unload_extension(f"commands.{cog}")
@@ -49,6 +40,16 @@ class CogManagementCog(commands.Cog):
             await ctx.send(f"Failed to unload cog: {type(e).__name__} - {e}")
         else:
             await ctx.send(f"Cog Unloaded!")
+
+    @commands.command(name="unloadallcogs")
+    @checks.isAdmin()
+    async def unloadAll(self, ctx):
+        pass
+        # try:
+        #     utils.unloadallcogs(self.bot)
+        # except Exception as e:
+        #     await ctx.send(f"Caught Exception while unloading all cogs: {type(e).__name__}, See console for more info")
+        #     print(f"Caught Exception while unloading all cogs: {type(e).__name__} - {e}")
 
 
 def setup(bot):

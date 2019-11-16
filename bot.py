@@ -2,7 +2,7 @@ import discord
 import os
 import time
 from discord.ext import commands
-from discord.ext.commands import errors
+import utils
 from dotenv import load_dotenv
 
 # Create a new 'bot' with prefix
@@ -10,27 +10,7 @@ bot = commands.Bot(command_prefix="{", description="PyBot")
 
 # Loads commands from commands folder, no need to touch this when adding new commands, it loads them automagically!
 if __name__ == '__main__':
-    # loads commands
-    for command in os.listdir("commands"):
-        if command.endswith("py"):
-            filename = command.split(".")[0]
-            try:
-                bot.load_extension(f"commands.{filename}")
-                print(f"Command Loaded: {filename}")
-            except (errors.ExtensionNotFound, errors.ExtensionAlreadyLoaded, errors.NoEntryPointError,
-                    errors.ExtensionFailed) as e:
-                print(f"Error loading command: {filename}, Error: {e}")
-
-    # loads events
-    for event in os.listdir("events"):
-        if event.endswith("py"):
-            filename = event.split(".")[0]
-            try:
-                bot.load_extension(f"events.{filename}")
-                print(f"Event Loaded: {filename}")
-            except (errors.ExtensionNotFound, errors.ExtensionAlreadyLoaded, errors.NoEntryPointError,
-                    errors.ExtensionFailed) as e:
-                print(f"Error loading event: {filename}, Error: {e}")
+    utils.loadallcogs(bot)
 
 
 # Ready event

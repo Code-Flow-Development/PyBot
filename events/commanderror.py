@@ -18,7 +18,7 @@ class CommandErrorHandler(commands.Cog):
         if hasattr(ctx.command, 'on_error'):
             return
 
-        ignored = (commands.CommandNotFound)
+        ignored = commands.CommandNotFound
 
         # Allows us to check for original exceptions raised and sent to CommandInvokeError.
         # If nothing is found. We keep the exception passed to on_command_error.
@@ -44,6 +44,9 @@ class CommandErrorHandler(commands.Cog):
 
         elif isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send("Missing arguments!")
+
+        elif isinstance(error, commands.CheckFailure):
+            return await ctx.send("You don't have permission to use that command!")
 
         # All other Errors not returned come here... And we can just print the default TraceBack.
         print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
