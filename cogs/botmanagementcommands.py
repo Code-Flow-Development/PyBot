@@ -1,4 +1,4 @@
-import discord
+from config import getLogger
 from discord.ext import commands
 from .utils import checks
 
@@ -14,7 +14,7 @@ class BotManagementCog(commands.Cog):
         try:
             await self.bot.close()
         except Exception as e:
-            print(f"Caught Exception during shutdown: {type(e).__name__} - {e}")
+            getLogger().critical(f"[Bot Management] Caught Exception during shutdown: {type(e).__name__} - {e}")
             await ctx.send(f"Caught Exception during shutdown: {type(e).__name__}, See console for more info.")
 
     @commands.command(name="eval")
@@ -28,8 +28,8 @@ class BotManagementCog(commands.Cog):
             result = eval(code)
         except Exception as e:
             await ctx.send(f"Error running code: {type(e).__name__} - {e}")
-            return
-        await ctx.send(result)
+        else:
+            await ctx.send(result)
 
 
 def setup(bot):

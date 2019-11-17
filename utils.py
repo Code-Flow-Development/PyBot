@@ -1,27 +1,47 @@
 import os
 import discord
+import calendar
+import logging
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from discord.ext.commands import errors
 
 
 def loadallcogs(bot):
-    # loads commands
-    for command in os.listdir("commands"):
+    # loads cogs
+    for command in os.listdir("cogs"):
         if command.endswith("py"):
             filename = command.split(".")[0]
             try:
-                bot.load_extension(f"commands.{filename}")
-                print(f"Command Loaded: {filename}")
+                bot.load_extension(f"cogs.{filename}")
+                logging.info(f"[Cog Management] Cog Loaded: {filename}")
             except (errors.ExtensionNotFound, errors.ExtensionAlreadyLoaded, errors.NoEntryPointError,
                     errors.ExtensionFailed) as e:
-                print(f"Error loading command: {filename}, Error: {e}")
+                logging.error(f"[Cog Management] Error loading cog: {filename} - {e}")
 
-    # loads events
-    for event in os.listdir("events"):
-        if event.endswith("py"):
-            filename = event.split(".")[0]
-            try:
-                bot.load_extension(f"events.{filename}")
-                print(f"Event Loaded: {filename}")
-            except (errors.ExtensionNotFound, errors.ExtensionAlreadyLoaded, errors.NoEntryPointError,
-                    errors.ExtensionFailed) as e:
-                print(f"Error loading event: {filename}, Error: {e}")
+
+def utc_to_epoch(utc: datetime):
+    return calendar.timegm(utc.utctimetuple())
+
+
+class EpochUtils(float):
+    def __init__(self, unix):
+        self.rdelta = relativedelta(datetime.now(), datetime.fromtimestamp(unix))
+
+    def seconds(self):
+        return self.rdelta.seconds
+
+    def minutes(self):
+        return self.rdelta.minutes
+
+    def hours(self):
+        return self.rdelta.hours
+
+    def days(self):
+        return self.rdelta.days
+
+    def months(self):
+        return self.rdelta.months
+
+    def years(self):
+        return self.rdelta.years

@@ -1,5 +1,4 @@
-import discord
-import utils
+from config import getLogger
 from .utils import checks
 from discord.ext import commands
 
@@ -13,33 +12,39 @@ class CogManagementCog(commands.Cog):
     async def reload(self, ctx, *, cog: str):
         # to reload we need to unload it first
         try:
-            self.bot.unload_extension(f"commands.{cog}")
-            self.bot.load_extension(f"commands.{cog}")
+            self.bot.unload_extension(f"cogs.{cog}")
+            self.bot.load_extension(f"cogs.{cog}")
         except Exception as e:
             await ctx.send(f"Failed to reload cog: {type(e).__name__} - {e}")
+            getLogger().error(f"[Cog Management] Failed to reload cog: {type(e).__name__} - {e}")
         else:
             await ctx.send(f"Cog Reloaded!")
+            getLogger().success(f"[Cog Management] {ctx.author.name} reloaded cog: {cog}")
 
     @commands.command(name="loadcog")
     @checks.isAdmin()
     async def load(self, ctx, *, cog: str):
         # try to load cog
         try:
-            self.bot.load_extension(f"commands.{cog}")
+            self.bot.load_extension(f"cogs.{cog}")
         except Exception as e:
             await ctx.send(f"Failed to load cog: {type(e).__name__} - {e}")
+            getLogger().error(f"[Cog Management] Failed to load cog: {type(e).__name__} - {e}")
         else:
             await ctx.send(f"Cog Loaded!")
+            getLogger().success(f"[Cog Management] {ctx.author.name} loaded cog: {cog}")
 
     @commands.command(name="unloadcog")
     @checks.isAdmin()
     async def unload(self, ctx, *, cog: str):
         try:
-            self.bot.unload_extension(f"commands.{cog}")
+            self.bot.unload_extension(f"cogs.{cog}")
         except Exception as e:
             await ctx.send(f"Failed to unload cog: {type(e).__name__} - {e}")
+            getLogger().error(f"[Cog Management] Failed to unload cog: {type(e).__name__} - {e}")
         else:
             await ctx.send(f"Cog Unloaded!")
+            getLogger().success(f"[Cog Management] {ctx.author.name} unloaded cog: {cog}")
 
     @commands.command(name="unloadallcogs")
     @checks.isAdmin()

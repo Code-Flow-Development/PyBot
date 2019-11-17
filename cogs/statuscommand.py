@@ -19,12 +19,13 @@ class StatusCog(commands.Cog):
 
         # create a new embed
         embed = discord.Embed(title="Bot Status", description=None, color=discord.Color.red())
-        if mins > 0 :
-            embed.add_field(name="Uptime:", value=f"{mins} minutes and {secs} seconds", inline=False)
+        if mins > 0:
+            embed.add_field(name="Uptime:", value=f"{mins} minute(s) and {secs} seconds", inline=False)
         elif hours > 0:
             embed.add_field(name="Uptime:", value=f"{hours} hours, {mins} minutes and {secs} seconds", inline=False)
         elif days > 0:
-            embed.add_field(name="Uptime:", value=f"{days} days, {hours} hours, {mins} minutes and {secs} second(s)", inline=False)
+            embed.add_field(name="Uptime:", value=f"{days} days, {hours} hours, {mins} minutes and {secs} second(s)",
+                            inline=False)
         else:
             embed.add_field(name="Uptime:", value=f"{secs} seconds", inline=False)
 

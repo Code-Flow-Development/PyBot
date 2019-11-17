@@ -1,6 +1,5 @@
 import traceback
 import sys
-import discord
 from discord.ext import commands
 
 
@@ -14,7 +13,7 @@ class CommandErrorHandler(commands.Cog):
         ctx   : Context
         error : Exception"""
 
-        # This prevents any commands with local handlers being handled here in on_command_error.
+        # This prevents any cogs with local handlers being handled here in on_command_error.
         if hasattr(ctx.command, 'on_error'):
             return
 
