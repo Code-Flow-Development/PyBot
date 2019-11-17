@@ -14,7 +14,7 @@ class BanCog(commands.Cog):
     @commands.command(name="ban", pass_context=True)
     @commands.guild_only()
     @commands.has_permissions(administrator=True, ban_members=True)
-    async def ban(self, ctx, member: discord.Member = None, reason="No reason specified!", dmd=0):
+    async def ban(self, ctx, member: discord.Member = None, reason: str = "No reason specified!", dmd=0):
         if member is None or member == ctx.message.author:
             await ctx.send(f"You cannot ban yourself!")
             return
