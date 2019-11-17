@@ -8,7 +8,7 @@ class BotManagementCog(commands.Cog):
         self.bot = bot
 
     @commands.command(name="stop")
-    @checks.isAdmin()
+    @checks.isBotAdmin()
     async def stop(self, ctx):
         await ctx.send("Shutting down...")
         try:
@@ -18,7 +18,7 @@ class BotManagementCog(commands.Cog):
             await ctx.send(f"Caught Exception during shutdown: {type(e).__name__}, See console for more info.")
 
     @commands.command(name="eval")
-    @checks.isAdmin()
+    @checks.isBotAdmin()
     async def eval(self, ctx, *, code: str):
         code = code.strip('` ')
         python = '```py\n{}\n```'

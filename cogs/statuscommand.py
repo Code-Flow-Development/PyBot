@@ -2,6 +2,7 @@ import discord
 import time
 import sys
 from discord.ext import commands
+from datetime import datetime
 
 
 class StatusCog(commands.Cog):
@@ -18,7 +19,7 @@ class StatusCog(commands.Cog):
         days, hours = divmod(hours, 60)
 
         # create a new embed
-        embed = discord.Embed(title="Bot Status", description=None, color=discord.Color.red())
+        embed = discord.Embed(title="Bot Status", description=None, color=discord.Color.red(), timestamp=datetime.utcnow())
         if mins > 0:
             embed.add_field(name="Uptime:", value=f"{mins} minute(s) and {secs} seconds", inline=False)
         elif hours > 0:
@@ -34,7 +35,7 @@ class StatusCog(commands.Cog):
         embed.add_field(name="Discord.py Version:", value=f"{discord.__version__}", inline=False)
         embed.add_field(name="Created by:", value="Riley and Skyler", inline=False)
 
-        embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+        embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
         await ctx.send(content=None, embed=embed)
 
 

@@ -8,7 +8,7 @@ class CogManagementCog(commands.Cog):
         self.bot = bot
 
     @commands.command(name="reloadcog")
-    @checks.isAdmin()
+    @checks.isBotAdmin()
     async def reload(self, ctx, *, cog: str):
         # to reload we need to unload it first
         try:
@@ -22,7 +22,7 @@ class CogManagementCog(commands.Cog):
             getLogger().success(f"[Cog Management] {ctx.author.name} reloaded cog: {cog}")
 
     @commands.command(name="loadcog")
-    @checks.isAdmin()
+    @checks.isBotAdmin()
     async def load(self, ctx, *, cog: str):
         # try to load cog
         try:
@@ -35,7 +35,7 @@ class CogManagementCog(commands.Cog):
             getLogger().success(f"[Cog Management] {ctx.author.name} loaded cog: {cog}")
 
     @commands.command(name="unloadcog")
-    @checks.isAdmin()
+    @checks.isBotAdmin()
     async def unload(self, ctx, *, cog: str):
         try:
             self.bot.unload_extension(f"cogs.{cog}")
@@ -47,7 +47,7 @@ class CogManagementCog(commands.Cog):
             getLogger().success(f"[Cog Management] {ctx.author.name} unloaded cog: {cog}")
 
     @commands.command(name="unloadallcogs")
-    @checks.isAdmin()
+    @checks.isBotAdmin()
     async def unloadAll(self, ctx):
         pass
         # try:
