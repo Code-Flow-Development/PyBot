@@ -74,7 +74,7 @@ class BotAdminCommandsCog(commands.Cog):
         result = None
 
         try:
-            result = eval(code)
+            result = exec(code)
         except Exception as e:
             await ctx.send(f"[Eval] Error running code: {type(e).__name__} - {e}")
         else:
