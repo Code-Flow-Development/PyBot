@@ -142,7 +142,9 @@ class MiscCommandsCog(commands.Cog):
     @commands.command(name="investigate")
     @commands.guild_only()
     async def investigate(self, ctx, member: discord.Member):
-        await ctx.send(f"You investigate {member.name}, but don't turn up any valuable information.")
+        choices = (f"You investigate {member.name}, and find out he is mega gay!",
+                   f"You investigate {member.name}, but don't turn up any valuable information.")
+        await ctx.send(random.choice(choices))
 
     @commands.command(name="kill")
     @commands.guild_only()
@@ -179,7 +181,7 @@ class MiscCommandsCog(commands.Cog):
     @commands.command(name="vpn")
     @commands.guild_only()
     async def vpn(self, ctx):
-        countries = ("Russian", "North Korea", "South Korea", "China", "Canada", "Europe")
+        countries = ("Russia", "North Korea", "South Korea", "China", "Canada", "Europe")
         country = random.choice(countries)
         message = await ctx.send(content=f"Connecting to secure server in {country}")
         await asyncio.sleep(1)
