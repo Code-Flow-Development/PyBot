@@ -23,8 +23,8 @@ class BanCog(commands.Cog):
             await ctx.send(f"{member.name} is an admin and cannot be banned!")
             return
 
-        embed = discord.Embed(title=f"{member.name} has been banned!",
-                              description=f"Banned for: {reason}\nDelete message days: {dmd}",
+        # TODO: log channel embed with reason (see: https://github.com/Puyodead1/Extron/blob/master/Discord/Commands/ban.js)
+        embed = discord.Embed(title=f"Bye Bye **{member.name}** 🔨",
                               color=discord.Color.green(),
                               timestamp=datetime.utcnow())
         embed.set_image(url="https://thumbs.gfycat.com/ElderlyViciousFeline-size_restricted.gif")
