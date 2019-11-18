@@ -1,16 +1,17 @@
 -=-=-= Commands =-=-=-=-
-Mute <mention or id> - GuildAdminCommands
-Unmute <mention or id> - GuildAdminCommands
+~~Mute <mention or id> - GuildAdminCommands~~
+~~Unmute <mention or id> - GuildAdminCommands~~
 AddBotAdmin <mention or id> - BotAdminCommands
 RemoveBotAdmin <mention or id> - BotAdminCommands
-Kick <mention or id> - GuildAdminCommands
+~~Kick <mention or id> - GuildAdminCommands~~
 CreateRole <role name> - GuildAdminCommands
 DeleteRole <role mention, id or name?> - GuildAdminCommands
 BanServer <server id> - BotAdminCommands
 UnbanServer <server id> - BotAdminCommands
 BanUser <mention or id> - BotAdminCommands
 UnbanUser <mention or id> - BotAdminCommands
-
+Strike <mention or id> [reason] - GuildAdminCommands
+Strikes <mention or id> - GuildAdminCommands
 
 -=-=-= Other Ideas =-=-=-=-
 Add optional argument to ban command for soft or hard ban mode (soft doesnt delete message history from user, hard does)

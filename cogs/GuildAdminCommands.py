@@ -14,7 +14,7 @@ class GuildAdminCommandsCog(commands.Cog):
     @commands.command(name="ban")
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, member: discord.Member = None, reason: str = "No reason specified!", dmd=0):
+    async def ban(self, ctx, member: discord.Member = None, reason: str = "No reason specified", dmd=0):
         if member is None or member == ctx.message.author:
             await ctx.send(f"You cannot ban yourself!")
             return
@@ -24,7 +24,8 @@ class GuildAdminCommandsCog(commands.Cog):
             return
 
         # TODO: log channel embed with reason (see: https://github.com/Puyodead1/Extron/blob/master/Discord/Commands/ban.js)
-        embed = discord.Embed(title=f"Bye Bye **{member.name}** 🔨",
+        embed = discord.Embed(title=None,
+                              description=f"Bye Bye **{member.name}** 🔨",
                               color=discord.Color.green(),
                               timestamp=datetime.utcnow())
         embed.set_image(url="https://thumbs.gfycat.com/ElderlyViciousFeline-size_restricted.gif")
@@ -34,7 +35,7 @@ class GuildAdminCommandsCog(commands.Cog):
             await member.ban(reason=reason, delete_message_days=dmd)
             await ctx.send(content=None, embed=embed)
         except Forbidden as e:
-            embed = discord.Embed(title=f"Missing `ban_members` permission!", description=f"Error: {e.text}",
+            embed = discord.Embed(title=f"Missing permission!", description=f"Error: {e.text}",
                                   color=discord.Color.red(),
                                   timestamp=datetime.utcnow())
             embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
@@ -53,15 +54,16 @@ class GuildAdminCommandsCog(commands.Cog):
     @commands.command(name="unban")
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, user_id: str, reason="No reason specified!"):
+    async def ban(self, ctx, user_id: str, reason="No reason specified"):
         try:
             member = await self.bot.fetch_user(user_id=user_id)
             try:
                 await ctx.guild.unban(user=member, reason=reason)
-                embed = discord.Embed(title=f"{member.name} has been unbanned!",
-                                      description=f"Unban Reason: {reason}",
+                embed = discord.Embed(title=None,
+                                      description=f"{member.name} has been unbanned!",
                                       color=discord.Color.green(),
                                       timestamp=datetime.utcnow())
+                embed.add_field(name=f"Unban Reason", value=reason)
                 embed.set_thumbnail(
                     url="https://icon-library.net/images/green-checkmark-icon/green-checkmark-icon-11.jpg")
                 embed.set_footer(text=f"Unbanned by {ctx.author.name}", icon_url=ctx.author.avatar_url)
@@ -95,7 +97,7 @@ class GuildAdminCommandsCog(commands.Cog):
     @commands.command(name="mute")
     @commands.guild_only()
     @commands.has_permissions(kick_members=True)
-    async def mute(self, ctx, member: discord.Member, reason: str = "No reason specified!"):
+    async def mute(self, ctx, member: discord.Member, reason: str = "No reason specified"):
         if member.bot:
             await ctx.send(f"{member.name} is a bot.")
             return
@@ -107,7 +109,11 @@ class GuildAdminCommandsCog(commands.Cog):
             if muted_role:
                 try:
                     await member.add_roles(muted_role, reason=reason, atomic=False)
-                    await ctx.send(f"{member.name} was muted!")
+                    embed = discord.Embed(title=None, description=f"**{member.name}** was muted 🔇",
+                                          color=discord.Color.green(), timestamp=datetime.utcnow())
+                    embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                    embed.set_footer(text=f"Muted by {ctx.author.name}", icon_url=ctx.author.avatar_url)
+                    await ctx.send(content=None, embed=embed)
                     await member.send(
                         f"You were muted by {ctx.message.author.name} in {ctx.guild.name} for {reason}")
                     log_channel = [x for x in member.guild.channels if x.name == "logs"]
@@ -118,12 +124,13 @@ class GuildAdminCommandsCog(commands.Cog):
                         embed = discord.Embed(title=f"{member.name}#{member.discriminator} was muted!",
                                               description=None, color=discord.Color.red(),
                                               timestamp=datetime.utcnow())
+                        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
                         embed.add_field(name=f"Mute Reason", value=reason)
                         embed.set_thumbnail(url=member.avatar_url)
                         embed.set_footer(text=f"Muted by {ctx.author.name}", icon_url=ctx.author.avatar_url)
                         await log_channel.send(content=None, embed=embed)
                 except Forbidden as e:
-                    await ctx.send(f"[GuildAdminCommands] Missing `manage_roles` permission! Error: {e.text}")
+                    await ctx.send(f"[GuildAdminCommands] Missing permission! Error: {e.text}")
                 except HTTPException as e:
                     await ctx.send(f"[GuildAdminCommands] Failed to add role! Error: {e.text}")
             else:
@@ -141,7 +148,7 @@ class GuildAdminCommandsCog(commands.Cog):
                             print(f"Set permissions on channel {channel.name}")
                         except Forbidden as e:
                             # no permission to edit channel specific permissions
-                            await ctx.send(f"[GuildAdminCommands] Missing `administrator` permission! Error: {e.text}")
+                            await ctx.send(f"[GuildAdminCommands] Missing permission! Error: {e.text}")
                         except NotFound as e:
                             await ctx.send(
                                 f"[GuildAdminCommands] The role or member being edited is not part of the guild! Error: {e.text}")
@@ -154,7 +161,11 @@ class GuildAdminCommandsCog(commands.Cog):
 
                     try:
                         await member.add_roles(muted_role, reason=reason, atomic=False)
-                        await ctx.send(f"{member.name} was muted!")
+                        embed = discord.Embed(title=None, description=f"**{member.name}** was muted 🔇",
+                                              color=discord.Color.green(), timestamp=datetime.utcnow())
+                        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                        embed.set_footer(text=f"Muted by {ctx.author.name}", icon_url=ctx.author.avatar_url)
+                        await ctx.send(content=None, embed=embed)
                         await member.send(
                             f"You were muted by {ctx.message.author.name} in {ctx.guild.name} for {reason}")
                         log_channel = [x for x in member.guild.channels if x.name == "logs"]
@@ -166,16 +177,17 @@ class GuildAdminCommandsCog(commands.Cog):
                                                   description=None, color=discord.Color.red(),
                                                   timestamp=datetime.utcnow())
                             embed.add_field(name=f"Mute Reason", value=reason)
+                            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
                             embed.set_thumbnail(url=member.avatar_url)
                             embed.set_footer(text=f"Muted by {ctx.author.name}", icon_url=ctx.author.avatar_url)
                             await log_channel.send(content=None, embed=embed)
                     except Forbidden as e:
-                        await ctx.send(f"[GuildAdminCommands] Missing `manage_roles` permission! Error: {e.text}")
+                        await ctx.send(f"[GuildAdminCommands] Missing permission! Error: {e.text}")
                     except HTTPException as e:
                         await ctx.send(f"[GuildAdminCommands] Failed to add role! Error: {e.text}")
                 except Forbidden as e:
                     # no permission to create the role
-                    await ctx.send(f"[GuildAdminCommands] Cannot create muted role, Missing `manage_roles` "
+                    await ctx.send(f"[GuildAdminCommands] Cannot create muted role, Missing "
                                    f"permission! Error: {e.text}")
                 except HTTPException as e:
                     # Creating role failed
@@ -190,7 +202,7 @@ class GuildAdminCommandsCog(commands.Cog):
     @commands.command(name="unmute")
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
-    async def unmute(self, ctx, member: discord.Member, reason: str = "No reason specified!"):
+    async def unmute(self, ctx, member: discord.Member, reason: str = "No reason specified"):
         if member.bot:
             await ctx.send(f"{member.name} is a bot.")
             return
@@ -201,7 +213,11 @@ class GuildAdminCommandsCog(commands.Cog):
             # check length of the list, if 0 no muted role, if == 0 there is one
             try:
                 await member.remove_roles(muted_role, reason=reason)
-                await ctx.send(f"{member.name} was unmuted!")
+                embed = discord.Embed(title=None, description=f"**{member.name}** was unmuted 🔊",
+                                      color=discord.Color.green(), timestamp=datetime.utcnow())
+                embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                embed.set_footer(text=f"Unmuted by {ctx.author.name}", icon_url=ctx.author.avatar_url)
+                await ctx.send(content=None, embed=embed)
                 await member.send(f"You were unmuted by {ctx.message.author.name} in {ctx.guild.name}")
                 log_channel = [x for x in member.guild.channels if x.name == "logs"]
                 log_channel = log_channel[0] if len(
@@ -212,17 +228,34 @@ class GuildAdminCommandsCog(commands.Cog):
                                           description=None, color=discord.Color.green(),
                                           timestamp=datetime.utcnow())
                     embed.add_field(name=f"Unmute Reason", value=reason)
+                    embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
                     embed.set_thumbnail(url=member.avatar_url)
                     embed.set_footer(text=f"Unmuted by {ctx.author.name}", icon_url=ctx.author.avatar_url)
                     await log_channel.send(content=None, embed=embed)
             except Forbidden as e:
                 # missing permission to remove roles
-                await ctx.send(f"[GuildAdminCommands] Missing `manage_roles` permission! Error: {e.text}")
+                await ctx.send(f"[GuildAdminCommands] Missing permission! Error: {e.text}")
             except HTTPException as e:
                 await ctx.send(f"[GuildAdminCommands] Failed to remove roles! Error: {e.text}")
         except HTTPException as e:
             # Retrieving roles failed
             await ctx.send(f"[GuildAdminCommands] Retrieving roles failed! Error: {e.text}")
+
+
+    @commands.command(name="kick")
+    @commands.guild_only()
+    # TODO: reason?
+    async def kick(self, ctx, member: discord.Member):
+        try:
+            await member.kick()
+            embed = discord.Embed(title=None, description=f"**{member.name}** was kicked 👋", color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_footer(text=f"Kicked by {ctx.author.name}", icon_url=ctx.author.avatar_url)
+            await ctx.send(content=None, embed=embed)
+        except Forbidden as e:
+            await ctx.send(f"[GuildAdminCommands] Missing permission! Error: {e.text}")
+        except HTTPException as e:
+            await ctx.send(f"[GuildAdminCommands] Failed to kick user {member.name}! Error: {e.text}")
 
 
 def setup(bot):

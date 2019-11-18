@@ -24,6 +24,7 @@ class MiscCommandsCog(commands.Cog):
         embed.add_field(name="🤖 Bot Latency:", value=f"{int(ping)}ms", inline=False)
         # adds a footer to the embed with the bot name and avatar
         embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         # edits the previous message sent with the new embed
         await message.edit(content=None, embed=embed)
 
@@ -53,7 +54,7 @@ class MiscCommandsCog(commands.Cog):
         embed.add_field(name="Python Version:", value=f"{sys.version.split(' ')[0]}", inline=False)
         embed.add_field(name="Discord.py Version:", value=f"{discord.__version__}", inline=False)
         embed.add_field(name="Created by:", value="Riley and Skyler", inline=False)
-
+        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
         await ctx.send(content=None, embed=embed)
 
@@ -67,6 +68,20 @@ class MiscCommandsCog(commands.Cog):
                               timestamp=datetime.utcnow())
         embed.set_image(url=member.avatar_url)
         await ctx.send(content=None, embed=embed)
+
+    @commands.command(name="ddos")
+    @commands.guild_only()
+    async def ddos(self, ctx, member: discord.Member):
+        await ctx.send(f"Initiating DDoS attack on {member.name}, please wait...")
+        time.sleep(1000)
+        await ctx.send("Malicious UDP packets were sent to their IP address, they should be offline now. :)")
+
+    @commands.command(name="swat")
+    @commands.guild_only()
+    async def swat(self, ctx, member: discord.Member):
+        await ctx.send(f"Initiating SWAT procedures on {member.name}, please wait...")
+        time.sleep(1000)
+        await ctx.send("Your local police department has been notified that you have shot your Dad & now have your mother hostage in your home, along with a can of gas with you to burn your house down. Enjoy the shitshow, motherfucker.")
 
 
 def setup(bot):

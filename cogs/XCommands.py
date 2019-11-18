@@ -15,19 +15,17 @@ class XCommandsCog(commands.Cog):
                               color=discord.Color.green(),
                               timestamp=datetime.utcnow())
         embed.set_image(url="https://thumbs.gfycat.com/ElderlyViciousFeline-size_restricted.gif")
+        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         embed.set_footer(text=f"Banned by {ctx.author.name}", icon_url=ctx.author.avatar_url)
         await ctx.send(content=None, embed=embed)
 
     @commands.command(name="xmute")
     @commands.guild_only()
     async def xmute(self, ctx, member: discord.Member, reason: str = None):
-        embed = discord.Embed(title=f"{member.name} has been muted!",
-                              description=f"Muted for: {reason}" if reason else None,
-                              color=discord.Color.green(),
-                              timestamp=datetime.utcnow())
-        embed.set_image(url="https://thumbs.gfycat.com/ElderlyViciousFeline-size_restricted.gif")
-        embed.set_footer(text=f"Muted by {ctx.author.name}", icon_url=ctx.author.avatar_url)
-        await ctx.send(content=None, embed=embed)
+        if reason:
+            await ctx.send(content=f"{member.name} was muted by {ctx.author.name} for {reason}")
+        else:
+            await ctx.send(content=f"{member.name} was muted by {ctx.author.name}")
 
 
 def setup(bot):
