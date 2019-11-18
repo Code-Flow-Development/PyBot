@@ -23,7 +23,7 @@ class GuildAdminCommandsCog(commands.Cog):
             await ctx.send(f"{member.name} is an admin and cannot be banned!")
             return
 
-        # TODO.md: log channel embed with reason (see: https://github.com/Puyodead1/Extron/blob/master/Discord/Commands/ban.js)
+        # TODO: log channel embed with reason (see: https://github.com/Puyodead1/Extron/blob/master/Discord/Commands/ban.js)
         embed = discord.Embed(title=None,
                               description=f"Bye Bye **{member.name}** 🔨",
                               color=discord.Color.green(),
@@ -93,7 +93,7 @@ class GuildAdminCommandsCog(commands.Cog):
             embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
             await ctx.send(content=None, embed=embed)
 
-    # TODO.md: maybe use roles for permissions instead (ex: Moderator)
+    # TODO: maybe use roles for permissions instead (ex: Moderator)
     @commands.command(name="mute")
     @commands.guild_only()
     @commands.has_permissions(kick_members=True)
@@ -244,7 +244,7 @@ class GuildAdminCommandsCog(commands.Cog):
 
     @commands.command(name="kick")
     @commands.guild_only()
-    # TODO.md: reason?
+    # TODO: reason?
     async def kick(self, ctx, member: discord.Member):
         try:
             await member.kick()
