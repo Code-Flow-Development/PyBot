@@ -217,7 +217,7 @@ class MiscCommandsCog(commands.Cog):
     @commands.guild_only()
     async def god(self, ctx, member: discord.Member):
         choices = (
-            f"{ctx.author.name} is already in God mode, he has the power to take down Granny Annette's life support system at his will.",
+            f"{ctx.author.name} is already in God mode, he has the power to take down his grandma's life support system at his will.",
             f"God mode enabled for {member.name}, they are now immune to all attacks.")
         await ctx.send(random.choice(choices))
 
