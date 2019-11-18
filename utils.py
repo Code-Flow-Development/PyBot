@@ -1,8 +1,7 @@
-import os
-import discord
 import calendar
-import logging
+import os
 from datetime import datetime
+from config import getLogger
 from dateutil.relativedelta import relativedelta
 from discord.ext.commands import errors
 
@@ -14,10 +13,10 @@ def loadallcogs(bot):
             filename = command.split(".")[0]
             try:
                 bot.load_extension(f"cogs.{filename}")
-                logging.info(f"[Cog Management] Cog Loaded: {filename}")
+                getLogger().info(f"[Cog Management] Cog Loaded: {filename}")
             except (errors.ExtensionNotFound, errors.ExtensionAlreadyLoaded, errors.NoEntryPointError,
                     errors.ExtensionFailed) as e:
-                logging.error(f"[Cog Management] Error loading cog: {filename} - {e}")
+                getLogger().error(f"[Cog Management] Error loading cog: {filename} - {e}")
 
 
 def utc_to_epoch(utc: datetime):

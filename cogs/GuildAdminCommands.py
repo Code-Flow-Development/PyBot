@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from datetime import datetime
-from discord.errors import HTTPException, Forbidden
+from discord.errors import HTTPException, Forbidden, InvalidArgument
 from discord.ext.commands.errors import BadArgument
 from discord.errors import NotFound
 
@@ -89,6 +89,66 @@ class GuildAdminCommandsCog(commands.Cog):
                                   timestamp=datetime.utcnow())
             embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
             await ctx.send(content=None, embed=embed)
+
+    # TODO: maybe use roles for permissions instead (ex: Moderator)
+    @commands.command(name="mute")
+    @commands.guild_only()
+    @commands.has_permissions(kick_members=True)
+    async def mute(self, ctx, member: discord.Member, reason: str = None):
+        try:
+            muted_role = [x for x in ctx.guild.roles if x.name == "Muted"]
+            muted_role = muted_role[0] if len(muted_role) == 1 else None
+            # check length of the list, if 0 no muted role, if > 0 there is one or more
+            if muted_role:
+                try:
+                    await member.add_roles(muted_role, reason=reason, atomic=False)
+                    await ctx.send(f"{member.name} was muted!")
+                except Forbidden as e:
+                    await ctx.send(f"[GuildAdminCommands] Missing `manage_roles` permission! Error: {e.text}")
+                except HTTPException as e:
+                    await ctx.send(f"[GuildAdminCommands] Failed to add role! Error: {e.text}")
+            else:
+                # create the role
+                try:
+                    muted_role = await ctx.guild.create_role(name="Muted", reason="No muted role existed", permissions=discord.Permissions.none())
+                    # loop channels and add muted role permissions
+                    for channel in [x for x in ctx.guild.channels]:
+                        try:
+                            await channel.set_permissions(muted_role, send_messages=False, add_reactions=False,
+                                                          manage_messages=False, embed_links=False,
+                                                          attach_files=False,
+                                                          external_emojis=False)
+                            print(f"Set permissions on channel {channel.name}")
+                        except Forbidden as e:
+                            # no permission to edit channel specific permissions
+                            await ctx.send(f"[GuildAdminCommands] Missing `administrator` permission! Error: {e.text}")
+                        except NotFound as e:
+                            await ctx.send(f"[GuildAdminCommands] The role or member being edited is not part of the guild! Error: {e.text}")
+                        except HTTPException as e:
+                            await ctx.send(f"[GuildAdminCommands] Editing channel specific permissions failed for channel `{channel.name}`! Error: {e.text}")
+                        except InvalidArgument as e:
+                            await ctx.send(f"[GuildAdminCommands] The overwrite parameter is invalid or the target type was not role or member! Error: {e}")
+
+                    try:
+                        await member.add_roles(muted_role, reason=reason, atomic=False)
+                        await ctx.send(f"{member.name} was muted!")
+                    except Forbidden as e:
+                        await ctx.send(f"[GuildAdminCommands] Missing `manage_roles` permission! Error: {e.text}")
+                    except HTTPException as e:
+                        await ctx.send(f"[GuildAdminCommands] Failed to add role! Error: {e.text}")
+                except Forbidden as e:
+                    # no permission to create the role
+                    await ctx.send(f"[GuildAdminCommands] Cannot create muted role, Missing `manage_roles` "
+                                   f"permission! Error: {e.text}")
+                except HTTPException as e:
+                    # Creating role failed
+                    await ctx.send(f"[GuildAdminCommands] Failed to create muted role! Error: {e.text}")
+                except InvalidArgument as e:
+                    # Invalid keyword was given
+                    await ctx.send(f"[GuildAdminCommands] Invalid keyword given! Error: {e}")
+        except HTTPException as e:
+            # Retrieving roles failed
+            await ctx.send(f"[GuildAdminCommands] Retrieving roles failed! Error: {e.text}")
 
 
 def setup(bot):
