@@ -271,6 +271,19 @@ class GuildAdminCommandsCog(commands.Cog):
     #             # TODO: catch the correct catch
     #             pass
 
+    @commands.command(name="createrole")
+    @commands.guild_only()
+    async def createrole(self, ctx, rolename: str, hoist: bool = False, mentionable: bool = False):
+        try:
+            await ctx.guild.create_role(name=rolename, hoist=hoist, mentionable=mentionable, reason=f"Requested by {ctx.author.name}")
+        except Forbidden as e:
+            await ctx.send(f"[GuildAdminCommands] Missing permissions to create role! Error: {e.text}")
+        except HTTPException as e:
+            await ctx.send(f"[GuildAdminCommands] Failed to create role! Error: {e.text}")
+        except InvalidArgument as e:
+            await ctx.send(f"[GuildAdminCommands] Invalid Argument Error! Error: {e}")
+        pass
+
 
 def setup(bot):
     bot.add_cog(GuildAdminCommandsCog(bot))

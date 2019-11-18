@@ -57,6 +57,19 @@ class CommandEventsCog(commands.Cog):
         getLogger().info(
             f"[Commands] {ctx.author.name}#{ctx.author.discriminator} ({ctx.author.id}) ran command {ctx.command.name}")
 
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author.bot:
+            return
+
+        if "xd" in message.content.lower():
+            await message.channel.send("Ecks Dee")
+            return
+
+        if "meme" in message.content.lower():
+            await message.channel.send("shit meme")
+            return
+
 
 def setup(bot):
     bot.add_cog(CommandEventsCog(bot))
