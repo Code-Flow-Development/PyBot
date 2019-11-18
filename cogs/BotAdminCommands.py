@@ -1,3 +1,4 @@
+import inspect
 from config import getLogger
 from .utils import checks
 from discord.ext import commands
@@ -74,7 +75,9 @@ class BotAdminCommandsCog(commands.Cog):
         result = None
 
         try:
-            result = await eval(code)
+            result = eval(code)
+            if inspect.isawaitable(result):
+                result = await result
         except Exception as e:
             await ctx.send(f"[Eval] Error running code: {type(e).__name__} - {e}")
         else:
