@@ -6,7 +6,7 @@ from discord.ext import commands
 from config import getLogger
 
 
-class GuildEventsHandler(commands.Cog):
+class GuildEventsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -91,8 +91,8 @@ class GuildEventsHandler(commands.Cog):
             embed.set_footer(text=member.name, icon_url=member.avatar_url)
             await log_channel.send(content=None, embed=embed)
         else:
-            getLogger().error(f"[Guild Events] Could not find suitable channel to send a event for guild {guild.name}!")
+            getLogger().error(f"[Guild Events] Could not find suitable channel to send a event log for guild {guild.name}!")
 
 
 def setup(bot):
-    bot.add_cog(GuildEventsHandler(bot))
+    bot.add_cog(GuildEventsCog(bot))

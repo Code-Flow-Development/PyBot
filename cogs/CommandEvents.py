@@ -1,9 +1,10 @@
 import traceback
 import sys
 from discord.ext import commands
+from config import getLogger
 
 
-class CommandErrorHandler(commands.Cog):
+class CommandEventsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -51,6 +52,11 @@ class CommandErrorHandler(commands.Cog):
         print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
+    @commands.Cog.listener()
+    async def on_command(self, ctx):
+        getLogger().info(
+            f"[Commands] {ctx.author.name}#{ctx.author.discriminator} ({ctx.author.id}) ran command {ctx.command.name}")
+
 
 def setup(bot):
-    bot.add_cog(CommandErrorHandler(bot))
+    bot.add_cog(CommandEventsCog(bot))
