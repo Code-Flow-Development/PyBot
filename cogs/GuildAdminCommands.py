@@ -257,20 +257,19 @@ class GuildAdminCommandsCog(commands.Cog):
         except HTTPException as e:
             await ctx.send(f"[GuildAdminCommands] Failed to kick user {member.name}! Error: {e.text}")
 
-    @commands.command(name="strike")
-    @commands.guild_only()
-    async def strike(self, ctx, member: discord.Member, reason: str = "No reason specified"):
-        # TODO: define strikes
-        if len(strikes) == 1:
-            embed = discord.Embed(title=None, description=f"Ok, **{member.name}** now has 1 strike 🚦 I warned them via PM ⚠", color=discord.Color.green(), timestamp=datetime.utcnow())
-            embed.set_footer(text=f"Striked by {ctx.author.name}", icon_url=ctx.author.avatar_url)
-            try:
-                dm_embed = discord.Embed(title=f"You just got a warning / strike from {ctx.author.name} on {ctx.guild.name}: ```{reason}```", color=discord.Color.red(), timestamp=datetime.utcnow())
-                embed.set_footer(text=f"Striked by {ctx.author.name}", icon_url=ctx.author.avatar_url)
-            except:
-                # TODO: catch the correct catch
-                pass
-        pass
+    # @commands.command(name="strike")
+    # @commands.guild_only()
+    # async def strike(self, ctx, member: discord.Member, reason: str = "No reason specified"):
+    #     # TODO: define strikes
+    #     if len(strikes) == 1:
+    #         embed = discord.Embed(title=None, description=f"Ok, **{member.name}** now has 1 strike 🚦 I warned them via PM ⚠", color=discord.Color.green(), timestamp=datetime.utcnow())
+    #         embed.set_footer(text=f"Striked by {ctx.author.name}", icon_url=ctx.author.avatar_url)
+    #         try:
+    #             dm_embed = discord.Embed(title=f"You just got a warning / strike from {ctx.author.name} on {ctx.guild.name}: ```{reason}```", color=discord.Color.red(), timestamp=datetime.utcnow())
+    #             embed.set_footer(text=f"Striked by {ctx.author.name}", icon_url=ctx.author.avatar_url)
+    #         except:
+    #             # TODO: catch the correct catch
+    #             pass
 
 
 def setup(bot):
