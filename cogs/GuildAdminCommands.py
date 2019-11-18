@@ -1,4 +1,5 @@
 import discord
+import random
 from discord.ext import commands
 from datetime import datetime
 from discord.errors import HTTPException, Forbidden, InvalidArgument
@@ -94,7 +95,11 @@ class GuildAdminCommandsCog(commands.Cog):
     @commands.command(name="mute")
     @commands.guild_only()
     @commands.has_permissions(kick_members=True)
-    async def mute(self, ctx, member: discord.Member, reason: str = None):
+    async def mute(self, ctx, member: discord.Member, reason: str = "No reason specified!"):
+        if member.bot:
+            await ctx.send(f"{member.name} is a bot.")
+            return
+
         try:
             muted_role = [x for x in ctx.guild.roles if x.name == "Muted"]
             muted_role = muted_role[0] if len(muted_role) == 1 else None
@@ -103,6 +108,20 @@ class GuildAdminCommandsCog(commands.Cog):
                 try:
                     await member.add_roles(muted_role, reason=reason, atomic=False)
                     await ctx.send(f"{member.name} was muted!")
+                    await member.send(
+                        f"You were muted by {ctx.message.author.name} in {ctx.guild.name} for {reason}")
+                    log_channel = [x for x in member.guild.channels if x.name == "logs"]
+                    log_channel = log_channel[0] if len(
+                        log_channel) == 1 else member.guild.system_channel if member.guild.system_channel else random.choice(
+                        await self.bot.fetch_channls())
+                    if log_channel:
+                        embed = discord.Embed(title=f"{member.name}#{member.discriminator} was muted!",
+                                              description=None, color=discord.Color.red(),
+                                              timestamp=datetime.utcnow())
+                        embed.add_field(name=f"Mute Reason", value=reason)
+                        embed.set_thumbnail(url=member.avatar_url)
+                        embed.set_footer(text=f"Muted by {ctx.author.name}", icon_url=ctx.author.avatar_url)
+                        await log_channel.send(content=None, embed=embed)
                 except Forbidden as e:
                     await ctx.send(f"[GuildAdminCommands] Missing `manage_roles` permission! Error: {e.text}")
                 except HTTPException as e:
@@ -110,7 +129,8 @@ class GuildAdminCommandsCog(commands.Cog):
             else:
                 # create the role
                 try:
-                    muted_role = await ctx.guild.create_role(name="Muted", reason="No muted role existed", permissions=discord.Permissions.none())
+                    muted_role = await ctx.guild.create_role(name="Muted", reason="No muted role existed",
+                                                             permissions=discord.Permissions.none())
                     # loop channels and add muted role permissions
                     for channel in [x for x in ctx.guild.channels]:
                         try:
@@ -123,15 +143,32 @@ class GuildAdminCommandsCog(commands.Cog):
                             # no permission to edit channel specific permissions
                             await ctx.send(f"[GuildAdminCommands] Missing `administrator` permission! Error: {e.text}")
                         except NotFound as e:
-                            await ctx.send(f"[GuildAdminCommands] The role or member being edited is not part of the guild! Error: {e.text}")
+                            await ctx.send(
+                                f"[GuildAdminCommands] The role or member being edited is not part of the guild! Error: {e.text}")
                         except HTTPException as e:
-                            await ctx.send(f"[GuildAdminCommands] Editing channel specific permissions failed for channel `{channel.name}`! Error: {e.text}")
+                            await ctx.send(
+                                f"[GuildAdminCommands] Editing channel specific permissions failed for channel `{channel.name}`! Error: {e.text}")
                         except InvalidArgument as e:
-                            await ctx.send(f"[GuildAdminCommands] The overwrite parameter is invalid or the target type was not role or member! Error: {e}")
+                            await ctx.send(
+                                f"[GuildAdminCommands] The overwrite parameter is invalid or the target type was not role or member! Error: {e}")
 
                     try:
                         await member.add_roles(muted_role, reason=reason, atomic=False)
                         await ctx.send(f"{member.name} was muted!")
+                        await member.send(
+                            f"You were muted by {ctx.message.author.name} in {ctx.guild.name} for {reason}")
+                        log_channel = [x for x in member.guild.channels if x.name == "logs"]
+                        log_channel = log_channel[0] if len(
+                            log_channel) == 1 else member.guild.system_channel if member.guild.system_channel else random.choice(
+                            await self.bot.fetch_channls())
+                        if log_channel:
+                            embed = discord.Embed(title=f"{member.name}#{member.discriminator} was muted!",
+                                                  description=None, color=discord.Color.red(),
+                                                  timestamp=datetime.utcnow())
+                            embed.add_field(name=f"Mute Reason", value=reason)
+                            embed.set_thumbnail(url=member.avatar_url)
+                            embed.set_footer(text=f"Muted by {ctx.author.name}", icon_url=ctx.author.avatar_url)
+                            await log_channel.send(content=None, embed=embed)
                     except Forbidden as e:
                         await ctx.send(f"[GuildAdminCommands] Missing `manage_roles` permission! Error: {e.text}")
                     except HTTPException as e:
@@ -146,6 +183,43 @@ class GuildAdminCommandsCog(commands.Cog):
                 except InvalidArgument as e:
                     # Invalid keyword was given
                     await ctx.send(f"[GuildAdminCommands] Invalid keyword given! Error: {e}")
+        except HTTPException as e:
+            # Retrieving roles failed
+            await ctx.send(f"[GuildAdminCommands] Retrieving roles failed! Error: {e.text}")
+
+    @commands.command(name="unmute")
+    @commands.guild_only()
+    @commands.has_permissions(administrator=True)
+    async def unmute(self, ctx, member: discord.Member, reason: str = "No reason specified!"):
+        if member.bot:
+            await ctx.send(f"{member.name} is a bot.")
+            return
+
+        try:
+            muted_role = [x for x in ctx.guild.roles if x.name == "Muted"]
+            muted_role = muted_role[0] if len(muted_role) == 1 else None
+            # check length of the list, if 0 no muted role, if == 0 there is one
+            try:
+                await member.remove_roles(muted_role, reason=reason)
+                await ctx.send(f"{member.name} was unmuted!")
+                await member.send(f"You were unmuted by {ctx.message.author.name} in {ctx.guild.name}")
+                log_channel = [x for x in member.guild.channels if x.name == "logs"]
+                log_channel = log_channel[0] if len(
+                    log_channel) == 1 else member.guild.system_channel if member.guild.system_channel else random.choice(
+                    await self.bot.fetch_channls())
+                if log_channel:
+                    embed = discord.Embed(title=f"{member.name}#{member.discriminator} was unmuted!",
+                                          description=None, color=discord.Color.green(),
+                                          timestamp=datetime.utcnow())
+                    embed.add_field(name=f"Unmute Reason", value=reason)
+                    embed.set_thumbnail(url=member.avatar_url)
+                    embed.set_footer(text=f"Unmuted by {ctx.author.name}", icon_url=ctx.author.avatar_url)
+                    await log_channel.send(content=None, embed=embed)
+            except Forbidden as e:
+                # missing permission to remove roles
+                await ctx.send(f"[GuildAdminCommands] Missing `manage_roles` permission! Error: {e.text}")
+            except HTTPException as e:
+                await ctx.send(f"[GuildAdminCommands] Failed to remove roles! Error: {e.text}")
         except HTTPException as e:
             # Retrieving roles failed
             await ctx.send(f"[GuildAdminCommands] Retrieving roles failed! Error: {e.text}")
