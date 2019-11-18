@@ -1,5 +1,6 @@
 import discord
 import time
+import asyncio
 import sys
 from discord.ext import commands
 from datetime import datetime
@@ -73,14 +74,14 @@ class MiscCommandsCog(commands.Cog):
     @commands.guild_only()
     async def ddos(self, ctx, member: discord.Member):
         await ctx.send(f"Initiating DDoS attack on {member.name}, please wait...")
-        time.sleep(1000)
+        await asyncio.sleep(1)
         await ctx.send("Malicious UDP packets were sent to their IP address, they should be offline now. :)")
 
     @commands.command(name="swat")
     @commands.guild_only()
     async def swat(self, ctx, member: discord.Member):
         await ctx.send(f"Initiating SWAT procedures on {member.name}, please wait...")
-        time.sleep(1000)
+        await asyncio.sleep(1)
         await ctx.send("Your local police department has been notified that you have shot your Dad & now have your mother hostage in your home, along with a can of gas with you to burn your house down. Enjoy the shitshow, motherfucker.")
 
 

@@ -23,7 +23,7 @@ class GuildAdminCommandsCog(commands.Cog):
             await ctx.send(f"{member.name} is an admin and cannot be banned!")
             return
 
-        # TODO: log channel embed with reason (see: https://github.com/Puyodead1/Extron/blob/master/Discord/Commands/ban.js)
+        # TODO.md: log channel embed with reason (see: https://github.com/Puyodead1/Extron/blob/master/Discord/Commands/ban.js)
         embed = discord.Embed(title=None,
                               description=f"Bye Bye **{member.name}** 🔨",
                               color=discord.Color.green(),
@@ -93,7 +93,7 @@ class GuildAdminCommandsCog(commands.Cog):
             embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
             await ctx.send(content=None, embed=embed)
 
-    # TODO: maybe use roles for permissions instead (ex: Moderator)
+    # TODO.md: maybe use roles for permissions instead (ex: Moderator)
     @commands.command(name="mute")
     @commands.guild_only()
     @commands.has_permissions(kick_members=True)
@@ -244,7 +244,7 @@ class GuildAdminCommandsCog(commands.Cog):
 
     @commands.command(name="kick")
     @commands.guild_only()
-    # TODO: reason?
+    # TODO.md: reason?
     async def kick(self, ctx, member: discord.Member):
         try:
             await member.kick()
@@ -256,6 +256,21 @@ class GuildAdminCommandsCog(commands.Cog):
             await ctx.send(f"[GuildAdminCommands] Missing permission! Error: {e.text}")
         except HTTPException as e:
             await ctx.send(f"[GuildAdminCommands] Failed to kick user {member.name}! Error: {e.text}")
+
+    @commands.command(name="strike")
+    @commands.guild_only()
+    async def strike(self, ctx, member: discord.Member, reason: str = "No reason specified"):
+        # TODO: define strikes
+        if len(strikes) == 1:
+            embed = discord.Embed(title=None, description=f"Ok, **{member.name}** now has 1 strike 🚦 I warned them via PM ⚠", color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_footer(text=f"Striked by {ctx.author.name}", icon_url=ctx.author.avatar_url)
+            try:
+                dm_embed = discord.Embed(title=f"You just got a warning / strike from {ctx.author.name} on {ctx.guild.name}: ```{reason}```", color=discord.Color.red(), timestamp=datetime.utcnow())
+                embed.set_footer(text=f"Striked by {ctx.author.name}", icon_url=ctx.author.avatar_url)
+            except:
+                # TODO: catch the correct catch
+                pass
+        pass
 
 
 def setup(bot):
