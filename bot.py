@@ -4,11 +4,11 @@ import time
 import utils
 from discord.ext import commands
 from dotenv import load_dotenv
-from config import getLogger
+from config import getLogger, PREFIX
 
 
 # Create a new 'bot' with prefix
-bot = commands.Bot(command_prefix="{", description="PyBot")
+bot = commands.Bot(command_prefix=PREFIX, description="PyBot")
 
 # Loads cogs from cogs folder, no need to touch this when adding new cogs, it loads them automagically!
 if __name__ == '__main__':

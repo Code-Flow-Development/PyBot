@@ -3,6 +3,7 @@ import logging
 import verboselogs
 
 ADMINS = ("213247101314924545", "399388398990786561")
+PREFIX = "{"
 
 
 def getLogger():

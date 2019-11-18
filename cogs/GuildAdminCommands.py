@@ -4,8 +4,6 @@ from datetime import datetime
 from discord.errors import HTTPException, Forbidden
 from discord.ext.commands.errors import BadArgument
 from discord.errors import NotFound
-from config import getLogger
-from .utils.checks import isGuildAdmin
 
 
 class GuildAdminCommandsCog(commands.Cog):
