@@ -47,17 +47,6 @@ class EpochUtils(float):
         return self.rdelta.years
 
 
-def getUserConfig(userid: str):
-    userfile = open(f"data\\{userid}.json", 'r')
-    return userfile.read()
-
-
-def saveUserConfig(userid, filecontent):
-    file = open(f"data\\{userid}.json", 'w')
-    file.write(json.dumps(filecontent))
-    # TODO: add try catch incase of failure
-
-
 class UserProfile(int):
     def __init__(self, userid):
         self.userid = userid
