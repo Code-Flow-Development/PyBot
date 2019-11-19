@@ -1,7 +1,10 @@
 import inspect
+import discord
+from datetime import datetime
 from config import getLogger
 from .utils import checks
 from discord.ext import commands
+from discord.errors import HTTPException
 
 
 class BotAdminCommandsCog(commands.Cog):
@@ -47,16 +50,6 @@ class BotAdminCommandsCog(commands.Cog):
             await ctx.send(f"Cog Unloaded!")
             getLogger().success(f"[Cog Management] {ctx.author.name} unloaded cog: {cog}")
 
-    @commands.command(name="unloadallcogs")
-    @checks.isBotAdmin()
-    async def unloadAll(self, ctx):
-        pass
-        # try:
-        #     utils.unloadallcogs(self.bot)
-        # except Exception as e:
-        #     await ctx.send(f"Caught Exception while unloading all cogs: {type(e).__name__}, See console for more info")
-        #     print(f"Caught Exception while unloading all cogs: {type(e).__name__} - {e}")
-
     @commands.command(name="stop")
     @checks.isBotAdmin()
     async def stop(self, ctx):
@@ -81,7 +74,10 @@ class BotAdminCommandsCog(commands.Cog):
         except Exception as e:
             await ctx.send(f"[Eval] Error running code: {type(e).__name__} - {e}")
         else:
-            await ctx.send(result)
+            if result:
+                await ctx.send(result)
+            else:
+                await ctx.send("[Eval] Empty result")
 
 
 def setup(bot):

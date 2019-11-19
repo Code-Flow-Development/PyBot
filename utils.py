@@ -1,5 +1,6 @@
 import calendar
 import os
+import json
 from datetime import datetime
 from config import getLogger
 from dateutil.relativedelta import relativedelta
@@ -42,5 +43,11 @@ class EpochUtils(float):
     def months(self):
         return self.rdelta.months
 
-    def years(self):
-        return self.rdelta.years
+
+def years(self):
+    return self.rdelta.years
+
+
+def getUserConfig(userid: str):
+    userfile = open(f"data\\{userid}.json", 'r')
+    return userfile.read()

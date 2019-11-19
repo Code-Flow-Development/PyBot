@@ -7,7 +7,7 @@ from discord.ext.commands.errors import BadArgument
 from discord.errors import NotFound
 
 
-class GuildAdminCommandsCog(commands.Cog):
+class ModerationCommandsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -130,9 +130,9 @@ class GuildAdminCommandsCog(commands.Cog):
                         embed.set_footer(text=f"Muted by {ctx.author.name}", icon_url=ctx.author.avatar_url)
                         await log_channel.send(content=None, embed=embed)
                 except Forbidden as e:
-                    await ctx.send(f"[GuildAdminCommands] Missing permission! Error: {e.text}")
+                    await ctx.send(f"[ModerationCommands] Missing permission! Error: {e.text}")
                 except HTTPException as e:
-                    await ctx.send(f"[GuildAdminCommands] Failed to add role! Error: {e.text}")
+                    await ctx.send(f"[ModerationCommands] Failed to add role! Error: {e.text}")
             else:
                 # create the role
                 try:
@@ -148,16 +148,16 @@ class GuildAdminCommandsCog(commands.Cog):
                             print(f"Set permissions on channel {channel.name}")
                         except Forbidden as e:
                             # no permission to edit channel specific permissions
-                            await ctx.send(f"[GuildAdminCommands] Missing permission! Error: {e.text}")
+                            await ctx.send(f"[ModerationCommands] Missing permission! Error: {e.text}")
                         except NotFound as e:
                             await ctx.send(
-                                f"[GuildAdminCommands] The role or member being edited is not part of the guild! Error: {e.text}")
+                                f"[ModerationCommands] The role or member being edited is not part of the guild! Error: {e.text}")
                         except HTTPException as e:
                             await ctx.send(
-                                f"[GuildAdminCommands] Editing channel specific permissions failed for channel `{channel.name}`! Error: {e.text}")
+                                f"[ModerationCommands] Editing channel specific permissions failed for channel `{channel.name}`! Error: {e.text}")
                         except InvalidArgument as e:
                             await ctx.send(
-                                f"[GuildAdminCommands] The overwrite parameter is invalid or the target type was not role or member! Error: {e}")
+                                f"[ModerationCommands] The overwrite parameter is invalid or the target type was not role or member! Error: {e}")
 
                     try:
                         await member.add_roles(muted_role, reason=reason, atomic=False)
@@ -182,22 +182,22 @@ class GuildAdminCommandsCog(commands.Cog):
                             embed.set_footer(text=f"Muted by {ctx.author.name}", icon_url=ctx.author.avatar_url)
                             await log_channel.send(content=None, embed=embed)
                     except Forbidden as e:
-                        await ctx.send(f"[GuildAdminCommands] Missing permission! Error: {e.text}")
+                        await ctx.send(f"[ModerationCommands] Missing permission! Error: {e.text}")
                     except HTTPException as e:
-                        await ctx.send(f"[GuildAdminCommands] Failed to add role! Error: {e.text}")
+                        await ctx.send(f"[ModerationCommands] Failed to add role! Error: {e.text}")
                 except Forbidden as e:
                     # no permission to create the role
-                    await ctx.send(f"[GuildAdminCommands] Cannot create muted role, Missing "
+                    await ctx.send(f"[ModerationCommands] Cannot create muted role, Missing "
                                    f"permission! Error: {e.text}")
                 except HTTPException as e:
                     # Creating role failed
-                    await ctx.send(f"[GuildAdminCommands] Failed to create muted role! Error: {e.text}")
+                    await ctx.send(f"[ModerationCommands] Failed to create muted role! Error: {e.text}")
                 except InvalidArgument as e:
                     # Invalid keyword was given
-                    await ctx.send(f"[GuildAdminCommands] Invalid keyword given! Error: {e}")
+                    await ctx.send(f"[ModerationCommands] Invalid keyword given! Error: {e}")
         except HTTPException as e:
             # Retrieving roles failed
-            await ctx.send(f"[GuildAdminCommands] Retrieving roles failed! Error: {e.text}")
+            await ctx.send(f"[ModerationCommands] Retrieving roles failed! Error: {e.text}")
 
     @commands.command(name="unmute")
     @commands.guild_only()
@@ -234,13 +234,12 @@ class GuildAdminCommandsCog(commands.Cog):
                     await log_channel.send(content=None, embed=embed)
             except Forbidden as e:
                 # missing permission to remove roles
-                await ctx.send(f"[GuildAdminCommands] Missing permission! Error: {e.text}")
+                await ctx.send(f"[ModerationCommands] Missing permission! Error: {e.text}")
             except HTTPException as e:
-                await ctx.send(f"[GuildAdminCommands] Failed to remove roles! Error: {e.text}")
+                await ctx.send(f"[ModerationCommands] Failed to remove roles! Error: {e.text}")
         except HTTPException as e:
             # Retrieving roles failed
-            await ctx.send(f"[GuildAdminCommands] Retrieving roles failed! Error: {e.text}")
-
+            await ctx.send(f"[ModerationCommands] Retrieving roles failed! Error: {e.text}")
 
     @commands.command(name="kick")
     @commands.guild_only()
@@ -248,42 +247,64 @@ class GuildAdminCommandsCog(commands.Cog):
     async def kick(self, ctx, member: discord.Member):
         try:
             await member.kick()
-            embed = discord.Embed(title=None, description=f"**{member.name}** was kicked 👋", color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed = discord.Embed(title=None, description=f"**{member.name}** was kicked 👋",
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             embed.set_footer(text=f"Kicked by {ctx.author.name}", icon_url=ctx.author.avatar_url)
             await ctx.send(content=None, embed=embed)
         except Forbidden as e:
-            await ctx.send(f"[GuildAdminCommands] Missing permission! Error: {e.text}")
+            await ctx.send(f"[ModerationCommands] Missing permission! Error: {e.text}")
         except HTTPException as e:
-            await ctx.send(f"[GuildAdminCommands] Failed to kick user {member.name}! Error: {e.text}")
-
-    # @commands.command(name="strike")
-    # @commands.guild_only()
-    # async def strike(self, ctx, member: discord.Member, reason: str = "No reason specified"):
-    #     # TODO: define strikes
-    #     if len(strikes) == 1:
-    #         embed = discord.Embed(title=None, description=f"Ok, **{member.name}** now has 1 strike 🚦 I warned them via PM ⚠", color=discord.Color.green(), timestamp=datetime.utcnow())
-    #         embed.set_footer(text=f"Striked by {ctx.author.name}", icon_url=ctx.author.avatar_url)
-    #         try:
-    #             dm_embed = discord.Embed(title=f"You just got a warning / strike from {ctx.author.name} on {ctx.guild.name}: ```{reason}```", color=discord.Color.red(), timestamp=datetime.utcnow())
-    #             embed.set_footer(text=f"Striked by {ctx.author.name}", icon_url=ctx.author.avatar_url)
-    #         except:
-    #             # TODO: catch the correct catch
-    #             pass
+            await ctx.send(f"[ModerationCommands] Failed to kick user {member.name}! Error: {e.text}")
 
     @commands.command(name="createrole")
     @commands.guild_only()
     async def createrole(self, ctx, rolename: str, hoist: bool = False, mentionable: bool = False):
         try:
-            await ctx.guild.create_role(name=rolename, hoist=hoist, mentionable=mentionable, reason=f"Requested by {ctx.author.name}")
+            await ctx.guild.create_role(name=rolename, hoist=hoist, mentionable=mentionable,
+                                        reason=f"Requested by {ctx.author.name}")
+            await ctx.send(f"Role Created!")
         except Forbidden as e:
-            await ctx.send(f"[GuildAdminCommands] Missing permissions to create role! Error: {e.text}")
+            await ctx.send(f"[ModerationCommands] Missing permissions to create role! Error: {e.text}")
         except HTTPException as e:
-            await ctx.send(f"[GuildAdminCommands] Failed to create role! Error: {e.text}")
+            await ctx.send(f"[ModerationCommands] Failed to create role! Error: {e.text}")
         except InvalidArgument as e:
-            await ctx.send(f"[GuildAdminCommands] Invalid Argument Error! Error: {e}")
+            await ctx.send(f"[ModerationCommands] Invalid Argument Error! Error: {e}")
         pass
+
+    @commands.command(name="deleterole")
+    @commands.guild_only()
+    async def deleterole(self, ctx, role: discord.Role):
+        try:
+            await role.delete(reason=f"Requested by f{ctx.author.name}")
+            await ctx.send(f"Role deleted!")
+        except Forbidden as e:
+            await ctx.send(f"[ModerationCommands] Missing permissions to delete role! Error: {e.text}")
+        except HTTPException as e:
+            await ctx.send(f"[ModerationCommands] Failed to delete role! Error: {e.text}")
+
+    @commands.command(name="addrole")
+    @commands.guild_only()
+    async def addrole(self, ctx, role: discord.Role, member: discord.Member):
+        try:
+            await member.add_roles(role, reason=f"Requested by {ctx.message.author.name}")
+            await ctx.send(f"Added role {role.name} to {member.name}")
+        except Forbidden as e:
+            await ctx.send(f"[ModerationCommands] Missing permission to add role! Error: {e.text}")
+        except HTTPException as e:
+            await ctx.send(f"[ModerationCommands] Failed to add roles! Error: {e.text}")
+
+    @commands.command(name="removerole")
+    @commands.guild_only()
+    async def removerole(self, ctx, role: discord.Role, member: discord.Member):
+        try:
+            await member.remove_roles(role, reason=f"Requested by {ctx.message.author.name}")
+            await ctx.send(f"Removed role {role.name} from {member.name}")
+        except Forbidden as e:
+            await ctx.send(f"[ModerationCommands] Missing permission to remove role! Error: {e.text}")
+        except HTTPException as e:
+            await ctx.send(f"[ModerationCommands] Failed to remove role! Error: {e.text}")
 
 
 def setup(bot):
-    bot.add_cog(GuildAdminCommandsCog(bot))
+    bot.add_cog(ModerationCommandsCog(bot))

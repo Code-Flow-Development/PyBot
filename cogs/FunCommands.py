@@ -133,6 +133,17 @@ class MiscCommandsCog(commands.Cog):
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         await ctx.send(content=None, embed=embed)
 
+    @commands.command(name="rob")
+    @commands.guild_only()
+    async def rob(self, ctx, member: discord.Member):
+        embed = discord.Embed(title=None,
+                              description=f"**{member.name}** has had their chromosones yoinked by **{ctx.message.author.name}**!",
+                              color=discord.Color.red(), timestamp=datetime.utcnow())
+        embed.set_image(url="https://cdn.discordapp.com/attachments/644927766197698593/646323695991914496/image0-5.png")
+        embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+        await ctx.send(content=None, embed=embed)
+
     @commands.command(name="dallas")
     @commands.guild_only()
     async def dallas(self, ctx):
