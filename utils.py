@@ -43,9 +43,8 @@ class EpochUtils(float):
     def months(self):
         return self.rdelta.months
 
-
-def years(self):
-    return self.rdelta.years
+    def years(self):
+        return self.rdelta.years
 
 
 def getUserConfig(userid: str):
@@ -58,13 +57,16 @@ def saveUserConfig(userid, filecontent):
     file.write(json.dumps(filecontent))
     # TODO: add try catch incase of failure
 
-# class UserProile(int):
-#     def __init__(self, userid):
-#         self.userid = userid
-#
-#     def getUserProfile(self):
-#         self.file = open(f"data\\userid}.json, 'r)
-#         return self.file.read()
-#
-#     def save(self, file):
-#         self.file.write()
+
+class UserProfile(int):
+    def __init__(self, userid):
+        self.userid = userid
+        self.filename = f"data\\{self.userid}.json"
+
+    def readUserProfile(self):
+        file = open(self.filename, 'r')
+        return json.loads(file.read())
+
+    def save(self, content):
+        file = open(self.filename, 'w')
+        file.write(json.dumps(content))
