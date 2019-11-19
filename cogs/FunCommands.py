@@ -4,6 +4,7 @@ import asyncio
 import sys
 import random
 import requests
+from discord import Forbidden, HTTPException, InvalidArgument, NotFound
 from discord.ext import commands
 from datetime import datetime
 
@@ -119,7 +120,9 @@ class MiscCommandsCog(commands.Cog):
     async def swat(self, ctx, member: discord.Member):
         await ctx.send(f"Initiating SWAT procedures on {member.name}, please wait...")
         await asyncio.sleep(1)
-        embed = discord.Embed(title=None, description="Your local police department has been notified that you have shot your Dad & now have your mother hostage in your home, along with a can of gas with you to burn your house down. Enjoy the shitshow, motherfucker.", color=discord.Color.green(), timestamp=datetime.utcnow())
+        embed = discord.Embed(title=None,
+                              description="Your local police department has been notified that you have shot your Dad & now have your mother hostage in your home, along with a can of gas with you to burn your house down. Enjoy the shitshow, motherfucker.",
+                              color=discord.Color.green(), timestamp=datetime.utcnow())
         embed.set_image(url="https://media.tenor.com/images/a1912e38f72c5df9050d931853fafddb/tenor.gif")
         embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
@@ -273,6 +276,114 @@ class MiscCommandsCog(commands.Cog):
     async def insult(self, ctx, member: discord.Member):
         api_response = requests.get("https://evilinsult.com/generate_insult.php?lang=en&type=json").json()
         await ctx.send(f"{member.mention}, {api_response['insult']}")
+
+    @commands.command(name="roulette")
+    @commands.guild_only()
+    @commands.bot_has_permissions(ban_members=True, kick_members=True, manage_roles=True)
+    async def roulette(self, ctx):
+        if ctx.author.guild_permissions.administrator or ctx.author.guild_permissions.manage_roles or ctx.author.guild_permissions.ban_members or ctx.author.guild_permissions.kick_members:
+            await ctx.send(f"You cannot use this command because you have moderator permissions!")
+            return
+        # 0=kick, 1=ban, 2=mute, 3=nothing
+        choice = random.randint(0, 3)
+        if choice == 0:
+            embed = discord.Embed(title=None,
+                                  description=f"{ctx.message.author.mention}, Congratulations! You are getting kicked!",
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_image(url="https://media1.tenor.com/images/ca1bad80a757fa8b87dacd9c051f2670/tenor.gif")
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            await ctx.send(content=None, embed=embed)
+            try:
+                await ctx.author.kick()
+            except Forbidden as e:
+                await ctx.send(f"[FunCommands] Missing permission! Error: {e.text}")
+            except HTTPException as e:
+                await ctx.send(f"[FunCommands] Failed to kick user {ctx.author.name}! Error: {e.text}")
+        elif choice == 1:
+            embed = discord.Embed(title=None, description=f"{ctx.message.author.mention}, Congratulations! You are getting banned!", color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_image(url="https://media1.tenor.com/images/d31dd258cb91c52733fd17d62f997d6f/tenor.gif")
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            await ctx.send(content=None, embed=embed)
+            try:
+                await ctx.author.ban()
+            except Forbidden as e:
+                await ctx.send(f"[FunCommands] Missing permission! Error: {e.text}")
+            except HTTPException as e:
+                await ctx.send(f"[FunCommands] Failed to ban user {ctx.author.name}! Error: {e.text}")
+        elif choice == 2:
+            embed = discord.Embed(title=None,
+                                  description=f"{ctx.message.author.mention}, Congratulations! You are getting muted!",
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_image(url="https://media1.tenor.com/images/4fc52cf612af7611598efcb6b788d5e0/tenor.gif")
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            await ctx.send(content=None, embed=embed)
+            try:
+                muted_role = [x for x in ctx.guild.roles if x.name == "Muted"]
+                muted_role = muted_role[0] if len(muted_role) == 1 else None
+                # check length of the list, if 0 no muted role, if > 0 there is one or more
+                if muted_role:
+                    try:
+                        await ctx.author.add_roles(muted_role, reason="Roulette", atomic=False)
+                    except Forbidden as e:
+                        await ctx.send(f"[FunCommands] Missing permission! Error: {e.text}")
+                    except HTTPException as e:
+                        await ctx.send(f"[FunCommands] Failed to add role! Error: {e.text}")
+                else:
+                    # create the role
+                    try:
+                        muted_role = await ctx.guild.create_role(name="Muted", reason="No muted role existed",
+                                                                 permissions=discord.Permissions.none())
+                        # loop channels and add muted role permissions
+                        for channel in [x for x in ctx.guild.channels]:
+                            try:
+                                await channel.set_permissions(muted_role, send_messages=False, add_reactions=False,
+                                                              manage_messages=False, embed_links=False,
+                                                              attach_files=False,
+                                                              external_emojis=False)
+                                print(f"Set permissions on channel {channel.name}")
+                            except Forbidden as e:
+                                # no permission to edit channel specific permissions
+                                await ctx.send(f"[FunCommands] Missing permission! Error: {e.text}")
+                            except NotFound as e:
+                                await ctx.send(
+                                    f"[FunCommands] The role or member being edited is not part of the guild! Error: {e.text}")
+                            except HTTPException as e:
+                                await ctx.send(
+                                    f"[FunCommands] Editing channel specific permissions failed for channel `{channel.name}`! Error: {e.text}")
+                            except InvalidArgument as e:
+                                await ctx.send(
+                                    f"[FunCommands] The overwrite parameter is invalid or the target type was not role or member! Error: {e}")
+
+                        try:
+                            await ctx.author.add_roles(muted_role, reason="Roulette", atomic=False)
+                        except Forbidden as e:
+                            await ctx.send(f"[FunCommands] Missing permission! Error: {e.text}")
+                        except HTTPException as e:
+                            await ctx.send(f"[FunCommands] Failed to add role! Error: {e.text}")
+                    except Forbidden as e:
+                        # no permission to create the role
+                        await ctx.send(f"[FunCommands] Cannot create muted role, Missing "
+                                       f"permission! Error: {e.text}")
+                    except HTTPException as e:
+                        # Creating role failed
+                        await ctx.send(f"[FunCommands] Failed to create muted role! Error: {e.text}")
+                    except InvalidArgument as e:
+                        # Invalid keyword was given
+                        await ctx.send(f"[FunCommands] Invalid keyword given! Error: {e}")
+            except HTTPException as e:
+                # Retrieving roles failed
+                await ctx.send(f"[FunCommands] Retrieving roles failed! Error: {e.text}")
+        elif choice == 3:
+            embed = discord.Embed(title=None,
+                                  description=f"{ctx.message.author.mention}, Congratulations! You are safe!",
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_image(url="https://media1.tenor.com/images/275eb7164f29563897c7d51d74edbf19/tenor.gif")
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            await ctx.send(content=None, embed=embed)
 
 
 def setup(bot):

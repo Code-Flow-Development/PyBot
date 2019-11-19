@@ -14,6 +14,7 @@ class ModerationCommandsCog(commands.Cog):
     @commands.command(name="ban")
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
+    @commands.bot_has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member = None, reason: str = "No reason specified", dmd=0):
         if member is None or member == ctx.message.author:
             await ctx.send(f"You cannot ban yourself!")
@@ -54,7 +55,8 @@ class ModerationCommandsCog(commands.Cog):
     @commands.command(name="unban")
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, user_id: str, reason="No reason specified"):
+    @commands.bot_has_permissions(ban_members=True)
+    async def unban(self, ctx, user_id: str, reason="No reason specified"):
         try:
             member = await self.bot.fetch_user(user_id=user_id)
             try:
@@ -97,6 +99,7 @@ class ModerationCommandsCog(commands.Cog):
     @commands.command(name="mute")
     @commands.guild_only()
     @commands.has_permissions(kick_members=True)
+    @commands.bot_has_permissions(manage_roles=True)
     async def mute(self, ctx, member: discord.Member, reason: str = "No reason specified"):
         if member.bot:
             await ctx.send(f"{member.name} is a bot.")
@@ -202,6 +205,7 @@ class ModerationCommandsCog(commands.Cog):
     @commands.command(name="unmute")
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(manage_roles=True)
     async def unmute(self, ctx, member: discord.Member, reason: str = "No reason specified"):
         if member.bot:
             await ctx.send(f"{member.name} is a bot.")
@@ -244,12 +248,14 @@ class ModerationCommandsCog(commands.Cog):
     @commands.command(name="kick")
     @commands.guild_only()
     # TODO: reason?
+    @commands.bot_has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member):
         try:
             await member.kick()
             embed = discord.Embed(title=None, description=f"**{member.name}** was kicked 👋",
                                   color=discord.Color.green(), timestamp=datetime.utcnow())
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_image(url="https://media1.tenor.com/images/ca1bad80a757fa8b87dacd9c051f2670/tenor.gif")
             embed.set_footer(text=f"Kicked by {ctx.author.name}", icon_url=ctx.author.avatar_url)
             await ctx.send(content=None, embed=embed)
         except Forbidden as e:
@@ -259,6 +265,7 @@ class ModerationCommandsCog(commands.Cog):
 
     @commands.command(name="createrole")
     @commands.guild_only()
+    @commands.bot_has_permissions(manage_roles=True)
     async def createrole(self, ctx, rolename: str, hoist: bool = False, mentionable: bool = False):
         try:
             await ctx.guild.create_role(name=rolename, hoist=hoist, mentionable=mentionable,
@@ -274,6 +281,7 @@ class ModerationCommandsCog(commands.Cog):
 
     @commands.command(name="deleterole")
     @commands.guild_only()
+    @commands.bot_has_permissions(manage_roles=True)
     async def deleterole(self, ctx, role: discord.Role):
         try:
             await role.delete(reason=f"Requested by f{ctx.author.name}")
@@ -285,6 +293,7 @@ class ModerationCommandsCog(commands.Cog):
 
     @commands.command(name="addrole")
     @commands.guild_only()
+    @commands.bot_has_permissions(manage_members=True)
     async def addrole(self, ctx, role: discord.Role, member: discord.Member):
         try:
             await member.add_roles(role, reason=f"Requested by {ctx.message.author.name}")
@@ -296,6 +305,7 @@ class ModerationCommandsCog(commands.Cog):
 
     @commands.command(name="removerole")
     @commands.guild_only()
+    @commands.bot_has_permissions(manage_members=True)
     async def removerole(self, ctx, role: discord.Role, member: discord.Member):
         try:
             await member.remove_roles(role, reason=f"Requested by {ctx.message.author.name}")
