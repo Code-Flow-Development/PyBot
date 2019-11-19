@@ -29,7 +29,7 @@ async def on_ready():
             filename = f"data\\{member.id}.json"
             if not os.path.exists(filename):
                 file = open(filename, 'w+')
-                Data = {
+                json_payload = {
                     "RPGData": {
                         "CreatedCharacter": False,
                         "Name": {
@@ -46,8 +46,7 @@ async def on_ready():
 
                     }
                 }
-                JSONConverted = json.dumps(Data)
-                file.write(JSONConverted)
+                file.write(json.dumps(json_payload))
                 file.close()
                 getLogger().info(f"Wrote new data file for user `{member.name} ({member.id})`")
 

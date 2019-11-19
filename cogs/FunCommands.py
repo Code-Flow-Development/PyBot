@@ -57,7 +57,7 @@ class MiscCommandsCog(commands.Cog):
         # add the discord.py version
         embed.add_field(name="Python Version:", value=f"{sys.version.split(' ')[0]}", inline=False)
         embed.add_field(name="Discord.py Version:", value=f"{discord.__version__}", inline=False)
-        embed.add_field(name="Created by:", value="Riley and Skyler", inline=False)
+        embed.add_field(name="Created by:", value="Riley, Skyler, and Jacob.", inline=False)
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
         await ctx.send(content=None, embed=embed)
@@ -119,8 +119,11 @@ class MiscCommandsCog(commands.Cog):
     async def swat(self, ctx, member: discord.Member):
         await ctx.send(f"Initiating SWAT procedures on {member.name}, please wait...")
         await asyncio.sleep(1)
-        await ctx.send(
-            "Your local police department has been notified that you have shot your Dad & now have your mother hostage in your home, along with a can of gas with you to burn your house down. Enjoy the shitshow, motherfucker.")
+        embed = discord.Embed(title=None, description="Your local police department has been notified that you have shot your Dad & now have your mother hostage in your home, along with a can of gas with you to burn your house down. Enjoy the shitshow, motherfucker.", color=discord.Color.green(), timestamp=datetime.utcnow())
+        embed.set_image(url="https://media.tenor.com/images/a1912e38f72c5df9050d931853fafddb/tenor.gif")
+        embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+        await ctx.send(content=None, embed=embed)
 
     @commands.command(name="dropkick")
     @commands.guild_only()
@@ -128,7 +131,8 @@ class MiscCommandsCog(commands.Cog):
         embed = discord.Embed(title=None,
                               description=f"**{member.name}** has been drop kicked by **{ctx.message.author.name}**",
                               color=discord.Color.green(), timestamp=datetime.utcnow())
-        embed.set_image(url="https://media.giphy.com/media/2OVL0dLCB5nck/giphy.gif")
+        # embed.set_image(url="https://media.giphy.com/media/2OVL0dLCB5nck/giphy.gif")
+        embed.set_image(url="https://media.giphy.com/media/YD0sJDzEgueXK/source.gif")
         embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         await ctx.send(content=None, embed=embed)
