@@ -4,12 +4,13 @@ import asyncio
 import sys
 import random
 import requests
+import html
 from discord import Forbidden, HTTPException, InvalidArgument, NotFound
 from discord.ext import commands
 from datetime import datetime
 
 
-class MiscCommandsCog(commands.Cog):
+class FunCommandsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -143,19 +144,38 @@ class MiscCommandsCog(commands.Cog):
     @commands.command(name="rob")
     @commands.guild_only()
     async def rob(self, ctx, member: discord.Member):
-        embed = discord.Embed(title=None,
-                              description=f"**{member.name}** has had their chromosones yoinked by **{ctx.message.author.name}**!",
-                              color=discord.Color.red(), timestamp=datetime.utcnow())
-        embed.set_image(url="https://cdn.discordapp.com/attachments/644927766197698593/646323695991914496/image0-5.png")
-        embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
-        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-        await ctx.send(content=None, embed=embed)
+        images = ("https://cdn.discordapp.com/attachments/644927766197698593/646323695991914496/image0-5.png",
+                  "https://media1.tenor.com/images/99df9d4636544fe8383c54b36a1ef935/tenor.gif",
+                  "https://media1.tenor.com/images/20f243e697a63f526fc9a81600daed50/tenor.gif",
+                  "https://media1.tenor.com/images/f3f2ffa2d265f3d64b69d4de1dc2dc17/tenor.gif")
+        image = random.choice(images)
+        if image == "https://cdn.discordapp.com/attachments/644927766197698593/646323695991914496/image0-5.png":
+            embed = discord.Embed(title=None,
+                                  description=f"**{member.name}** has had their chromosones yoinked by **{ctx.message.author.name}**!",
+                                  color=discord.Color.red(), timestamp=datetime.utcnow())
+            embed.set_image(url=image)
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            await ctx.send(content=None, embed=embed)
+        else:
+            embed = discord.Embed(title=None,
+                                  description=f"**{member.name}** was robbed by **{ctx.message.author.name}**!",
+                                  color=discord.Color.red(), timestamp=datetime.utcnow())
+            embed.set_image(url=image)
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            await ctx.send(content=None, embed=embed)
 
     @commands.command(name="dallas")
     @commands.guild_only()
     async def dallas(self, ctx):
-        await ctx.send(
-            "Dallas is currently busy, he's with a couple of furries and... well he's in the middle of them y'know..")
+        embed = discord.Embed(title=None,
+                              description="Dallas is currently busy, he's with a couple of furries and... well he's in the middle of them y'know..",
+                              color=discord.Color.red(), timestamp=datetime.utcnow())
+        embed.set_image(url="https://i.imgur.com/wIa2brp.jpg")
+        embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+        await ctx.send(content=None, embed=embed)
 
     @commands.command(name="investigate")
     @commands.guild_only()
@@ -301,7 +321,9 @@ class MiscCommandsCog(commands.Cog):
             except HTTPException as e:
                 await ctx.send(f"[FunCommands] Failed to kick user {ctx.author.name}! Error: {e.text}")
         elif choice == 1:
-            embed = discord.Embed(title=None, description=f"{ctx.message.author.mention}, Congratulations! You are getting banned!", color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed = discord.Embed(title=None,
+                                  description=f"{ctx.message.author.mention}, Congratulations! You are getting banned!",
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
             embed.set_image(url="https://media1.tenor.com/images/d31dd258cb91c52733fd17d62f997d6f/tenor.gif")
             embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
@@ -384,6 +406,49 @@ class MiscCommandsCog(commands.Cog):
             embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             await ctx.send(content=None, embed=embed)
+
+    @commands.command(name="meme")
+    async def meme(self, ctx, listing_type: str = "top"):
+        if listing_type.lower() == "new" or listing_type.lower() == "top" or listing_type.lower() == "rising" or listing_type.lower() == "hot" or listing_type.lower() == "best":
+            result = requests.get(f"https://www.reddit.com/r/funny/{listing_type.lower()}.json?count=50",
+                                  headers={'User-agent': f'PyBot ({ctx.author.id})'}).json()
+            posts = result["data"]["children"]
+            post = pickRandomPost(posts)
+            title = post["data"]["title"]
+            image_url = post["data"]["preview"]["images"][0]["source"]["url"]
+            embed = discord.Embed(title=None,
+                                  description=title,
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_image(url=html.unescape(image_url))
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            return await ctx.send(content=None, embed=embed)
+        elif listing_type.lower() == "random":
+            post = requests.get(f"https://www.reddit.com/r/funny/{listing_type.lower()}.json?count=50",
+                                  headers={'User-agent': f'PyBot ({ctx.author.id})'}).json()[0]["data"]["children"][0]
+            title = post["data"]["title"]
+            image_url = post["data"]["preview"]["images"][0]["source"]["url"]
+            embed = discord.Embed(title=None,
+                                  description=title,
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_image(url=html.unescape(image_url))
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            return await ctx.send(content=None, embed=embed)
+        else:
+            return await ctx.send(
+                f"{listing_type.lower()} is not a valid type! Valid types are: ```top\nhot\nnew\nbest\nrandom\nrising\ntop```")
+
+
+def pickRandomPost(posts: []):
+    random.shuffle(posts)
+    post = random.choice(posts)
+    over18 = post["data"]["over_18"]
+    images = post["data"]["preview"]["images"]
+    if len(images) > 0 and not over18:
+        return post
+    else:
+        pickRandomPost(posts)
 
 
 def setup(bot):

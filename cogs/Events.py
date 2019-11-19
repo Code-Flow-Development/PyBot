@@ -4,7 +4,7 @@ from discord.ext import commands
 from config import getLogger
 
 
-class CommandEventsCog(commands.Cog):
+class EventsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
