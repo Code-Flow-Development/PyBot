@@ -20,7 +20,7 @@ class FunCommandsCog(commands.Cog):
         if not member:
             member = ctx.author
 
-        embed = discord.Embed(title=None, help=f"Here is the avatar for **{member.display_name}**",
+        embed = discord.Embed(title=None,
                               color=discord.Colour.green(),
                               timestamp=datetime.utcnow())
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)

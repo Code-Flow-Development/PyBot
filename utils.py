@@ -81,6 +81,13 @@ class UserProfiles(discord.Member):
                         "MiddleName": "none",
                         "LastName": "none",
                     },
+                    "Race": "none",
+                    "Stats": {
+                        "Level": 1,
+                        "CurrentExp": 0,
+                        "MaxExp": 100,
+                        "Sheckels": 10,
+                    },
                     "Inventory": {},
                 },
                 "MiscData": {

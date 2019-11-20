@@ -328,7 +328,7 @@ class ModerationCommandsCog(commands.Cog):
 
     @commands.command(name="strike", help="Add a strike to a user", usage="<@user> [reason]")
     @commands.guild_only()
-    async def strike(self, ctx, member: discord.Member, reason: str = None):
+    async def strike(self, ctx, member: discord.Member, reason: str = "No reason"):
         profile = UserProfiles(member)
         profile_content = profile.getUserProfile()
         strikes = profile_content["MiscData"]["strikes"]
@@ -338,10 +338,40 @@ class ModerationCommandsCog(commands.Cog):
         }
         strikes.append(strike_payload)
         profile.update("MiscData", profile_content["MiscData"])
-        embed = discord.Embed(title=None, description=f"**{member.name}** now has {len(strikes)} 🚦", color=discord.Color.green(), timestamp=datetime.utcnow())
+        embed = discord.Embed(title=None, description=f"**{member.name}** now has {len(strikes)} strikes 🚦", color=discord.Color.green(), timestamp=datetime.utcnow())
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         embed.set_footer(text=f"Kicked by {ctx.author.name}", icon_url=ctx.author.avatar_url)
         await ctx.send(content=None, embed=embed)
+
+    @commands.command(name="removestrike", help="Removes a strike from a user", usage="<strike id>")
+    @commands.guild_only()
+    # TODO: use role based permissions
+    @commands.has_permissions(administrator=True)
+    @commands.bot_has_permissions(manage_roles=True)
+    async def removestrike(self, ctx, member: discord.Member, strike_id: str):
+        profile = UserProfiles(member)
+        profile_content = profile.getUserProfile()
+        strikes = profile_content["MiscData"]["strikes"]
+        strikes = [x for x in strikes if x["strike_id"] != int(strike_id)]
+        profile.update("MiscData", profile_content["MiscData"])
+
+    @commands.command(name="strikes", help="Lists a users strikes", usage="<@user>")
+    @commands.guild_only()
+    async def strikes(self, ctx, member: discord.Member):
+        profile = UserProfiles(member)
+        profile_content = profile.getUserProfile()
+        strikes = profile_content["MiscData"]["strikes"]
+        embed = discord.Embed(title=None, description=f"Strikes for **{member.name}**",
+                              color=discord.Color.green(), timestamp=datetime.utcnow())
+        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+        embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+        for strike in strikes:
+            strike_id = str(strike["strike_id"])
+            reason = strike["reason"]
+            embed.add_field(name=f"Strike ID {strike_id}", value=f"Reason: {reason}", inline=True)
+
+        await ctx.send(content=None, embed=embed)
+
 
     @commands.command(name="createcc", help="Creates a new counting channel")
     @commands.guild_only()
