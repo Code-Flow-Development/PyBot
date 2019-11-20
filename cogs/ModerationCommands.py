@@ -5,6 +5,7 @@ from datetime import datetime
 from discord.errors import HTTPException, Forbidden, InvalidArgument
 from discord.ext.commands.errors import BadArgument
 from discord.errors import NotFound
+from utils import UserProfiles
 
 
 class ModerationCommandsCog(commands.Cog):
@@ -325,10 +326,22 @@ class ModerationCommandsCog(commands.Cog):
         except HTTPException as e:
             await ctx.send(f"[ModerationCommands] Failed to remove role! Error: {e.text}")
 
-    @commands.command(name="strike", help="Add a strike to a user", enabled=False, usage="<@user> [reason]")
+    @commands.command(name="strike", help="Add a strike to a user", usage="<@user> [reason]")
     @commands.guild_only()
     async def strike(self, ctx, member: discord.Member, reason: str = None):
-        pass
+        profile = UserProfiles(member)
+        profile_content = profile.getUserProfile()
+        strikes = profile_content["MiscData"]["strikes"]
+        strike_payload = {
+            "strike_id": (len(strikes) + 1),
+            "reason": reason
+        }
+        strikes.append(strike_payload)
+        profile.update("MiscData", profile_content["MiscData"])
+        embed = discord.Embed(title=None, description=f"**{member.name}** now has {len(strikes)} 🚦", color=discord.Color.green(), timestamp=datetime.utcnow())
+        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+        embed.set_footer(text=f"Kicked by {ctx.author.name}", icon_url=ctx.author.avatar_url)
+        await ctx.send(content=None, embed=embed)
 
     @commands.command(name="createcc", help="Creates a new counting channel")
     @commands.guild_only()

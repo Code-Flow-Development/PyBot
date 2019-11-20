@@ -7,6 +7,7 @@ from datetime import datetime
 from config import getLogger, getMongoClient
 from dateutil.relativedelta import relativedelta
 from discord.ext.commands import errors
+from bson.json_util import dumps
 
 
 def loadAllCogs(bot):
@@ -68,67 +69,33 @@ class UserProfiles(discord.Member):
         self.user_collection = self.db["users"]
         self.member = member
 
-        user_payload = {
-            "id": member.id,
-            "RPGData": {
-                "CreatedCharacter": False,
-                "Name": {
-                    "FirstName": "none",
-                    "MiddleName": "none",
-                    "LastName": "none",
+        user = self.user_collection.find_one({"id": member.id})
+        print(user)
+        if not user:
+            user_payload = {
+                "id": member.id,
+                "RPGData": {
+                    "CreatedCharacter": False,
+                    "Name": {
+                        "FirstName": "none",
+                        "MiddleName": "none",
+                        "LastName": "none",
+                    },
+                    "Inventory": {},
                 },
-                "Inventory": {},
-            },
-            "MiscData": {}
-        }
-        idd = self.user_collection.insert_one(user_payload).inserted_id
-        getLogger().info(f"Inserted document for user '{member.name}' ({member.id}), ID: {idd}")
+                "MiscData": {
+                    "strikes": []
+                }
+            }
+            idd = self.user_collection.insert_one(user_payload).inserted_id
+            getLogger().info(f"Inserted document for user '{member.name}' ({member.id}), ID: {idd}")
 
     def getUserProfile(self):
-        profile = self.user_collection.find_one({"userid": self.member.id})
-        return json.loads(profile)
+        profile = self.user_collection.find_one({"id": self.member.id})
+        return json.loads(dumps(profile))
 
-    def save(self, updated_content):
-        replace = self.user_collection.replace_one({"id": self.member.id}, json.dumps(updated_content))
-        print(replace)
-
-
-
-class UserProfile(discord.Member):
-    def __init__(self, member):
-        self.member = member
-        self.filename = f"data\\{member.id}.json"
-        if not member.bot:
-            if not os.path.exists(self.filename):
-                file = open(self.filename, 'w')
-                json_payload = {
-                    "RPGData": {
-                        "CreatedCharacter": False,
-                        "Name": {
-                            "FirstName": "none",
-                            "MiddleName": "none",
-                            "LastName": "none",
-                        },
-                        "Inventory": {
-
-                        },
-                    },
-
-                    "MiscData": {
-
-                    }
-                }
-                file.write(json.dumps(json_payload))
-                file.close()
-                getLogger().info(f"Wrote new data file for user `{member.name} ({member.id})`")
-
-    def readUserProfile(self):
-        file = open(self.filename, 'r')
-        return json.loads(file.read())
-
-    def save(self, content):
-        file = open(self.filename, 'w')
-        file.write(json.dumps(content))
+    def update(self, key, value):
+        self.user_collection.update_one({"id": self.member.id}, {"$set": {key: value}})
 
 
 def getRandomFact():

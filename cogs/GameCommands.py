@@ -1,6 +1,6 @@
 import discord
 import asyncio
-from utils import UserProfile, UserProfiles
+from utils import UserProfiles
 from discord.ext import commands
 from discord.errors import HTTPException, Forbidden
 
@@ -12,8 +12,9 @@ class GameCommandsCog(commands.Cog):
     @commands.command(name="rpgstart")
     @commands.guild_only()
     async def rpgstart(self, ctx):
-        profile = UserProfiles(ctx.author).getUserProfile()
-        isCreated = profile["RPGData"]["CharacterCreated"]
+        profile = UserProfiles(ctx.author)
+        profile_data = profile.getUserProfile()
+        isCreated = profile_data["RPGData"]["CreatedCharacter"]
         if not isCreated:
             await ctx.send("You have not created a character. Let's create one.\nWhat is the first name of your character?")
             try:
@@ -33,11 +34,11 @@ class GameCommandsCog(commands.Cog):
 
                             response = await self.bot.wait_for('message', check=check, timeout=20)
                             if response.content.lower() == "yes":
-                                profile["RPGData"]["CreatedCharacter"] = True
-                                profile["RPGData"]["Name"]["FirstName"] = firstname.content
-                                profile["RPGData"]["Name"]["MiddleName"] = middlename.content
-                                profile["RPGData"]["Name"]["LastName"] = lastname.content
-                                profile.save(profile)
+                                profile_data["RPGData"]["CreatedCharacter"] = True
+                                profile_data["RPGData"]["Name"]["FirstName"] = firstname.content
+                                profile_data["RPGData"]["Name"]["MiddleName"] = middlename.content
+                                profile_data["RPGData"]["Name"]["LastName"] = lastname.content
+                                profile.update("RPGData", profile_data["RPGData"])
                                 try:
                                     # delete all the questions and answers
                                     await ctx.message.channel.purge(limit=8)
