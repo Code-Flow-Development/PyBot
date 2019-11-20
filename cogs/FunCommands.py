@@ -36,9 +36,6 @@ class FunCommandsCog(commands.Cog):
 
     @commands.command(name="status", help="Bot status")
     async def status(self, ctx):
-        # unix time the bot has been up, takes time the bot was started minus the current unix time to get the difference
-        unix = int(time.time() - self.bot.startedAt)
-
         mins, secs = divmod(unix, 60)
         hours, mins = divmod(mins, 60)
         days, hours = divmod(hours, 60)

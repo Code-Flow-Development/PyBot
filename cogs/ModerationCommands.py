@@ -320,6 +320,5 @@ class ModerationCommandsCog(commands.Cog):
     async def strike(self, ctx, member: discord.Member, reason: str = None):
         pass
 
-
 def setup(bot):
     bot.add_cog(ModerationCommandsCog(bot))
