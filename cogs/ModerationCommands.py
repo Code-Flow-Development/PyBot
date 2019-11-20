@@ -379,7 +379,6 @@ class ModerationCommandsCog(commands.Cog):
                 reason = strike["reason"]
                 striked_by = strike["striked_by"]
                 strike_timestamp = strike["timestamp"]
-                # TODO: add timestamp (ex: a few seconds ago, 2 months ago)
                 striked_date = datetime.fromtimestamp(strike_timestamp)
                 now = datetime.now()
                 embed.add_field(name=f"[{strike_id}] Warning from @{striked_by}",
