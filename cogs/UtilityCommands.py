@@ -7,7 +7,7 @@ from datetime import datetime
 from discord.ext import commands
 
 
-class UtilityCommandsCog:
+class UtilityCommandsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
