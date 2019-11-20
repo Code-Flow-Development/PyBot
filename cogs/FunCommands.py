@@ -1,67 +1,20 @@
-import discord
-import time
 import asyncio
-import sys
-import random
-import requests
 import html
+import random
+from datetime import datetime
+
+import discord
+import requests
 from discord import Forbidden, HTTPException, InvalidArgument, NotFound
 from discord.ext import commands
-from datetime import datetime
 
 
 class FunCommandsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="ping", help="Bot ping")
-    @commands.guild_only()
-    async def ping(self, ctx):
-        # gets the time (as of the message being sent)
-        before = time.monotonic()
-        # sends a message to the channel
-        message = await ctx.send("Pong!")
-        # calculates the ping using the current time and the time the message was sent
-        ping = (time.monotonic() - before) * 1000
-        # creates a new embed, sets title to blank with a description and color (color int generator: https://www.shodor.org/stella2java/rgbint.html)
-        embed = discord.Embed(title="Bot Response Time", description=None, color=discord.Colour.red(),
-                              timestamp=datetime.utcnow())
-        # adds a new field to the embed
-        embed.add_field(name="🤖 Bot Latency:", value=f"{int(ping)}ms", inline=False)
-        # adds a footer to the embed with the bot name and avatar
-        embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
-        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-        # edits the previous message sent with the new embed
-        await message.edit(content=None, embed=embed)
-
-    @commands.command(name="status", help="Bot status")
-    async def status(self, ctx):
-        mins, secs = divmod(unix, 60)
-        hours, mins = divmod(mins, 60)
-        days, hours = divmod(hours, 60)
-
-        # create a new embed
-        embed = discord.Embed(title="Bot Status", description=None, color=discord.Color.red(),
-                              timestamp=datetime.utcnow())
-        if mins > 0:
-            embed.add_field(name="Uptime:", value=f"{mins} minute(s) and {secs} seconds", inline=False)
-        elif hours > 0:
-            embed.add_field(name="Uptime:", value=f"{hours} hours, {mins} minutes and {secs} seconds", inline=False)
-        elif days > 0:
-            embed.add_field(name="Uptime:", value=f"{days} days, {hours} hours, {mins} minutes and {secs} second(s)",
-                            inline=False)
-        else:
-            embed.add_field(name="Uptime:", value=f"{secs} seconds", inline=False)
-
-        # add the discord.py version
-        embed.add_field(name="Python Version:", value=f"{sys.version.split(' ')[0]}", inline=False)
-        embed.add_field(name="Discord.py Version:", value=f"{discord.__version__}", inline=False)
-        embed.add_field(name="Created by:", value="Riley, Skyler, and Jacob.", inline=False)
-        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-        embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
-        await ctx.send(content=None, embed=embed)
-
-    @commands.command(name="avatar", help="View a large version of a users avatar", usage="[@user]", description="Defaults to author if no user is specified")
+    @commands.command(name="avatar", help="View a large version of a users avatar", usage="[@user]",
+                      description="Defaults to author if no user is specified")
     @commands.guild_only()
     async def avatar(self, ctx, member: discord.Member = None):
         if not member:
@@ -106,7 +59,8 @@ class FunCommandsCog(commands.Cog):
 
         await ctx.send(content=None, embed=embed)
 
-    @commands.command(name="ddos", help="No internet connection... Check your connection and try again!", usage="<@user>")
+    @commands.command(name="ddos", help="No internet connection... Check your connection and try again!",
+                      usage="<@user>")
     @commands.guild_only()
     async def ddos(self, ctx, member: discord.Member):
         await ctx.send(f"Initiating DDoS attack on {member.name}, please wait...")
@@ -319,7 +273,9 @@ class FunCommandsCog(commands.Cog):
         api_response = requests.get("https://evilinsult.com/generate_insult.php?lang=en&type=json").json()
         await ctx.send(f"{member.mention}, {api_response['insult']}")
 
-    @commands.command(name="roulette", help="Take a chance of being muted, kicked, banned, or being safe! Too scared? use 'dry' mode to see what WOULD have happened to you!", usage="[dry]")
+    @commands.command(name="roulette",
+                      help="Take a chance of being muted, kicked, banned, or being safe! Too scared? use 'dry' mode to see what WOULD have happened to you!",
+                      usage="[dry]")
     @commands.guild_only()
     @commands.bot_has_permissions(ban_members=True, kick_members=True, manage_roles=True)
     async def roulette(self, ctx, mode: str = "default"):
@@ -440,7 +396,8 @@ class FunCommandsCog(commands.Cog):
             elif choice == 3:
                 await ctx.send(f"You would have been safe!")
 
-    @commands.command(name="meme", usage="[top, rising, new, hot, random, best]", help="Gets a meme from r/funny", description="Defaults to top if no listing type is specified")
+    @commands.command(name="meme", usage="[top, rising, new, hot, random, best]", help="Gets a meme from r/funny",
+                      description="Defaults to top if no listing type is specified")
     async def meme(self, ctx, listing_type: str = "top"):
         if listing_type.lower() == "new" or listing_type.lower() == "top" or listing_type.lower() == "rising" or listing_type.lower() == "hot" or listing_type.lower() == "best":
             result = requests.get(f"https://www.reddit.com/r/funny/{listing_type.lower()}.json?count=50",
