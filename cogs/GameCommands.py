@@ -112,7 +112,7 @@ class GameCommandsCog(commands.Cog):
         isCreated = profile_data["RPGData"]["CreatedCharacter"]
         if isCreated:
             embed = discord.Embed(title=f"**Profile** of {ctx.author.name}.",
-                                  description=,f"mega gay")
+                                  description=f"mega gay")
             await ctx.send(content=None, embed=embed)
         else:
             await ctx.send("You must created a character before you use this command. \n Do '{rpgstart'!")
