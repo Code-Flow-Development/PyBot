@@ -42,18 +42,14 @@ class GameCommandsCog(commands.Cog):
                                 try:
                                     # delete all the questions and answers
                                     await ctx.message.channel.purge(limit=8)
-                                    await ctx.send(f"[GameCommands] Character saved!")
-                                    await ctx.send(f"Now you need to select a race..")
-                                    await ctx.send(f"**Orc** \n **Elf** \n **Dark Elf**")
-                                    await ctx.send(f"**Human** \n **Dwarf** \n **Goblin**")
-                                    await ctx.send(f"**Kobold**")
-                                    await ctx.send(f"Please respond with a race.")
+                                    await ctx.send(f"[GameCommands] Character saved!\nNow you need to select a race:\n**Orc**\n**Elf** \n**Dark Elf**\n**Human** \n**Dwarf** \n**Goblin**\n**Kobold**")
 
                                     def check(message):
                                         return True if message.content else False
 
                                     try:
                                         response = await self.bot.wait_for('message', check=check, timeout=20)
+                                        await ctx.message.channel.purge(limit=4)
                                         if response.content.lower() == "orc":
                                             profile_data["RPGData"]["Race"] = "orc"
                                             profile.update("RPGData", profile_data["RPGData"])
@@ -81,25 +77,33 @@ class GameCommandsCog(commands.Cog):
                                         elif response.content.lower() == "kobold":
                                             profile_data["RPGData"]["Race"] = "kobold"
                                             profile.update("RPGData", profile_data["RPGData"])
+                                            await ctx.message.channel.purge(limit=8)
                                             await ctx.send("Your race has been selected as kobold.")
                                     except asyncio.TimeoutError:
+                                        await ctx.message.channel.purge(limit=8)
                                         await ctx.send("[GameManager] The bot has timed out.")
                                 except Forbidden as e:
                                     await ctx.send(f"[GameCommands] Missing permissions to delete messages! Error: {e.text}")
                                 except HTTPException as e:
                                     await ctx.send(f"[GameCommands] Failed to delete messages! Error: {e.text}")
                             elif response.content.lower() == "no":
+                                await ctx.message.channel.purge(limit=8)
                                 await ctx.send("[GameCommands] Please run the command again to re-do the character creation process.")
                             else:
+                                await ctx.message.channel.purge(limit=8)
                                 await ctx.send(
                                     f"[GameCommands] Since you didn't send a proper input, you get to do this all over again. **Dumbass!**")
                         except asyncio.TimeoutError:
+                            await ctx.message.channel.purge(limit=8)
                             return await ctx.send("[GameCommands] The bot has timed out, please re-run the command.")
                     except asyncio.TimeoutError:
+                        await ctx.message.channel.purge(limit=8)
                         return await ctx.send("[GameCommands] The bot has timed out, please re-run the command.")
                 except asyncio.TimeoutError:
+                    await ctx.message.channel.purge(limit=8)
                     return await ctx.send("[GameCommands] The bot has timed out, please re-run the command.")
             except asyncio.TimeoutError:
+                await ctx.message.channel.purge(limit=8)
                 return await ctx.send("[GameCommands] The bot has timed out, please re-run the command.")
         else:
             await ctx.send("You already have a character, please use a different command!")
@@ -109,11 +113,13 @@ class GameCommandsCog(commands.Cog):
     async def rpgprofile(self, ctx, member=discord.Member):
         profile = UserProfiles(ctx.author)
         profile_data = profile.getUserProfile()
+        a = profile_data['RPGData']['Name']
         isCreated = profile_data["RPGData"]["CreatedCharacter"]
         if isCreated:
             embed = discord.Embed(title=f"**Profile** of {ctx.author.name}.",
-                                  description=f"mega gay")
+                                  description="mega gay")
             await ctx.send(content=None, embed=embed)
+            await ctx.send(f"Character name: {a['FirstName']} {a['MiddleName']} {a['LastName']}")
         else:
             await ctx.send("You must created a character before you use this command. \n Do '{rpgstart'!")
 

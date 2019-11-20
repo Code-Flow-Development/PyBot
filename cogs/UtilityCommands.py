@@ -3,6 +3,7 @@ import time
 import sys
 import platform
 import os
+from utils import getLogger
 from datetime import datetime
 from discord.ext import commands
 
@@ -24,7 +25,8 @@ class UtilityCommandsCog(commands.Cog):
         embed = discord.Embed(title="Bot Response Time", description=None, color=discord.Colour.green(),
                               timestamp=datetime.utcnow())
         # adds a new field to the embed
-        embed.add_field(name="🤖 Bot Latency:", value=f"{int(ping)}ms", inline=False)
+        embed.add_field(name="🤖 Bot Latency:", value=f"{int(ping)}ms", inline=True)
+        embed.add_field(name="🌐 API Latency:", value=f"{round(self.bot.latency, 2)}ms", inline=True)
         # adds a footer to the embed with the bot name and avatar
         embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
@@ -160,6 +162,45 @@ class UtilityCommandsCog(commands.Cog):
             command_list = [x for x in self.bot.commands if x.cog_name == "ModerationCommandsCog"]
             pass
 
+    @commands.command(name="userinfo", help="Shows detailed information on a user", usage="[@user or user id]")
+    async def userinfo(self, ctx, member: discord.Member = None):
+        status_icons = {"online": 646827558771359755, "idle": 646827558591135794, "dnd": 646826726428639232,
+                        "offline": 646827559035600926}
+        if not member:
+            member = ctx.author
+
+        status = str(member.status)
+        role_ids = [x.id for x in member.roles if x.name != "@everyone"]
+        roles = []
+        for role_id in role_ids:
+            roles.append(ctx.guild.get_role(role_id).mention)
+
+        status_icon = self.bot.get_emoji(status_icons[status])
+        activity_text = ""
+        if member.activity:
+            # user has an activity
+            if member.activity.type == 4:
+                activity_type = "Playing"
+            else:
+                # playing
+                activity_type = str(member.activity.type).split('.')[1].capitalize()
+            activity_text = f"**{activity_type}:** {member.activity.name}"
+        else:
+            activity_type = "Doing"
+
+        embed = discord.Embed(title=f"Information for {member.name}#{member.discriminator}",
+                              color=discord.Color.green(), timestamp=datetime.utcnow())
+        embed.add_field(name="Nickname", value=member.display_name)
+        embed.add_field(name="ID", value=member.id)
+        embed.add_field(name="Properties", value=f"**Bot:** {member.bot}")
+        embed.add_field(name="Presence",
+                        value=f"**Status:** {status_icon} {status.capitalize()}\n{activity_text}")
+        embed.add_field(name="Created On", value=f"{ctx.author.created_at.strftime('%A, %B %d, %Y')}")
+        embed.add_field(name="Joined On", value=f"{ctx.author.joined_at.strftime('%A, %B %d, %Y')}")
+        embed.add_field(name=f"Roles({len(roles)})", value=f"{'|'.join(roles)}")
+        embed.set_thumbnail(url=member.avatar_url)
+        embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+        await ctx.send(content=None, embed=embed)
 
 
 def setup(bot):

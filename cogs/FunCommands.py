@@ -269,6 +269,17 @@ class FunCommandsCog(commands.Cog):
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         await ctx.send(content=None, embed=embed)
 
+    @commands.command(name="immaheadout", help="Imma head out")
+    @commands.guild_only()
+    async def immaheadout(self, ctx):
+        embed = discord.Embed(title=None,
+                              description=None,
+                              color=discord.Color.green(), timestamp=datetime.utcnow())
+        embed.set_image(url="https://cdn.discordapp.com/attachments/644927766197698593/646136209940414464/image0.jpg")
+        embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+        await ctx.send(content=None, embed=embed)
+
     @commands.command(name="spam", help="Spams a user with 5 mentions", usage="<@user>")
     @commands.guild_only()
     @commands.has_permissions(administrator=True)

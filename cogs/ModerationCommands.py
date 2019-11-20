@@ -1,11 +1,14 @@
 import discord
 import random
+import time
+import timeago
 from discord.ext import commands
 from datetime import datetime
 from discord.errors import HTTPException, Forbidden, InvalidArgument
 from discord.ext.commands.errors import BadArgument
 from discord.errors import NotFound
-from utils import UserProfiles
+from utils import UserProfiles, EpochUtils
+from config import getLogger
 
 
 class ModerationCommandsCog(commands.Cog):
@@ -152,7 +155,7 @@ class ModerationCommandsCog(commands.Cog):
                                                           manage_messages=False, embed_links=False,
                                                           attach_files=False,
                                                           external_emojis=False)
-                            print(f"Set permissions on channel {channel.name}")
+                            getLogger().info(f"Set permissions on channel {channel.name}")
                         except Forbidden as e:
                             # no permission to edit channel specific permissions
                             await ctx.send(f"[ModerationCommands] Missing permission! Error: {e.text}")
@@ -303,7 +306,7 @@ class ModerationCommandsCog(commands.Cog):
     @commands.command(name="addrole", help="Add role to user", usage="<@role or role id> <@user or userid>",
                       description="Requires manage_members permission")
     @commands.guild_only()
-    @commands.bot_has_permissions(manage_members=True)
+    @commands.bot_has_permissions(manage_roles=True)
     async def addrole(self, ctx, role: discord.Role, member: discord.Member):
         try:
             await member.add_roles(role, reason=f"Requested by {ctx.message.author.name}")
@@ -334,11 +337,14 @@ class ModerationCommandsCog(commands.Cog):
         strikes = profile_content["MiscData"]["strikes"]
         strike_payload = {
             "strike_id": (len(strikes) + 1),
-            "reason": reason
+            "reason": reason,
+            "striked_by": ctx.author.name,
+            "timestamp": time.time()
         }
         strikes.append(strike_payload)
         profile.update("MiscData", profile_content["MiscData"])
-        embed = discord.Embed(title=None, description=f"**{member.name}** now has {len(strikes)} strikes 🚦", color=discord.Color.green(), timestamp=datetime.utcnow())
+        embed = discord.Embed(title=None, description=f"**{member.name}** now has {len(strikes)} strikes 🚦",
+                              color=discord.Color.green(), timestamp=datetime.utcnow())
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         embed.set_footer(text=f"Kicked by {ctx.author.name}", icon_url=ctx.author.avatar_url)
         await ctx.send(content=None, embed=embed)
@@ -351,9 +357,10 @@ class ModerationCommandsCog(commands.Cog):
     async def removestrike(self, ctx, member: discord.Member, strike_id: str):
         profile = UserProfiles(member)
         profile_content = profile.getUserProfile()
-        strikes = profile_content["MiscData"]["strikes"]
-        strikes = [x for x in strikes if x["strike_id"] != int(strike_id)]
+        old_strikes = profile_content["MiscData"]["strikes"]
+        profile_content["MiscData"]["strikes"] = [x for x in old_strikes if x["strike_id"] != int(strike_id)]
         profile.update("MiscData", profile_content["MiscData"])
+        await ctx.send(f"Strike removed")
 
     @commands.command(name="strikes", help="Lists a users strikes", usage="<@user>")
     @commands.guild_only()
@@ -361,17 +368,28 @@ class ModerationCommandsCog(commands.Cog):
         profile = UserProfiles(member)
         profile_content = profile.getUserProfile()
         strikes = profile_content["MiscData"]["strikes"]
-        embed = discord.Embed(title=None, description=f"Strikes for **{member.name}**",
-                              color=discord.Color.green(), timestamp=datetime.utcnow())
-        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-        embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
-        for strike in strikes:
-            strike_id = str(strike["strike_id"])
-            reason = strike["reason"]
-            embed.add_field(name=f"Strike ID {strike_id}", value=f"Reason: {reason}", inline=True)
 
+        if len(strikes) > 0:
+            embed = discord.Embed(title=f"Here are the strikes for {member.name}", description=None,
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+            for strike in strikes:
+                strike_id = str(strike["strike_id"])
+                reason = strike["reason"]
+                striked_by = strike["striked_by"]
+                strike_timestamp = strike["timestamp"]
+                # TODO: add timestamp (ex: a few seconds ago, 2 months ago)
+                striked_date = datetime.fromtimestamp(strike_timestamp)
+                now = datetime.now()
+                embed.add_field(name=f"[{strike_id}] Warning from @{striked_by}",
+                                value=f"{reason} - {timeago.format(striked_date, now)}", inline=True)
+        else:
+            embed = discord.Embed(title=f"{member.name} does not have any strikes!", description=None,
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
         await ctx.send(content=None, embed=embed)
-
 
     @commands.command(name="createcc", help="Creates a new counting channel")
     @commands.guild_only()

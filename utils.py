@@ -70,7 +70,6 @@ class UserProfiles(discord.Member):
         self.member = member
 
         user = self.user_collection.find_one({"id": member.id})
-        print(user)
         if not user:
             user_payload = {
                 "id": member.id,
@@ -88,14 +87,14 @@ class UserProfiles(discord.Member):
                         "MaxExp": 100,
                         "Sheckels": 10,
                     },
-                    "Inventory": {},
+                    "Inventory": [],
                 },
                 "MiscData": {
                     "strikes": []
                 }
             }
             idd = self.user_collection.insert_one(user_payload).inserted_id
-            getLogger().info(f"Inserted document for user '{member.name}' ({member.id}), ID: {idd}")
+            getLogger().debug(f"[MongoDB] Created user profile for '{member.name}' ({member.id}), Document ID: {idd}")
 
     def getUserProfile(self):
         profile = self.user_collection.find_one({"id": self.member.id})

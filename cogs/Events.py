@@ -1,5 +1,6 @@
 import traceback
 import sys
+import discord
 from discord.ext import commands
 from config import getLogger
 
@@ -63,7 +64,7 @@ class EventsCog(commands.Cog):
         if message.author.bot:
             return
 
-        if message.channel.name.lower() == "counting":
+        if message.channel.type == discord.ChannelType.text and message.channel.name.lower() == "counting":
             try:
                 # try to convert the string to a number
                 number = int(message.content)
