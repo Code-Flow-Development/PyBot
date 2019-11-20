@@ -11,7 +11,7 @@ class BotAdminCommandsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="reloadcog", hidden=True)
+    @commands.command(name="reloadcog", hidden=True, help="Reloads a cog")
     @checks.isBotAdmin()
     async def reloadcog(self, ctx, *, cog: str):
         # to reload we need to unload it first
@@ -25,7 +25,7 @@ class BotAdminCommandsCog(commands.Cog):
             await ctx.send(f"Cog Reloaded!")
             getLogger().success(f"[Cog Management] {ctx.author.name} reloaded cog: {cog}")
 
-    @commands.command(name="loadcog", hidden=True)
+    @commands.command(name="loadcog", hidden=True, help="Loads a cog")
     @checks.isBotAdmin()
     async def loadcog(self, ctx, *, cog: str):
         # try to load cog
@@ -38,7 +38,7 @@ class BotAdminCommandsCog(commands.Cog):
             await ctx.send(f"Cog Loaded!")
             getLogger().success(f"[Cog Management] {ctx.author.name} loaded cog: {cog}")
 
-    @commands.command(name="unloadcog", hidden=True)
+    @commands.command(name="unloadcog", hidden=True, help="Unloads a cog")
     @checks.isBotAdmin()
     async def unloadcog(self, ctx, *, cog: str):
         try:
@@ -50,7 +50,7 @@ class BotAdminCommandsCog(commands.Cog):
             await ctx.send(f"Cog Unloaded!")
             getLogger().success(f"[Cog Management] {ctx.author.name} unloaded cog: {cog}")
 
-    @commands.command(name="reloadext", hidden=True)
+    @commands.command(name="reloadext", hidden=True, help="Reloads an extension")
     @checks.isBotAdmin()
     async def reloadext(self, ctx, *, ext: str):
         # to reload we need to unload it first
@@ -64,7 +64,7 @@ class BotAdminCommandsCog(commands.Cog):
             await ctx.send(f"Extension Reloaded!")
             getLogger().success(f"[Extension Management] {ctx.author.name} reloaded extension: {ext}")
 
-    @commands.command(name="loadext", hidden=True)
+    @commands.command(name="loadext", hidden=True, help="Loads an extension")
     @checks.isBotAdmin()
     async def loadext(self, ctx, *, ext: str):
         # try to load cog
@@ -77,7 +77,7 @@ class BotAdminCommandsCog(commands.Cog):
             await ctx.send(f"Extension Loaded!")
             getLogger().success(f"[Extension Management] {ctx.author.name} loaded extension: {ext}")
 
-    @commands.command(name="unloadext", hidden=True)
+    @commands.command(name="unloadext", hidden=True, help="Unloads an extension")
     @checks.isBotAdmin()
     async def unloadext(self, ctx, *, ext: str):
         try:
@@ -89,7 +89,7 @@ class BotAdminCommandsCog(commands.Cog):
             await ctx.send(f"Extension Unloaded!")
             getLogger().success(f"[Extension Management] {ctx.author.name} unloaded extension: {ext}")
 
-    @commands.command(name="stop", hidden=True)
+    @commands.command(name="stop", hidden=True, help="Stops the bot")
     @checks.isBotAdmin()
     async def stop(self, ctx):
         await ctx.send("Shutting down...")
@@ -99,7 +99,7 @@ class BotAdminCommandsCog(commands.Cog):
             getLogger().critical(f"[Bot Management] Caught Exception during shutdown: {type(e).__name__} - {e}")
             await ctx.send(f"Caught Exception during shutdown: {type(e).__name__}, See console for more info.")
 
-    @commands.command(name="eval", hidden=True)
+    @commands.command(name="eval", hidden=True, help="Evaluates code")
     @checks.isBotAdmin()
     async def eval(self, ctx, *, code: str):
         code = code.strip('` ')

@@ -206,7 +206,7 @@ class ModerationCommandsCog(commands.Cog):
             await ctx.send(f"[ModerationCommands] Retrieving roles failed! Error: {e.text}")
 
     @commands.command(name="unmute", help="Unmutes a user", usage="<@user or user id> [reason]",
-                      description="Requires ban_members and manage_roles permission")
+                      descrition="Requires ban_members and manage_roles permission")
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(manage_roles=True)

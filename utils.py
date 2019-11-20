@@ -1,8 +1,10 @@
 import calendar
 import os
 import json
+import discord
+import random
 from datetime import datetime
-from config import getLogger
+from config import getLogger, getMongoClient
 from dateutil.relativedelta import relativedelta
 from discord.ext.commands import errors
 
@@ -59,10 +61,66 @@ class EpochUtils(float):
         return self.rdelta.years
 
 
-class UserProfile(int):
-    def __init__(self, userid):
-        self.userid = userid
-        self.filename = f"data\\{self.userid}.json"
+class UserProfiles(discord.Member):
+    def __init__(self, member):
+        mongoclient = getMongoClient()
+        self.db = mongoclient["PyBot"]
+        self.user_collection = self.db["users"]
+        self.member = member
+
+        user_payload = {
+            "id": member.id,
+            "RPGData": {
+                "CreatedCharacter": False,
+                "Name": {
+                    "FirstName": "none",
+                    "MiddleName": "none",
+                    "LastName": "none",
+                },
+                "Inventory": {},
+            },
+            "MiscData": {}
+        }
+        idd = self.user_collection.insert_one(user_payload).inserted_id
+        getLogger().info(f"Inserted document for user '{member.name}' ({member.id}), ID: {idd}")
+
+    def getUserProfile(self):
+        profile = self.user_collection.find_one({"userid": self.member.id})
+        return json.loads(profile)
+
+    def save(self, updated_content):
+        replace = self.user_collection.replace_one({"id": self.member.id}, json.dumps(updated_content))
+        print(replace)
+
+
+
+class UserProfile(discord.Member):
+    def __init__(self, member):
+        self.member = member
+        self.filename = f"data\\{member.id}.json"
+        if not member.bot:
+            if not os.path.exists(self.filename):
+                file = open(self.filename, 'w')
+                json_payload = {
+                    "RPGData": {
+                        "CreatedCharacter": False,
+                        "Name": {
+                            "FirstName": "none",
+                            "MiddleName": "none",
+                            "LastName": "none",
+                        },
+                        "Inventory": {
+
+                        },
+                    },
+
+                    "MiscData": {
+
+                    }
+                }
+                file.write(json.dumps(json_payload))
+                file.close()
+                getLogger().info(f"Wrote new data file for user `{member.name} ({member.id})`")
 
     def readUserProfile(self):
         file = open(self.filename, 'r')
@@ -71,3 +129,10 @@ class UserProfile(int):
     def save(self, content):
         file = open(self.filename, 'w')
         file.write(json.dumps(content))
+
+
+def getRandomFact():
+    file = open("didyouknow.json", 'r')
+    file_content = file.read()
+    json_data = json.loads(file_content)
+    return random.choice(json_data)

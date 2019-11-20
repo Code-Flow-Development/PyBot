@@ -21,7 +21,7 @@ class UtilityCommandsCog(commands.Cog):
         # calculates the ping using the current time and the time the message was sent
         ping = (time.monotonic() - before) * 1000
         # creates a new embed, sets title to blank with a description and color (color int generator: https://www.shodor.org/stella2java/rgbint.html)
-        embed = discord.Embed(title="Bot Response Time", description=None, color=discord.Colour.red(),
+        embed = discord.Embed(title="Bot Response Time", description=None, color=discord.Colour.green(),
                               timestamp=datetime.utcnow())
         # adds a new field to the embed
         embed.add_field(name="🤖 Bot Latency:", value=f"{int(ping)}ms", inline=False)
@@ -41,7 +41,7 @@ class UtilityCommandsCog(commands.Cog):
         days, hours = divmod(hours, 60)
 
         # create a new embed
-        embed = discord.Embed(title="Bot Status", description=None, color=discord.Color.red(),
+        embed = discord.Embed(title="Bot Status", description=None, color=discord.Color.green(),
                               timestamp=datetime.utcnow())
         if mins > 0:
             embed.add_field(name="Uptime:", value=f"{mins} minute(s) and {secs} seconds", inline=False)
@@ -61,6 +61,105 @@ class UtilityCommandsCog(commands.Cog):
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
         await ctx.send(content=None, embed=embed)
+
+    @commands.command(name="help")
+    async def help(self, ctx, category: str = None):
+        if not category:
+            # show the main help menu
+            embed = discord.Embed(title=f"**Help Dictionary**",
+                                  description="We have a lot of commands, so there is multiple help commands! \n - - -",
+                                  color=discord.Color.green(),
+                                  timestamp=datetime.utcnow())
+            embed.add_field(name="Bot Admin Commands", value="{help botadmin", inline=False)
+            embed.add_field(name="Fun Commands", value="{help fun", inline=False)
+            embed.add_field(name="Game Commands", value="{help game", inline=False)
+            embed.add_field(name="Moderation Commands", value="{help moderation", inline=False)
+            embed.add_field(name="Utility Commands", value="{help utility", inline=False)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+            await ctx.send(content=None, embed=embed)
+        elif category.lower() == "botadmin":
+            command_list = [x for x in self.bot.commands if x.cog_name == "BotAdminCommandsCog"]
+            embed = discord.Embed(title=f"**Bot Developer Commands**",
+                                  description="Commands for the developer of the bot to use. \n - - -",
+                                  color=discord.Color.green(),
+                                  timestamp=datetime.utcnow())
+
+            for command in command_list:
+                embed.add_field(name=command.name, value=command.help, inline=False)
+
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+            await ctx.send(content=None, embed=embed)
+        elif category.lower() == "fun":
+            command_list = [x for x in self.bot.commands if x.cog_name == "FunCommandsCog"]
+            new_list = command_list[0:8]
+            embed = discord.Embed(title=f"**Fun Commands**",
+                                  description="Just have some fun, you nerd. \n Do 'fun2' for more commands!\n - - - ",
+                                  color=discord.Color.green(),
+                                  timestamp=datetime.utcnow())
+            for command in new_list:
+                embed.add_field(name=command.name, value=command.help, inline=False)
+
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+            await ctx.send(content=None, embed=embed)
+        elif category.lower() == "fun2":
+            command_list = [x for x in self.bot.commands if x.cog_name == "FunCommandsCog"]
+            new_list = command_list[8:16]
+            embed = discord.Embed(title=f"**Fun Commands 2**",
+                                  description="Just have some fun, you nerd. \n  Do 'fun3' for more commands!\n - - - ",
+                                  color=discord.Color.green(),
+                                  timestamp=datetime.utcnow())
+
+            for command in new_list:
+                embed.add_field(name=command.name, value=command.help, inline=False)
+
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+            await ctx.send(content=None, embed=embed)
+        elif category.lower() == "fun3":
+            command_list = [x for x in self.bot.commands if x.cog_name == "FunCommandsCog"]
+            new_list = command_list[16:32]
+            embed = discord.Embed(title=f"**Fun Commands 3**",
+                                  description="Just have some fun, you nerd.\n Do 'fun4' for more commands! \n - - - ",
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+
+            for x in range(16, 32):
+                embed.add_field(name=command_list[x].name, value=command_list[x].help, inline=False)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+            await ctx.send(content=None, embed=embed)
+        elif category.lower() == "fun4":
+            command_list = [x for x in self.bot.commands if x.cog_name == "FunCommandsCog"]
+            embed = discord.Embed(title=f"**Fun Commands 4**",
+                                  description="Just have some fun, you nerd.\n YOU MADE IT! THE LAST PAGEEEE!\n - - - ",
+                                  color=discord.Color.green(),
+                                  timestamp=datetime.utcnow())
+            embed.add_field(name="{meme",
+                            value="Reddit memes.",
+                            inline=False)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+            await ctx.send(content=None, embed=embed)
+        elif category.lower() == "game":
+            command_list = [x for x in self.bot.commands if x.cog_name == "GameCommandsCog"]
+            embed = discord.Embed(title=f"**Game Commands**",
+                                  description="This section of the bot is currently unfinished "
+                                              "\nand being worked on! \n - - -",
+                                  color=discord.Color.green(),
+                                  timestamp=datetime.utcnow())
+            for command in command_list:
+                embed.add_field(name=command.name, value=command.help, inline=False)
+            # embed.add_field(name="{rpgstart", value="Start your new adventure in our text RPG!", inline=False)
+            # embed.add_field(name="{rpgprofile", value="See your profile in the text RPG!", inline=False)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+            await ctx.send(content=None, embed=embed)
+        elif category.lower() == "moderation":
+            command_list = [x for x in self.bot.commands if x.cog_name == "ModerationCommandsCog"]
+            pass
+
 
 
 def setup(bot):

@@ -1,12 +1,12 @@
 import asyncio
 import html
 import random
-from datetime import datetime
-
 import discord
 import requests
+from datetime import datetime
 from discord import Forbidden, HTTPException, InvalidArgument, NotFound
 from discord.ext import commands
+from utils import getRandomFact
 
 
 class FunCommandsCog(commands.Cog):
@@ -204,6 +204,22 @@ class FunCommandsCog(commands.Cog):
         await asyncio.sleep(1)
         await ctx.send(content="Connected!")
 
+    @commands.command(name='lenny', help='Lenny faces')
+    @commands.guild_only()
+    async def lenny(self, ctx):
+        faces = (
+        "( ͡° ͜ʖ ͡°)", "( ͠° ͟ʖ ͡°)", "( ͡~ ͜ʖ ͡°)", "( ͡ʘ ͜ʖ ͡ʘ)", "( ͡o ͜ʖ ͡o)", "(° ͜ʖ °)", "( ‾ʖ̫‾)", "( ಠ ͜ʖಠ)",
+        "( ͡° ʖ̯ ͡°)", "( ͡ಥ ͜ʖ ͡ಥ)", "༼  ͡° ͜ʖ ͡° ༽", "(▀̿Ĺ̯▀̿ ̿)", "( ✧≖ ͜ʖ≖)", "(ง ͠° ͟ل͜ ͡°)ง", "(͡ ͡° ͜ つ ͡͡°) ",
+        "[̲̅$̲̅(̲̅ ͡° ͜ʖ ͡°̲̅)̲̅$̲̅]", "(✿❦ ͜ʖ ❦)", "ᕦ( ͡° ͜ʖ ͡°)ᕤ" "( ͡° ͜ʖ ͡°)╭∩╮", "¯\_( ͡° ͜ʖ ͡°)_/¯",
+        "(╯ ͠° ͟ʖ ͡°)╯┻━┻", "( ͡°( ͡° ͜ʖ( ͡° ͜ʖ ͡°)ʖ ͡°) ͡°)", "¯\_(ツ)_/¯", "ಠ_ಠ")
+        await ctx.send(content=f"{random.choice(faces)}")
+
+    @commands.command(name='fact', help='Random did you know facts')
+    @commands.guild_only()
+    async def fact(self, ctx):
+        fact = getRandomFact()
+        await ctx.send(content=f"Did you know? {fact}")
+
     @commands.command(name="thot", help="THOT BEGONE", usage="[@user]")
     @commands.guild_only()
     async def thot(self, ctx, member: discord.Member = None):
@@ -253,7 +269,7 @@ class FunCommandsCog(commands.Cog):
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         await ctx.send(content=None, embed=embed)
 
-    @commands.command(name="spam", help="Spams a user with 5 mentions", usage="<@role>")
+    @commands.command(name="spam", help="Spams a user with 5 mentions", usage="<@user>")
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
     async def spam(self, ctx, member: discord.Member):
