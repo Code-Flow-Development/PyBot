@@ -11,7 +11,8 @@ class ModerationCommandsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="ban", help="Ban a user from the server", usage="<@user or user id> [reason]", description="Requires ban_members permission")
+    @commands.command(name="ban", help="Ban a user from the server", usage="<@user or user id> [reason]",
+                      description="Requires ban_members permission")
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
@@ -52,7 +53,8 @@ class ModerationCommandsCog(commands.Cog):
             embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
             await ctx.send(content=None, embed=embed)
 
-    @commands.command(name="unban", help="Unbans a user from the server", usage="<user id> [reason]", description="Requires ban_members permission")
+    @commands.command(name="unban", help="Unbans a user from the server", usage="<user id> [reason]",
+                      description="Requires ban_members permission")
     @commands.guild_only()
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
@@ -96,7 +98,8 @@ class ModerationCommandsCog(commands.Cog):
             await ctx.send(content=None, embed=embed)
 
     # TODO: maybe use roles for permissions instead (ex: Moderator)
-    @commands.command(name="mute", help="Mutes a user", usage="<@user or user id> [reason]", description="Requires kick_members and manage_roles permission")
+    @commands.command(name="mute", help="Mutes a user", usage="<@user or user id> [reason]",
+                      description="Requires kick_members and manage_roles permission")
     @commands.guild_only()
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(manage_roles=True)
@@ -202,7 +205,8 @@ class ModerationCommandsCog(commands.Cog):
             # Retrieving roles failed
             await ctx.send(f"[ModerationCommands] Retrieving roles failed! Error: {e.text}")
 
-    @commands.command(name="unmute", help="Unmutes a user", usage="<@user or user id> [reason]", description="Requires ban_members and manage_roles permission")
+    @commands.command(name="unmute", help="Unmutes a user", usage="<@user or user id> [reason]",
+                      description="Requires ban_members and manage_roles permission")
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(manage_roles=True)
@@ -245,7 +249,8 @@ class ModerationCommandsCog(commands.Cog):
             # Retrieving roles failed
             await ctx.send(f"[ModerationCommands] Retrieving roles failed! Error: {e.text}")
 
-    @commands.command(name="kick", help="Kicks a user from the server", usage="<@user or user id> [reason]", description="Requires kick_members permission")
+    @commands.command(name="kick", help="Kicks a user from the server", usage="<@user or user id> [reason]",
+                      description="Requires kick_members permission")
     @commands.guild_only()
     # TODO: reason?
     @commands.bot_has_permissions(kick_members=True)
@@ -263,7 +268,9 @@ class ModerationCommandsCog(commands.Cog):
         except HTTPException as e:
             await ctx.send(f"[ModerationCommands] Failed to kick user {member.name}! Error: {e.text}")
 
-    @commands.command(name="createrole", help="Creates a new role", usage="<role name> [hoist: true/false] [mentionable: true/false]", description="Requires manage_roles permission")
+    @commands.command(name="createrole", help="Creates a new role",
+                      usage="<role name> [hoist: true/false] [mentionable: true/false]",
+                      description="Requires manage_roles permission")
     @commands.guild_only()
     @commands.bot_has_permissions(manage_roles=True)
     async def createrole(self, ctx, rolename: str, hoist: bool = False, mentionable: bool = False):
@@ -279,7 +286,8 @@ class ModerationCommandsCog(commands.Cog):
             await ctx.send(f"[ModerationCommands] Invalid Argument Error! Error: {e}")
         pass
 
-    @commands.command(name="deleterole", help="Deletes a role", usage="<@role or role id>", description="Requires manage_roles permission")
+    @commands.command(name="deleterole", help="Deletes a role", usage="<@role or role id>",
+                      description="Requires manage_roles permission")
     @commands.guild_only()
     @commands.bot_has_permissions(manage_roles=True)
     async def deleterole(self, ctx, role: discord.Role):
@@ -291,7 +299,8 @@ class ModerationCommandsCog(commands.Cog):
         except HTTPException as e:
             await ctx.send(f"[ModerationCommands] Failed to delete role! Error: {e.text}")
 
-    @commands.command(name="addrole", help="Add role to user", usage="<@role or role id> <@user or userid>", description="Requires manage_members permission")
+    @commands.command(name="addrole", help="Add role to user", usage="<@role or role id> <@user or userid>",
+                      description="Requires manage_members permission")
     @commands.guild_only()
     @commands.bot_has_permissions(manage_members=True)
     async def addrole(self, ctx, role: discord.Role, member: discord.Member):
@@ -303,7 +312,8 @@ class ModerationCommandsCog(commands.Cog):
         except HTTPException as e:
             await ctx.send(f"[ModerationCommands] Failed to add roles! Error: {e.text}")
 
-    @commands.command(name="removerole", help="Remove a role from a user", usage="<@role or role id> <@user or user id>", description="Requires manage_members permission")
+    @commands.command(name="removerole", help="Remove a role from a user",
+                      usage="<@role or role id> <@user or user id>", description="Requires manage_members permission")
     @commands.guild_only()
     @commands.bot_has_permissions(manage_members=True)
     async def removerole(self, ctx, role: discord.Role, member: discord.Member):
@@ -319,6 +329,20 @@ class ModerationCommandsCog(commands.Cog):
     @commands.guild_only()
     async def strike(self, ctx, member: discord.Member, reason: str = None):
         pass
+
+    @commands.command(name="createcc", help="Creates a new counting channel")
+    @commands.guild_only()
+    async def newcountingchannel(self, ctx):
+        try:
+            channel = await ctx.guild.create_text_channel(name="counting", topic="1")
+            await ctx.send(f"Channel created! {channel.mention}")
+        except Forbidden as e:
+            return await ctx.send(f"[ModerationCommands] Missing permission to create channel! Error: {e.text}")
+        except HTTPException as e:
+            return await ctx.send(f"[ModerationCommands] Failed to create channel! Error: {e.text}")
+        except InvalidArgument as e:
+            return await ctx.send(f"[ModerationCommands] Permission override information is invalid! Error: {e} ")
+
 
 def setup(bot):
     bot.add_cog(ModerationCommandsCog(bot))

@@ -63,6 +63,21 @@ class EventsCog(commands.Cog):
         if message.author.bot:
             return
 
+        if message.channel.name.lower() == "counting":
+            try:
+                # try to convert the string to a number
+                number = int(message.content)
+                next_number = int(message.channel.topic)
+                if number == next_number:
+                    # user gave the correct next number
+                    await message.channel.edit(topic=str(number + 1))
+                else:
+                    # not the next number so delete the message
+                    await message.delete()
+            except ValueError:
+                # not a valid number so delete the message
+                await message.delete()
+
         if "xd" in message.content.lower():
             await message.channel.send("Ecks Dee")
             return
