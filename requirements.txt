@@ -1,0 +1,4 @@
+verboselogs
+coloredlogs
+discord.py
+python-dotenv
