@@ -141,7 +141,17 @@ class ServerSettings(discord.Guild):
                         "guild_role_delete": True,
                         "guild_role_update": True,
                         "guild_emojis_update": True
-                    }
+                    },
+                    "custom_message_responses": [
+                        {
+                            "trigger": "xd",
+                            "response": "Ecks Dee"
+                        },
+                        {
+                            "trigger": "meme",
+                            "response": "shit meme"
+                        }
+                    ]
                 }
             }
             idd = self.server_collection.insert_one(guild_payload).inserted_id

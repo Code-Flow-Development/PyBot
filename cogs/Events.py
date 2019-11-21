@@ -65,9 +65,10 @@ class EventsCog(commands.Cog):
         if message.author.bot:
             return
 
-        server_settings = ServerSettings(message.guild).getServerDocument()
-        message_responses_enabled = server_settings["settings"]["message_responses_enabled"]
-        counting_channel_enabled = server_settings["settings"]["counting_channel_enabled"]
+        server_settings = ServerSettings(message.guild)
+        server_document = server_settings.getServerDocument()
+        message_responses_enabled = server_document["settings"]["message_responses_enabled"]
+        counting_channel_enabled = server_document["settings"]["counting_channel_enabled"]
 
         if counting_channel_enabled:
             if message.channel.type == discord.ChannelType.text and message.channel.name.lower() == "counting":
@@ -86,17 +87,13 @@ class EventsCog(commands.Cog):
                     await message.delete()
 
         if message_responses_enabled:
-            if "xd" in message.content.lower():
-                await message.channel.send("Ecks Dee")
-                return
-
-            if "meme" in message.content.lower():
-                await message.channel.send("shit meme")
-                return
-
-            if "anime" in message.content.lower():
-                await message.channel.send("fucking weeb")
-                return
+            custom_message_responses = server_document["settings"]["custom_message_responses"]
+            for custom_response in custom_message_responses:
+                trigger = custom_response["trigger"]
+                response = custom_response["response"]
+                if trigger in message.content.lower():
+                    await message.channel.send(response)
+                    return
 
 
 def setup(bot):
