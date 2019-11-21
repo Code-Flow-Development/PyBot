@@ -3,7 +3,7 @@ import time
 import sys
 import platform
 import os
-from utils import getLogger
+from utils import ServerSettings
 from datetime import datetime
 from discord.ext import commands
 
@@ -201,6 +201,25 @@ class UtilityCommandsCog(commands.Cog):
         embed.set_thumbnail(url=member.avatar_url)
         embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
         await ctx.send(content=None, embed=embed)
+
+    @commands.command(name="addmessageresponse", help="Add a custom message response", usage="<trigger> <response>")
+    @commands.guild_only()
+    @commands.has_permissions(administrator=True)
+    async def addmessageresponse(self, ctx, trigger: str, response: str):
+        server_settings = ServerSettings(ctx.guild)
+        server_document = server_settings.getServerDocument()
+        custom_message_responses = server_document["settings"]["custom_message_responses"]
+        current_triggers = [x["trigger"] for x in custom_message_responses]
+        if trigger not in current_triggers:
+            new_trigger = {
+                "trigger": trigger,
+                "response": response
+            }
+            server_document["settings"]["custom_message_responses"].append(new_trigger)
+            server_settings.update("settings", server_document["settings"])
+            await ctx.send(f"Message response added!")
+        else:
+            await ctx.send(f"{trigger} is already added!")
 
 
 def setup(bot):
