@@ -3,6 +3,7 @@ import sys
 import discord
 from discord.ext import commands
 from config import getLogger
+from utils import ServerSettings
 
 
 class EventsCog(commands.Cog):
@@ -64,32 +65,38 @@ class EventsCog(commands.Cog):
         if message.author.bot:
             return
 
-        if message.channel.type == discord.ChannelType.text and message.channel.name.lower() == "counting":
-            try:
-                # try to convert the string to a number
-                number = int(message.content)
-                next_number = int(message.channel.topic)
-                if number == next_number:
-                    # user gave the correct next number
-                    await message.channel.edit(topic=str(number + 1))
-                else:
-                    # not the next number so delete the message
+        server_settings = ServerSettings(message.guild).getServerDocument()
+        message_responses_enabled = server_settings["settings"]["message_responses_enabled"]
+        counting_channel_enabled = server_settings["settings"]["counting_channel_enabled"]
+
+        if counting_channel_enabled:
+            if message.channel.type == discord.ChannelType.text and message.channel.name.lower() == "counting":
+                try:
+                    # try to convert the string to a number
+                    number = int(message.content)
+                    next_number = int(message.channel.topic)
+                    if number == next_number:
+                        # user gave the correct next number
+                        await message.channel.edit(topic=str(number + 1))
+                    else:
+                        # not the next number so delete the message
+                        await message.delete()
+                except ValueError:
+                    # not a valid number so delete the message
                     await message.delete()
-            except ValueError:
-                # not a valid number so delete the message
-                await message.delete()
 
-        if "xd" in message.content.lower():
-            await message.channel.send("Ecks Dee")
-            return
+        if message_responses_enabled:
+            if "xd" in message.content.lower():
+                await message.channel.send("Ecks Dee")
+                return
 
-        if "meme" in message.content.lower():
-            await message.channel.send("shit meme")
-            return
+            if "meme" in message.content.lower():
+                await message.channel.send("shit meme")
+                return
 
-        if "anime" in message.content.lower():
-            await message.channel.send("fucking weeb")
-            return
+            if "anime" in message.content.lower():
+                await message.channel.send("fucking weeb")
+                return
 
 
 def setup(bot):

@@ -94,7 +94,7 @@ class UserProfiles(discord.Member):
                 }
             }
             idd = self.user_collection.insert_one(user_payload).inserted_id
-            getLogger().debug(f"[MongoDB] Created user profile for '{member.name}' ({member.id}), Document ID: {idd}")
+            getLogger().debug(f"[MongoDB] Created user document for '{member.name}' ({member.id}), Document ID: {idd}")
 
     def getUserProfile(self):
         profile = self.user_collection.find_one({"id": self.member.id})
@@ -102,6 +102,61 @@ class UserProfiles(discord.Member):
 
     def update(self, key, value):
         self.user_collection.update_one({"id": self.member.id}, {"$set": {key: value}})
+
+    def reset(self):
+        result = self.user_collection.delete_one({"id": self.member.id})
+        return result
+
+
+class ServerSettings(discord.Guild):
+    def __init__(self, guild):
+        self.guild = guild
+        mongoclient = getMongoClient()
+        self.db = mongoclient["PyBot"]
+        self.server_collection = self.db["servers"]
+
+        server = self.server_collection.find_one({"id": guild.id})
+        if not server:
+            guild_payload = {
+                "id": guild.id,
+                "settings": {
+                    "log_channel": None,
+                    "message_responses_enabled": False,
+                    "counting_channel_enabled": False,
+                    "events": {
+                        "member_join": True,
+                        "member_leave": True,
+                        "member_update": True,
+                        "member_ban": True,
+                        "member_unban": True,
+                        "message_delete": True,
+                        "build_message_delete": True,
+                        "message_edit": True,
+                        "guild_channel_delete": True,
+                        "guild_channel_create": True,
+                        "guild_channel_update": True,
+                        "user_update": True,
+                        "guild_update": True,
+                        "guild_role_created": True,
+                        "guild_role_delete": True,
+                        "guild_role_update": True,
+                        "guild_emojis_update": True
+                    }
+                }
+            }
+            idd = self.server_collection.insert_one(guild_payload).inserted_id
+            getLogger().debug(f"[MongoDB] Created server document for '{guild.name}' ({guild.id}), Document ID: {idd}")
+
+    def getServerDocument(self):
+        document = self.server_collection.find_one({"id": self.guild.id})
+        return json.loads(dumps(document))
+
+    def update(self, key, value):
+        self.server_collection.update_one({"id": self.guild.id}, {"$set": {key: value}})
+
+    def reset(self):
+        result = self.server_collection.delete_one({"id": self.guild.id})
+        return result
 
 
 def getRandomFact():

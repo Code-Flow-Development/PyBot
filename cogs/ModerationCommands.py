@@ -7,7 +7,7 @@ from datetime import datetime
 from discord.errors import HTTPException, Forbidden, InvalidArgument
 from discord.ext.commands.errors import BadArgument
 from discord.errors import NotFound
-from utils import UserProfiles, EpochUtils
+from utils import UserProfiles, ServerSettings
 from config import getLogger
 
 
@@ -402,6 +402,63 @@ class ModerationCommandsCog(commands.Cog):
             return await ctx.send(f"[ModerationCommands] Failed to create channel! Error: {e.text}")
         except InvalidArgument as e:
             return await ctx.send(f"[ModerationCommands] Permission override information is invalid! Error: {e} ")
+
+    @commands.command(name="setlogchannel", help="Set the log channel for the server")
+    @commands.guild_only()
+    @commands.has_permissions(administrator=True)
+    async def setlogchannel(self, ctx, log_channel: discord.TextChannel):
+        server_settings = ServerSettings(ctx.guild)
+        server_document = server_settings.getServerDocument()
+        server_document["settings"]["log_channel"] = log_channel.id
+        server_settings.update("settings", server_document["settings"])
+        await ctx.send(f"Updated log channel to {log_channel.mention}")
+
+    @commands.command(name="eventsettings", help="Enable/Disable event logging")
+    @commands.guild_only()
+    @commands.has_permissions(administrator=True)
+    async def eventsettings(self, ctx, event: str, setting: bool):
+        server_settings = ServerSettings(ctx.guild)
+        server_document = server_settings.getServerDocument()
+        current_event_settings = server_document["settings"]["events"]
+        try:
+            theSetting = current_event_settings[event]
+            current_event_settings[event] = setting
+            server_settings.update("settings", server_document["settings"])
+            await ctx.send(f"Setting updated!")
+        except KeyError:
+            await ctx.send(f"{event} is not a valid event!")
+
+    @commands.command(name="config", help="Shows the current config for the server")
+    @commands.guild_only()
+    @commands.has_permissions(administrator=True)
+    async def config(self, ctx, setting: str = None, value: bool = None):
+        server_settings = ServerSettings(ctx.guild)
+        server_document = server_settings.getServerDocument()
+        if not setting:
+            settings = server_document["settings"]
+            log_channel = self.bot.get_channel(settings["log_channel"])
+
+            embed = discord.Embed(title=f"Current settings for '{ctx.guild.name}'", description=None,
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.add_field(name="Log Channel",
+                            value=log_channel.mention if log_channel is not None else "No log channel set")
+            embed.add_field(name="Message Responses",
+                            value=server_document["settings"]["message_responses_enabled"])
+            embed.add_field(name="Counting Channels",
+                            value=server_document["settings"]["counting_channel_enabled"])
+            embed.add_field(name="Events", value='\n'.join(
+                ['**' + x + ':** ' + str(y) for x, y in server_document['settings']['events'].items()]))
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+            await ctx.send(content=None, embed=embed)
+        else:
+            try:
+                theSetting = server_document["settings"][setting]
+                server_document["settings"][setting] = value
+                server_settings.update("settings", server_document["settings"])
+                await ctx.send(f"Setting updated!")
+            except KeyError:
+                await ctx.send(f"{setting} is not a valid setting!")
 
 
 def setup(bot):

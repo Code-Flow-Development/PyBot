@@ -1,10 +1,9 @@
 import inspect
 import discord
-from datetime import datetime
 from config import getLogger
 from .utils import checks
 from discord.ext import commands
-from discord.errors import HTTPException
+from utils import UserProfiles
 
 
 class BotAdminCommandsCog(commands.Cog):
@@ -117,6 +116,16 @@ class BotAdminCommandsCog(commands.Cog):
                 await ctx.send(result)
             else:
                 await ctx.send("[Eval] Empty result")
+
+    @commands.command(name="resetuser", hidden=True, help="Clears a users profile")
+    @commands.guild_only()
+    @checks.isBotAdmin()
+    async def resetuser(self, ctx, member: discord.Member):
+        result = UserProfiles(member).reset()
+        if result.deleted_count == 1:
+            await ctx.send(f"{member.name}'s profile was reset!")
+        else:
+            await ctx.send(f"{member.name} doesn't have a profile!")
 
 
 def setup(bot):

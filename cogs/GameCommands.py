@@ -53,57 +53,56 @@ class GameCommandsCog(commands.Cog):
                                         if response.content.lower() == "orc":
                                             profile_data["RPGData"]["Race"] = "orc"
                                             profile.update("RPGData", profile_data["RPGData"])
-                                            await ctx.send("Your race has been selected as orc.")
+                                            await ctx.message.channel.purge(limit=8)
+                                            await ctx.send("[GameManager] Your race has been selected as orc.")
                                         elif response.content.lower() == "elf":
                                             profile_data["RPGData"]["Race"] = "elf"
                                             profile.update("RPGData", profile_data["RPGData"])
-                                            await ctx.send("Your race has been selected as elf.")
+                                            await ctx.message.channel.purge(limit=8)
+                                            await ctx.send("[GameManager] Your race has been selected as elf.")
                                         elif response.content.lower() == "dark elf":
                                             profile_data["RPGData"]["Race"] = "dark elf"
                                             profile.update("RPGData", profile_data["RPGData"])
-                                            await ctx.send("Your race has been selected as dark elf.")
+                                            await ctx.message.channel.purge(limit=8)
+                                            await ctx.send("[GameManager] Your race has been selected as dark elf.")
                                         elif response.content.lower() == "human":
                                             profile_data["RPGData"]["Race"] = "human"
                                             profile.update("RPGData", profile_data["RPGData"])
-                                            await ctx.send("Your race has been selected as human.")
+                                            await ctx.message.channel.purge(limit=8)
+                                            await ctx.send("[GameManager] Your race has been selected as human.")
                                         elif response.content.lower() == "dwarf":
                                             profile_data["RPGData"]["Race"] = "dwarf"
                                             profile.update("RPGData", profile_data["RPGData"])
-                                            await ctx.send("Your race has been selected as dwarf.")
+                                            await ctx.message.channel.purge(limit=8)
+                                            await ctx.send("[GameManager] Your race has been selected as dwarf.")
                                         elif response.content.lower() == "goblin":
                                             profile_data["RPGData"]["Race"] = "goblin"
                                             profile.update("RPGData", profile_data["RPGData"])
-                                            await ctx.send("Your race has been selected as goblin.")
+                                            await ctx.message.channel.purge(limit=8)
+                                            await ctx.send("[GameManager] Your race has been selected as goblin.")
                                         elif response.content.lower() == "kobold":
                                             profile_data["RPGData"]["Race"] = "kobold"
                                             profile.update("RPGData", profile_data["RPGData"])
                                             await ctx.message.channel.purge(limit=8)
-                                            await ctx.send("Your race has been selected as kobold.")
+                                            await ctx.send("[GameManager] Your race has been selected as kobold.")
                                     except asyncio.TimeoutError:
-                                        await ctx.message.channel.purge(limit=8)
                                         await ctx.send("[GameManager] The bot has timed out.")
                                 except Forbidden as e:
                                     await ctx.send(f"[GameCommands] Missing permissions to delete messages! Error: {e.text}")
                                 except HTTPException as e:
                                     await ctx.send(f"[GameCommands] Failed to delete messages! Error: {e.text}")
                             elif response.content.lower() == "no":
-                                await ctx.message.channel.purge(limit=8)
                                 await ctx.send("[GameCommands] Please run the command again to re-do the character creation process.")
                             else:
-                                await ctx.message.channel.purge(limit=8)
                                 await ctx.send(
                                     f"[GameCommands] Since you didn't send a proper input, you get to do this all over again. **Dumbass!**")
                         except asyncio.TimeoutError:
-                            await ctx.message.channel.purge(limit=8)
                             return await ctx.send("[GameCommands] The bot has timed out, please re-run the command.")
                     except asyncio.TimeoutError:
-                        await ctx.message.channel.purge(limit=8)
                         return await ctx.send("[GameCommands] The bot has timed out, please re-run the command.")
                 except asyncio.TimeoutError:
-                    await ctx.message.channel.purge(limit=8)
                     return await ctx.send("[GameCommands] The bot has timed out, please re-run the command.")
             except asyncio.TimeoutError:
-                await ctx.message.channel.purge(limit=8)
                 return await ctx.send("[GameCommands] The bot has timed out, please re-run the command.")
         else:
             await ctx.send("You already have a character, please use a different command!")
@@ -116,10 +115,22 @@ class GameCommandsCog(commands.Cog):
         a = profile_data['RPGData']['Name']
         isCreated = profile_data["RPGData"]["CreatedCharacter"]
         if isCreated:
-            embed = discord.Embed(title=f"**Profile** of {ctx.author.name}.",
-                                  description="mega gay")
+            embed = discord.Embed(title=f"RPG PROFILE",
+                                  description=f"[Title] : {a['FirstName']} {a['MiddleName']} {a['LastName']}",
+                                  color=discord.Color.gold())
+            embed.add_field(name="Stats",
+                            value=f"[Level] : {profile_data['RPGData']['Stats']['Level']}"
+                                  f"\n- [Current EXP] : {profile_data['RPGData']['Stats']['CurrentExp']}"
+                                  f"\n- [Needed EXP] : {profile_data['RPGData']['Stats']['MaxExp']}\n"
+                                  f"\n[Race] : {profile_data['RPGData']['Race']}\n"
+                                  f"\n[Sheckels] : {profile_data['RPGData']['Stats']['Sheckels']}",
+                            inline=False)
+            embed.add_field(name="Inventory",
+                            value=f"I'm an inventory!",
+                            inline=False)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
             await ctx.send(content=None, embed=embed)
-            await ctx.send(f"Character name: {a['FirstName']} {a['MiddleName']} {a['LastName']}")
         else:
             await ctx.send("You must created a character before you use this command. \n Do '{rpgstart'!")
 
