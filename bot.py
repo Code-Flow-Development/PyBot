@@ -6,6 +6,7 @@ import json
 from discord.ext import commands
 from dotenv import load_dotenv
 from config import getLogger, PREFIX
+from utils import ServerSettings
 
 # Create a new 'bot' with prefix
 bot = commands.Bot(command_prefix=PREFIX, description="PyBot")
@@ -23,6 +24,9 @@ async def on_ready():
     getLogger().info(f'Logged in as {bot.user.name}#{bot.user.discriminator}')
     await bot.change_presence(
         activity=discord.Activity(name='in ' + str(len(bot.guilds)) + " server!", type=discord.ActivityType.playing))
+    # Create server documents for each server
+    for guild in bot.guilds:
+        ServerSettings(guild)
 
 
 # load the .env file with token
