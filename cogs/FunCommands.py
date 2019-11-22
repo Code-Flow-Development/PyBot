@@ -208,10 +208,12 @@ class FunCommandsCog(commands.Cog):
     @commands.guild_only()
     async def lenny(self, ctx):
         faces = (
-        "( ͡° ͜ʖ ͡°)", "( ͠° ͟ʖ ͡°)", "( ͡~ ͜ʖ ͡°)", "( ͡ʘ ͜ʖ ͡ʘ)", "( ͡o ͜ʖ ͡o)", "(° ͜ʖ °)", "( ‾ʖ̫‾)", "( ಠ ͜ʖಠ)",
-        "( ͡° ʖ̯ ͡°)", "( ͡ಥ ͜ʖ ͡ಥ)", "༼  ͡° ͜ʖ ͡° ༽", "(▀̿Ĺ̯▀̿ ̿)", "( ✧≖ ͜ʖ≖)", "(ง ͠° ͟ل͜ ͡°)ง", "(͡ ͡° ͜ つ ͡͡°) ",
-        "[̲̅$̲̅(̲̅ ͡° ͜ʖ ͡°̲̅)̲̅$̲̅]", "(✿❦ ͜ʖ ❦)", "ᕦ( ͡° ͜ʖ ͡°)ᕤ" "( ͡° ͜ʖ ͡°)╭∩╮", "¯\_( ͡° ͜ʖ ͡°)_/¯",
-        "(╯ ͠° ͟ʖ ͡°)╯┻━┻", "( ͡°( ͡° ͜ʖ( ͡° ͜ʖ ͡°)ʖ ͡°) ͡°)", "¯\_(ツ)_/¯", "ಠ_ಠ")
+            "( ͡° ͜ʖ ͡°)", "( ͠° ͟ʖ ͡°)", "( ͡~ ͜ʖ ͡°)", "( ͡ʘ ͜ʖ ͡ʘ)", "( ͡o ͜ʖ ͡o)", "(° ͜ʖ °)", "( ‾ʖ̫‾)",
+            "( ಠ ͜ʖಠ)",
+            "( ͡° ʖ̯ ͡°)", "( ͡ಥ ͜ʖ ͡ಥ)", "༼  ͡° ͜ʖ ͡° ༽", "(▀̿Ĺ̯▀̿ ̿)", "( ✧≖ ͜ʖ≖)", "(ง ͠° ͟ل͜ ͡°)ง",
+            "(͡ ͡° ͜ つ ͡͡°) ",
+            "[̲̅$̲̅(̲̅ ͡° ͜ʖ ͡°̲̅)̲̅$̲̅]", "(✿❦ ͜ʖ ❦)", "ᕦ( ͡° ͜ʖ ͡°)ᕤ" "( ͡° ͜ʖ ͡°)╭∩╮", "¯\_( ͡° ͜ʖ ͡°)_/¯",
+            "(╯ ͠° ͟ʖ ͡°)╯┻━┻", "( ͡°( ͡° ͜ʖ( ͡° ͜ʖ ͡°)ʖ ͡°) ͡°)", "¯\_(ツ)_/¯", "ಠ_ಠ")
         await ctx.send(content=f"{random.choice(faces)}")
 
     @commands.command(name='fact', help='Random did you know facts')
@@ -425,12 +427,17 @@ class FunCommandsCog(commands.Cog):
 
     @commands.command(name="meme", usage="[top, rising, new, hot, random, best]", help="Gets a meme from r/funny",
                       description="Defaults to top if no listing type is specified")
-    async def meme(self, ctx, listing_type: str = "top"):
+    async def meme(self, ctx, subreddit: str = "r/funny", listing_type: str = "top"):
+        # NOTE: posts that dont contain images will throw an error
+
         if listing_type.lower() == "new" or listing_type.lower() == "top" or listing_type.lower() == "rising" or listing_type.lower() == "hot" or listing_type.lower() == "best":
-            result = requests.get(f"https://www.reddit.com/r/funny/{listing_type.lower()}.json?count=50",
+            result = requests.get(f"https://www.reddit.com/{subreddit}/{listing_type.lower()}.json?count=50",
                                   headers={'User-agent': f'PyBot ({ctx.author.id})'}).json()
             posts = result["data"]["children"]
-            post = pickRandomPost(posts)
+            if len(posts) == 0:
+                return await ctx.send(f"Nothing found! Is it a valid subreddit?")
+            else:
+                post = pickRandomPost(posts)
             title = post["data"]["title"]
             image_url = post["data"]["preview"]["images"][0]["source"]["url"]
             embed = discord.Embed(title=None,
@@ -441,8 +448,12 @@ class FunCommandsCog(commands.Cog):
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             return await ctx.send(content=None, embed=embed)
         elif listing_type.lower() == "random":
-            post = requests.get(f"https://www.reddit.com/r/funny/{listing_type.lower()}.json?count=50",
-                                headers={'User-agent': f'PyBot ({ctx.author.id})'}).json()[0]["data"]["children"][0]
+            posts = requests.get(f"https://www.reddit.com/{subreddit}/{listing_type.lower()}.json?count=50",
+                                 headers={'User-agent': f'PyBot ({ctx.author.id})'}).json()[0]["data"]["children"]
+            if len(posts) == 0:
+                return await ctx.send(f"Nothing found! Is it a valid subreddit?")
+            else:
+                post = posts[0]
             title = post["data"]["title"]
             image_url = post["data"]["preview"]["images"][0]["source"]["url"]
             embed = discord.Embed(title=None,
@@ -454,18 +465,22 @@ class FunCommandsCog(commands.Cog):
             return await ctx.send(content=None, embed=embed)
         else:
             return await ctx.send(
-                f"{listing_type.lower()} is not a valid type! Valid types are: ```top\nhot\nnew\nbest\nrandom\nrising\ntop```")
+                f"{listing_type.lower()} is not a valid type! Valid types are: "
+                f"```top\nhot\nnew\nbest\nrandom\nrising\ntop```")
 
 
 def pickRandomPost(posts: []):
     random.shuffle(posts)
     post = random.choice(posts)
     over18 = post["data"]["over_18"]
-    images = post["data"]["preview"]["images"]
-    if len(images) > 0 and not over18:
-        return post
-    else:
-        pickRandomPost(posts)
+    try:
+        images = post["data"]["preview"]["images"]
+        if len(images) > 0 and not over18:
+            return post
+        else:
+            pickRandomPost(posts)
+    except KeyError:
+        return pickRandomPost(posts)
 
 
 def setup(bot):

@@ -115,7 +115,7 @@ class GameCommandsCog(commands.Cog):
         a = profile_data['RPGData']['Name']
         isCreated = profile_data["RPGData"]["CreatedCharacter"]
         if isCreated:
-            embed = discord.Embed(title=f"RPG PROFILE",
+            embed = discord.Embed(title=f"Rpg Profile",
                                   description=f"[Title] : {a['FirstName']} {a['MiddleName']} {a['LastName']}",
                                   color=discord.Color.gold())
             embed.add_field(name="Stats",
