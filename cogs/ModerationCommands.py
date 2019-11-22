@@ -89,7 +89,7 @@ class ModerationCommandsCog(commands.Cog):
                 embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
                 await ctx.send(content=None, embed=embed)
             except HTTPException as e:
-                embed = discord.Embed(title=f"User {member}#{member.discriminator} is not banned!",
+                embed = discord.Embed(title=f"User {member} is not banned!",
                                       description=f"Error: {e.text}", color=discord.Color.red(),
                                       timestamp=datetime.utcnow())
                 embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
@@ -137,7 +137,7 @@ class ModerationCommandsCog(commands.Cog):
                         log_channel) == 1 else member.guild.system_channel if member.guild.system_channel else random.choice(
                         await self.bot.fetch_channls())
                     if log_channel:
-                        embed = discord.Embed(title=f"{member}#{member.discriminator} was muted!",
+                        embed = discord.Embed(title=f"{member} was muted!",
                                               description=None, color=discord.Color.red(),
                                               timestamp=datetime.utcnow())
                         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
@@ -189,7 +189,7 @@ class ModerationCommandsCog(commands.Cog):
                             log_channel) == 1 else member.guild.system_channel if member.guild.system_channel else random.choice(
                             await self.bot.fetch_channls())
                         if log_channel:
-                            embed = discord.Embed(title=f"{member}#{member.discriminator} was muted!",
+                            embed = discord.Embed(title=f"{member} was muted!",
                                                   description=None, color=discord.Color.red(),
                                                   timestamp=datetime.utcnow())
                             embed.add_field(name=f"Mute Reason", value=reason)
@@ -242,7 +242,7 @@ class ModerationCommandsCog(commands.Cog):
                     log_channel) == 1 else member.guild.system_channel if member.guild.system_channel else random.choice(
                     await self.bot.fetch_channls())
                 if log_channel:
-                    embed = discord.Embed(title=f"{member}#{member.discriminator} was unmuted!",
+                    embed = discord.Embed(title=f"{member} was unmuted!",
                                           description=None, color=discord.Color.green(),
                                           timestamp=datetime.utcnow())
                     embed.add_field(name=f"Unmute Reason", value=reason)
