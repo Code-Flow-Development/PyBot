@@ -216,6 +216,22 @@ class UtilityCommandsCog(commands.Cog):
         else:
             await ctx.send(f"{trigger} is already added!")
 
+    @commands.command(name="listmessageresponses", help="List custom message responses for the server", aliases=["lmr"])
+    @commands.guild_only()
+    @commands.has_permissions(administrator=True)
+    async def listresponses(self, ctx):
+        server_document = ServerSettings(ctx.guild)
+        server_settings = server_document.getServerDocument()
+        responses_list = server_settings["settings"]["custom_message_responses"]
+        new_list = []
+        for response in responses_list:
+            response_dict = dict(response)
+            new_list.append(f"Trigger: {response_dict['trigger']}; Response: {response_dict['response']}")
+        embed = discord.Embed(title=f"Active Message Responses", description='\n'.join(new_list), color=discord.Color.green(),
+                              timestamp=datetime.utcnow())
+        embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+        await ctx.send(content=None, embed=embed)
+
 
 def setup(bot):
     bot.add_cog(UtilityCommandsCog(bot))

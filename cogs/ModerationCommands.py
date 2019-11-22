@@ -44,6 +44,7 @@ class ModerationCommandsCog(commands.Cog):
             embed2 = discord.Embed(title=None, description=f"**{member}** was banned!", color=discord.Color.red(), timestamp=datetime.utcnow())
             embed2.add_field(name="Banned by", value=f"{ctx.author.mention} ({ctx.author.id})")
             embed2.add_field(name="Banned for", value=f"{reason}")
+            embed2.add_field(name="User ID", value=member.id)
             embed2.set_thumbnail(url=member.avatar_url)
             await log_channel.send(content=None, embed=embed2)
         except Forbidden as e:
@@ -79,7 +80,7 @@ class ModerationCommandsCog(commands.Cog):
                                       timestamp=datetime.utcnow())
                 embed.add_field(name=f"Unban Reason", value=reason)
                 embed.set_thumbnail(
-                    url="https://icon-library.net/images/green-checkmark-icon/green-checkmark-icon-11.jpg")
+                    url="https://cdn.discordapp.com/emojis/646882488353947709.gif?v=1")
                 embed.set_footer(text=f"Unbanned by {ctx.author.name}", icon_url=ctx.author.avatar_url)
                 await ctx.send(content=None, embed=embed)
             except Forbidden as e:
@@ -396,7 +397,7 @@ class ModerationCommandsCog(commands.Cog):
             embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
         await ctx.send(content=None, embed=embed)
 
-    @commands.command(name="createcc", help="Creates a new counting channel")
+    @commands.command(name="createcountingchannel", help="Creates a new counting channel", aliases=["createcc", "newcountingchannel", "createcounting"])
     @commands.guild_only()
     async def newcountingchannel(self, ctx):
         try:
