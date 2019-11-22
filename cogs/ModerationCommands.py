@@ -24,14 +24,14 @@ class ModerationCommandsCog(commands.Cog):
         if member is None or member == ctx.message.author:
             await ctx.send(f"You cannot ban yourself!")
             return
+
         # dont ban members that have administrator permission
         if member.guild_permissions.administrator:
-            await ctx.send(f"{member.name} is an admin and cannot be banned!")
+            await ctx.send(f"{member} is an admin and cannot be banned!")
             return
 
-        # TODO: log channel embed with reason (see: https://github.com/Puyodead1/Extron/blob/master/Discord/Commands/ban.js)
         embed = discord.Embed(title=None,
-                              description=f"Bye Bye **{member.name}** 🔨",
+                              description=f"Bye Bye **{member}** 🔨",
                               color=discord.Color.green(),
                               timestamp=datetime.utcnow())
         embed.set_image(url="https://thumbs.gfycat.com/ElderlyViciousFeline-size_restricted.gif")
@@ -40,6 +40,12 @@ class ModerationCommandsCog(commands.Cog):
         try:
             await member.ban(reason=reason, delete_message_days=dmd)
             await ctx.send(content=None, embed=embed)
+            log_channel = ServerSettings(ctx.guild).getLogChannel(self.bot)
+            embed2 = discord.Embed(title=None, description=f"**{member}** was banned!", color=discord.Color.red(), timestamp=datetime.utcnow())
+            embed2.add_field(name="Banned by", value=f"{ctx.author.mention} ({ctx.author.id})")
+            embed2.add_field(name="Banned for", value=f"{reason}")
+            embed2.set_thumbnail(url=member.avatar_url)
+            await log_channel.send(content=None, embed=embed2)
         except Forbidden as e:
             embed = discord.Embed(title=f"Missing permission!", description=f"Error: {e.text}",
                                   color=discord.Color.red(),
@@ -47,7 +53,7 @@ class ModerationCommandsCog(commands.Cog):
             embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
             await ctx.send(content=None, embed=embed)
         except HTTPException as e:
-            embed = discord.Embed(title=f"Failed to ban {member.name}", description=f"Error: {e.text}",
+            embed = discord.Embed(title=f"Failed to ban {member}", description=f"Error: {e.text}",
                                   color=discord.Color.red(), timestamp=datetime.utcnow())
             embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
             await ctx.send(content=None, embed=embed)
@@ -68,7 +74,7 @@ class ModerationCommandsCog(commands.Cog):
             try:
                 await ctx.guild.unban(user=member, reason=reason)
                 embed = discord.Embed(title=None,
-                                      description=f"{member.name} has been unbanned!",
+                                      description=f"{member} has been unbanned!",
                                       color=discord.Color.green(),
                                       timestamp=datetime.utcnow())
                 embed.add_field(name=f"Unban Reason", value=reason)
@@ -83,7 +89,7 @@ class ModerationCommandsCog(commands.Cog):
                 embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
                 await ctx.send(content=None, embed=embed)
             except HTTPException as e:
-                embed = discord.Embed(title=f"User {member.name}#{member.discriminator} is not banned!",
+                embed = discord.Embed(title=f"User {member}#{member.discriminator} is not banned!",
                                       description=f"Error: {e.text}", color=discord.Color.red(),
                                       timestamp=datetime.utcnow())
                 embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
@@ -109,7 +115,7 @@ class ModerationCommandsCog(commands.Cog):
     @commands.bot_has_permissions(manage_roles=True)
     async def mute(self, ctx, member: discord.Member, reason: str = "No reason specified"):
         if member.bot:
-            await ctx.send(f"{member.name} is a bot.")
+            await ctx.send(f"{member} is a bot.")
             return
 
         try:
@@ -119,7 +125,7 @@ class ModerationCommandsCog(commands.Cog):
             if muted_role:
                 try:
                     await member.add_roles(muted_role, reason=reason, atomic=False)
-                    embed = discord.Embed(title=None, description=f"**{member.name}** was muted 🔇",
+                    embed = discord.Embed(title=None, description=f"**{member}** was muted 🔇",
                                           color=discord.Color.green(), timestamp=datetime.utcnow())
                     embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
                     embed.set_footer(text=f"Muted by {ctx.author.name}", icon_url=ctx.author.avatar_url)
@@ -131,7 +137,7 @@ class ModerationCommandsCog(commands.Cog):
                         log_channel) == 1 else member.guild.system_channel if member.guild.system_channel else random.choice(
                         await self.bot.fetch_channls())
                     if log_channel:
-                        embed = discord.Embed(title=f"{member.name}#{member.discriminator} was muted!",
+                        embed = discord.Embed(title=f"{member}#{member.discriminator} was muted!",
                                               description=None, color=discord.Color.red(),
                                               timestamp=datetime.utcnow())
                         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
@@ -171,7 +177,7 @@ class ModerationCommandsCog(commands.Cog):
 
                     try:
                         await member.add_roles(muted_role, reason=reason, atomic=False)
-                        embed = discord.Embed(title=None, description=f"**{member.name}** was muted 🔇",
+                        embed = discord.Embed(title=None, description=f"**{member}** was muted 🔇",
                                               color=discord.Color.green(), timestamp=datetime.utcnow())
                         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
                         embed.set_footer(text=f"Muted by {ctx.author.name}", icon_url=ctx.author.avatar_url)
@@ -183,7 +189,7 @@ class ModerationCommandsCog(commands.Cog):
                             log_channel) == 1 else member.guild.system_channel if member.guild.system_channel else random.choice(
                             await self.bot.fetch_channls())
                         if log_channel:
-                            embed = discord.Embed(title=f"{member.name}#{member.discriminator} was muted!",
+                            embed = discord.Embed(title=f"{member}#{member.discriminator} was muted!",
                                                   description=None, color=discord.Color.red(),
                                                   timestamp=datetime.utcnow())
                             embed.add_field(name=f"Mute Reason", value=reason)
@@ -216,7 +222,7 @@ class ModerationCommandsCog(commands.Cog):
     @commands.bot_has_permissions(manage_roles=True)
     async def unmute(self, ctx, member: discord.Member, reason: str = "No reason specified"):
         if member.bot:
-            await ctx.send(f"{member.name} is a bot.")
+            await ctx.send(f"{member} is a bot.")
             return
 
         try:
@@ -225,7 +231,7 @@ class ModerationCommandsCog(commands.Cog):
             # check length of the list, if 0 no muted role, if == 0 there is one
             try:
                 await member.remove_roles(muted_role, reason=reason)
-                embed = discord.Embed(title=None, description=f"**{member.name}** was unmuted 🔊",
+                embed = discord.Embed(title=None, description=f"**{member}** was unmuted 🔊",
                                       color=discord.Color.green(), timestamp=datetime.utcnow())
                 embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
                 embed.set_footer(text=f"Unmuted by {ctx.author.name}", icon_url=ctx.author.avatar_url)
@@ -236,7 +242,7 @@ class ModerationCommandsCog(commands.Cog):
                     log_channel) == 1 else member.guild.system_channel if member.guild.system_channel else random.choice(
                     await self.bot.fetch_channls())
                 if log_channel:
-                    embed = discord.Embed(title=f"{member.name}#{member.discriminator} was unmuted!",
+                    embed = discord.Embed(title=f"{member}#{member.discriminator} was unmuted!",
                                           description=None, color=discord.Color.green(),
                                           timestamp=datetime.utcnow())
                     embed.add_field(name=f"Unmute Reason", value=reason)
@@ -261,7 +267,7 @@ class ModerationCommandsCog(commands.Cog):
     async def kick(self, ctx, member: discord.Member):
         try:
             await member.kick()
-            embed = discord.Embed(title=None, description=f"**{member.name}** was kicked 👋",
+            embed = discord.Embed(title=None, description=f"**{member}** was kicked 👋",
                                   color=discord.Color.green(), timestamp=datetime.utcnow())
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             embed.set_image(url="https://media1.tenor.com/images/ca1bad80a757fa8b87dacd9c051f2670/tenor.gif")
@@ -270,7 +276,7 @@ class ModerationCommandsCog(commands.Cog):
         except Forbidden as e:
             await ctx.send(f"[ModerationCommands] Missing permission! Error: {e.text}")
         except HTTPException as e:
-            await ctx.send(f"[ModerationCommands] Failed to kick user {member.name}! Error: {e.text}")
+            await ctx.send(f"[ModerationCommands] Failed to kick user {member}! Error: {e.text}")
 
     @commands.command(name="createrole", help="Creates a new role",
                       usage="<role name> [hoist: true/false] [mentionable: true/false]",
@@ -310,7 +316,7 @@ class ModerationCommandsCog(commands.Cog):
     async def addrole(self, ctx, role: discord.Role, member: discord.Member):
         try:
             await member.add_roles(role, reason=f"Requested by {ctx.message.author.name}")
-            await ctx.send(f"Added role {role.name} to {member.name}")
+            await ctx.send(f"Added role {role.name} to {member}")
         except Forbidden as e:
             await ctx.send(f"[ModerationCommands] Missing permission to add role! Error: {e.text}")
         except HTTPException as e:
@@ -323,7 +329,7 @@ class ModerationCommandsCog(commands.Cog):
     async def removerole(self, ctx, role: discord.Role, member: discord.Member):
         try:
             await member.remove_roles(role, reason=f"Requested by {ctx.message.author.name}")
-            await ctx.send(f"Removed role {role.name} from {member.name}")
+            await ctx.send(f"Removed role {role.name} from {member}")
         except Forbidden as e:
             await ctx.send(f"[ModerationCommands] Missing permission to remove role! Error: {e.text}")
         except HTTPException as e:
@@ -343,7 +349,7 @@ class ModerationCommandsCog(commands.Cog):
         }
         strikes.append(strike_payload)
         profile.update("MiscData", profile_content["MiscData"])
-        embed = discord.Embed(title=None, description=f"**{member.name}** now has {len(strikes)} strikes 🚦",
+        embed = discord.Embed(title=None, description=f"**{member}** now has {len(strikes)} strikes 🚦",
                               color=discord.Color.green(), timestamp=datetime.utcnow())
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         embed.set_footer(text=f"Kicked by {ctx.author.name}", icon_url=ctx.author.avatar_url)
@@ -370,7 +376,7 @@ class ModerationCommandsCog(commands.Cog):
         strikes = profile_content["MiscData"]["strikes"]
 
         if len(strikes) > 0:
-            embed = discord.Embed(title=f"Here are the strikes for {member.name}", description=None,
+            embed = discord.Embed(title=f"Here are the strikes for {member}", description=None,
                                   color=discord.Color.green(), timestamp=datetime.utcnow())
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
@@ -384,7 +390,7 @@ class ModerationCommandsCog(commands.Cog):
                 embed.add_field(name=f"[{strike_id}] Warning from @{striked_by}",
                                 value=f"{reason} - {timeago.format(striked_date, now)}", inline=True)
         else:
-            embed = discord.Embed(title=f"{member.name} does not have any strikes!", description=None,
+            embed = discord.Embed(title=f"{member} does not have any strikes!", description=None,
                                   color=discord.Color.green(), timestamp=datetime.utcnow())
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)

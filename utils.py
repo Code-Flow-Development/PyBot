@@ -122,25 +122,24 @@ class ServerSettings(discord.Guild):
                 "settings": {
                     "log_channel": None,
                     "message_responses_enabled": False,
-                    "counting_channel_enabled": False,
+                    "counting_channels_enabled": False,
                     "events": {
-                        "member_join": True,
-                        "member_leave": True,
-                        "member_update": True,
-                        "member_ban": True,
-                        "member_unban": True,
-                        "message_delete": True,
-                        "build_message_delete": True,
-                        "message_edit": True,
+                        "guild_member_join": True,
+                        "guild_member_leave": True,
+                        "guild_member_update": True,
+                        "guild_member_ban": True,
+                        "guild_member_unban": True,
+                        "guild_update": True,
+                        "guild_message_delete": True,
+                        "guild_message_edit": True,
                         "guild_channel_delete": True,
                         "guild_channel_create": True,
                         "guild_channel_update": True,
-                        "user_update": True,
-                        "guild_update": True,
                         "guild_role_created": True,
                         "guild_role_delete": True,
                         "guild_role_update": True,
-                        "guild_emojis_update": True
+                        "guild_emojis_update": True,
+                        "user_update": True
                     },
                     "custom_message_responses": [
                         {
@@ -156,6 +155,7 @@ class ServerSettings(discord.Guild):
             }
             idd = self.server_collection.insert_one(guild_payload).inserted_id
             getLogger().debug(f"[MongoDB] Created server document for '{guild.name}' ({guild.id}), Document ID: {idd}")
+        self.server_settings = self.getServerDocument()
 
     def getServerDocument(self):
         document = self.server_collection.find_one({"id": self.guild.id})
@@ -167,6 +167,9 @@ class ServerSettings(discord.Guild):
     def reset(self):
         result = self.server_collection.delete_one({"id": self.guild.id})
         return result
+
+    def getLogChannel(self, bot: discord.ext.commands.Bot):
+        return bot.get_channel(self.server_settings["settings"]["log_channel"]) if self.server_settings["settings"]["log_channel"] else None
 
 
 def getRandomFact():

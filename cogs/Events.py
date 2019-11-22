@@ -1,6 +1,7 @@
 import traceback
 import sys
 import discord
+from datetime import datetime
 from discord.ext import commands
 from config import getLogger, getBotLogChannel
 from utils import ServerSettings
@@ -97,39 +98,24 @@ class EventsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
-        # TODO: Make this an embed
-        await getBotLogChannel(self.bot).send(f"Bot was added to a new guild! {guild.name} ({guild.id})")
+        embed = discord.Embed(title=f"New Guild", description=None, color=discord.Color.green(),
+                              timestamp=datetime.utcnow())
+        embed.add_field(name="Guild Name", value=f"{guild.name}")
+        embed.add_field(name="Guild ID", value=f"{guild.id}")
+        embed.add_field(name="Guild Members", value=f"{guild.member_count}")
+        embed.add_field(name="Guild Owner", value=f"{guild.owner} ({guild.owner.id})")
+        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+        await getBotLogChannel(self.bot).send(content=None, embed=embed)
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild):
-        # TODO: Make this an embed
-        await getBotLogChannel(self.bot).send(f"Bot was removed from guild! {guild.name} ({guild.id})")
-
-    @commands.Cog.listener()
-    async def on_guild_update(self, before: discord.Guild, after: discord.Guild):
-        # TODO: Make this an embed and make a function in utils to get the guilds log channel from the db
-        await self.bot.get_channel(645770887781548051).send(f"Guild was updated!")
-
-    @commands.Cog.listener()
-    async def on_guild_role_create(self, role: discord.Role):
-        # TODO: Make this an embed and make a function in utils to get the guilds log channel from the db
-        await self.bot.get_channel(645770887781548051).send(f"Role created: {role.name}")
-
-    @commands.Cog.listener()
-    async def on_guild_role_delete(self, role: discord.Role):
-        # TODO: Make this an embed and make a function in utils to get the guilds log channel from the db
-        await self.bot.get_channel(645770887781548051).send(f"Role deleted: {role.name}")
-
-    @commands.Cog.listener()
-    async def on_guild_role_update(self, before: discord.Role, after: discord.Role):
-        # TODO: Make this an embed and make a function in utils to get the guilds log channel from the db
-        await self.bot.get_channel(645770887781548051).send(f"Role updated: {before.name}")
-
-    @commands.Cog.listener()
-    async def on_guild_emojis_update(self, guild: discord.Guild, before: discord.Emoji, after: discord.Emoji):
-        # TODO: Make this an embed and make a function in utils to get the guilds log channel from the db and correctly log this change
-        await self.bot.get_channel(645770887781548051).send(f"Emoji updated")
-        # print(before)
+        embed = discord.Embed(title=f"Guild Left", description=None, color=discord.Color.red(),
+                              timestamp=datetime.utcnow())
+        embed.add_field(name="Guild Name", value=f"{guild.name}")
+        embed.add_field(name="Guild ID", value=f"{guild.id}")
+        embed.add_field(name="Guild Owner", value=f"{guild.owner} ({guild.owner.id})")
+        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+        await getBotLogChannel(self.bot).send(content=None, embed=embed)
 
 
 def setup(bot):
