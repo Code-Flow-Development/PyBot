@@ -425,7 +425,7 @@ class FunCommandsCog(commands.Cog):
             elif choice == 3:
                 await ctx.send(f"You would have been safe!")
 
-    @commands.command(name="meme", usage="[top, rising, new, hot, random, best]", help="Gets a meme from r/funny",
+    @commands.command(name="meme", usage="[r/{subreddit name}] [top, rising, new, hot, random, best]", help="Gets a meme from r/funny or another subreddit",
                       description="Defaults to top if no listing type is specified")
     async def meme(self, ctx, subreddit: str = "r/funny", listing_type: str = "top"):
         # NOTE: posts that dont contain images will throw an error
