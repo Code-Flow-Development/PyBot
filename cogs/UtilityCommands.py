@@ -50,7 +50,7 @@ class UtilityCommandsCog(commands.Cog):
         print(member_count)
         uptime_format = f"{hours} hours, {mins} minutes, and {secs} seconds" if secs > 0 and mins > 0 and hours > 0 else f"{mins} minutes, and {secs} seconds" if secs > 0 and mins > 0 and hours == 0 else f"{secs} seconds" if secs > 0 and mins == 0 and hours == 0 else "Error"
         embed.add_field(name="\> Bot", value=f"**Servers:** {len(self.bot.guilds)}\n**Users:**: {member_count}\n**Uptime:** {uptime_format}")
-        embed.add_field(name="\> System", value=f"**Library:** Discord.py {discord.__version__}\n**Python Version:** {sys.version.split('.')[0]}\n**OS:** {platform.system()} {platform.release()} ({os.name})")
+        embed.add_field(name="\> System", value=f"**Library:** Discord.py {discord.__version__}\n**Python Version:** {sys.version.split(' ')[0]}\n**OS:** {platform.system()} {platform.release()} ({os.name})")
         # embed.add_field(name="Python Version:", value=f"{sys.version.split(' ')[0]}", inline=False)
         # embed.add_field(name="OS:", value=f"{platform.system()} {platform.release()} ({os.name})", inline=False)
         # embed.add_field(name="Discord.py Version:", value=f"{discord.__version__}", inline=False)
