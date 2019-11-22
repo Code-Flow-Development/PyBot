@@ -4,5 +4,4 @@ coloredlogs
 discord.py
 python-dotenv
 pymongo
-python-dateutils
 requests
