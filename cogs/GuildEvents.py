@@ -82,7 +82,7 @@ class GuildEventsCog(commands.Cog):
     async def on_member_unban(self, guild: discord.Guild, member: discord.Member):
         if member == self.bot.user:
             return
-        server_settings = ServerSettings(member.guild).getServerDocument()
+        server_settings = ServerSettings(guild).getServerDocument()
         log_channel = self.bot.get_channel(server_settings["settings"]["log_channel"]) if server_settings["settings"][
             "log_channel"] else None
         enabled = server_settings["settings"]["events"]["guild_member_unban"]
