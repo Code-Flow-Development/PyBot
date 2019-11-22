@@ -1,12 +1,10 @@
 import discord
 import os
 import time
-import utils
-import json
 from discord.ext import commands
 from dotenv import load_dotenv
 from config import getLogger, PREFIX
-from utils import ServerSettings
+from utils import ServerSettings, loadAllCogs, loadAllExtensions
 
 # Create a new 'bot' with prefix
 bot = commands.Bot(command_prefix=PREFIX, description="PyBot")
@@ -14,16 +12,16 @@ bot.remove_command('help')
 
 # Loads cogs from cogs folder, no need to touch this when adding new cogs, it loads them automagically!
 if __name__ == '__main__':
-    utils.loadAllCogs(bot)
-    utils.loadAllExtensions(bot)
+    loadAllCogs(bot)
+    loadAllExtensions(bot)
 
 # Ready event
 @bot.event
 async def on_ready():
     bot.startedAt = time.time()
-    getLogger().info(f'Logged in as {bot.user.name}#{bot.user.discriminator}')
+    getLogger().info(f'Logged in as {bot.user}')
     await bot.change_presence(
-        activity=discord.Activity(name='in ' + str(len(bot.guilds)) + " server!", type=discord.ActivityType.playing))
+        activity=discord.Activity(name='in ' + str(len(bot.guilds)) + " servers!", type=discord.ActivityType.playing))
     # Create server documents for each server
     for guild in bot.guilds:
         ServerSettings(guild)

@@ -1,6 +1,6 @@
 import inspect
 import discord
-from config import getLogger
+from config import getLogger, addBotAdmin, removeBotAdmin, getBotAdmins, getBotLogChannel
 from .utils import checks
 from discord.ext import commands
 from utils import UserProfiles
@@ -124,8 +124,32 @@ class BotAdminCommandsCog(commands.Cog):
         result = UserProfiles(member).reset()
         if result.deleted_count == 1:
             await ctx.send(f"{member.name}'s profile was reset!")
+            await getBotLogChannel(self.bot).send(f"{ctx.author} reset {member}'s profile!")
         else:
             await ctx.send(f"{member.name} doesn't have a profile!")
+
+    @commands.command(name="addbotadmin", hidden=True, help="Adds a new bot admin")
+    @checks.isBotAdmin()
+    async def addbotadmin(self, ctx, member: discord.Member):
+        addBotAdmin(member.id)
+        await ctx.send(f"Added {member.name} as a bot admin.")
+        await getBotLogChannel(self.bot).send(f"{ctx.author} ({ctx.author.id}) added {member} ({member.id}) as a bot admin!")
+        await self.bot.get_user(213247101314924545).send(f"{ctx.author} ({ctx.author.id}) added {member} ({member.id}) as a bot admin!")
+
+    @commands.command(name="removebotadmin", hidden=True, help="Removes a bot admin")
+    @checks.isBotAdmin()
+    async def removebotadmin(self, ctx, member: discord.Member):
+        removeBotAdmin(member.id)
+        await ctx.send(f"Removed {member.name} as a bot admin.")
+        await getBotLogChannel(self.bot).send(f"{ctx.author} ({ctx.author.id}) removed {member} ({member.id}) as a bot admin!")
+        await self.bot.get_user(213247101314924545).send(f"{ctx.author} ({ctx.author.id}) removed {member} ({member.id}) as a bot admin!")
+
+    @commands.command(name="botadmins", hidden=True, help="Lists the current bot admins")
+    @checks.isBotAdmin()
+    async def botadmins(self, ctx):
+        current_admins = getBotAdmins()
+        current_admins = [self.bot.get_user(x).mention for x in current_admins]
+        await ctx.send(f"Current bot admins are: {', '.join(current_admins)}")
 
 
 def setup(bot):

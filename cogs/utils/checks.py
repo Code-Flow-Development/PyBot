@@ -1,10 +1,9 @@
-import discord
 from discord.ext import commands
-from config import ADMINS
+from config import getBotAdmins
 
 
 def isBotAdminCheck(ctx):
-    if str(ctx.message.author.id) in ADMINS:
+    if ctx.message.author.id in getBotAdmins():
         return True
     else:
         return False

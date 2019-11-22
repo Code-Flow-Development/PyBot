@@ -45,21 +45,16 @@ class UtilityCommandsCog(commands.Cog):
         # create a new embed
         embed = discord.Embed(title="Bot Status", description=None, color=discord.Color.green(),
                               timestamp=datetime.utcnow())
-        if mins > 0:
-            embed.add_field(name="Uptime:", value=f"{mins} minute(s) and {secs} seconds", inline=False)
-        elif hours > 0:
-            embed.add_field(name="Uptime:", value=f"{hours} hours, {mins} minutes and {secs} seconds", inline=False)
-        elif days > 0:
-            embed.add_field(name="Uptime:", value=f"{days} days, {hours} hours, {mins} minutes and {secs} second(s)",
-                            inline=False)
-        else:
-            embed.add_field(name="Uptime:", value=f"{secs} seconds", inline=False)
-
         # add the discord.py version
-        embed.add_field(name="Python Version:", value=f"{sys.version.split(' ')[0]}", inline=False)
-        embed.add_field(name="OS:", value=f"{platform.system()} {platform.release()} ({os.name})", inline=False)
-        embed.add_field(name="Discord.py Version:", value=f"{discord.__version__}", inline=False)
-        embed.add_field(name="Created by:", value="Riley, Skyler, and Jacob.", inline=False)
+        member_count = len(self.bot.users)
+        print(member_count)
+        uptime_format = f"{hours} hours, {mins} minutes, and {secs} seconds" if secs > 0 and mins > 0 and hours > 0 else f"{mins} minutes, and {secs} seconds" if secs > 0 and mins > 0 and hours == 0 else f"{secs} seconds" if secs > 0 and mins == 0 and hours == 0 else "Error"
+        embed.add_field(name="\> Bot", value=f"**Servers:** {len(self.bot.guilds)}\n**Users:**: {member_count}\n**Uptime:** {uptime_format}")
+        embed.add_field(name="\> System", value=f"**Library:** Discord.py {discord.__version__}\n**Python Version:** {sys.version.split('.')[0]}\n**OS:** {platform.system()} {platform.release()} ({os.name})")
+        # embed.add_field(name="Python Version:", value=f"{sys.version.split(' ')[0]}", inline=False)
+        # embed.add_field(name="OS:", value=f"{platform.system()} {platform.release()} ({os.name})", inline=False)
+        # embed.add_field(name="Discord.py Version:", value=f"{discord.__version__}", inline=False)
+        # embed.add_field(name="Created by:", value="Riley, Skyler, and Jacob.", inline=False)
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
         await ctx.send(content=None, embed=embed)

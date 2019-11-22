@@ -32,6 +32,8 @@ class GuildEventsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
+        if member == self.bot.user:
+            return
         banned_users = await member.guild.bans()
         is_banned = [x for x in banned_users if x.user.id == member.id]
         if is_banned:

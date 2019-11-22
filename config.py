@@ -1,10 +1,42 @@
 import coloredlogs
 import logging
 import verboselogs
+import json
+import discord
 from pymongo import MongoClient
 
-ADMINS = ("213247101314924545", "399388398990786561", "276519987244695552")
 PREFIX = "{"
+BOT_LOG_CHANNEL_ID = 647218189218086937
+
+
+def getBotLogChannel(bot: discord.ext.commands.Bot):
+    return bot.get_channel(BOT_LOG_CHANNEL_ID)
+
+
+def getBotAdmins():
+    file = open("admins.json", 'r')
+    contents = file.read()
+    return json.loads(contents)
+
+
+def addBotAdmin(user_id: int):
+    file = open("admins.json", 'r+')
+    current_admins = json.loads(file.read())
+    file.truncate(0)
+    file.close()
+    current_admins.append(user_id)
+    file = open("admins.json", 'w')
+    file.write(json.dumps(current_admins))
+
+
+def removeBotAdmin(user_id: int):
+    file = open("admins.json", 'r+')
+    current_admins = json.loads(file.read())
+    file.truncate(0)
+    file.close()
+    current_admins.remove(user_id)
+    file = open("admins.json", 'w')
+    file.write(json.dumps(current_admins))
 
 
 def getLogger():
