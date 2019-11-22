@@ -100,7 +100,7 @@ class GuildEventsCog(commands.Cog):
         log_channel = self.bot.get_channel(server_settings["settings"]["log_channel"]) if server_settings["settings"]["log_channel"] else None
         enabled = server_settings["settings"]["events"]["guild_member_update"]
         if log_channel and enabled:
-            print(before, after)
+            pass
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
