@@ -61,3 +61,6 @@ target/
 
 # Data
 data/**
+
+# Venv
+venv/**

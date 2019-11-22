@@ -190,8 +190,8 @@ class UtilityCommandsCog(commands.Cog):
         embed.add_field(name="Properties", value=f"**Bot:** {member.bot}")
         embed.add_field(name="Presence",
                         value=f"**Status:** {status_icon} {status.capitalize()}\n{activity_text}")
-        embed.add_field(name="Created On", value=f"{ctx.author.created_at.strftime('%A, %B %d, %Y')}")
-        embed.add_field(name="Joined On", value=f"{ctx.author.joined_at.strftime('%A, %B %d, %Y')}")
+        embed.add_field(name="Created On", value=f"{member.created_at.strftime('%A, %B %d, %Y')}")
+        embed.add_field(name="Joined On", value=f"{member.joined_at.strftime('%A, %B %d, %Y')}")
         embed.add_field(name=f"Roles({len(roles)})", value=f"{'|'.join(roles)}")
         embed.set_thumbnail(url=member.avatar_url)
         embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)

@@ -150,7 +150,7 @@ class FunCommandsCog(commands.Cog):
                 return await ctx.send(content=None, embed=embed)
             else:
                 embed = discord.Embed(title=None,
-                                      description=f"You tried to drown yourself but you're such a screw up you couldn't do that right either!",
+                                      description=f"You tried to kill yourself!",
                                       color=discord.Color.green(), timestamp=datetime.utcnow())
                 embed.set_image(url="https://media1.tenor.com/images/e349f19d4c0f48abf4a8cdfceb3bf151/tenor.gif")
                 embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
