@@ -27,8 +27,6 @@ class GuildEventsCog(commands.Cog):
             embed.set_thumbnail(url=member.avatar_url)
             embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             await log_channel.send(content=None, embed=embed)
-        else:
-            getLogger().debug(f"on_member_join log_channel is null or not enabled for guild {member.guild.name}")
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):

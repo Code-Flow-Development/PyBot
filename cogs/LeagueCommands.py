@@ -14,7 +14,7 @@ class LeagueCommandsCog(commands.Cog):
     async def league(self, ctx, decider: str, decider2: str = None):
         # Displays all the champions in the bot currently.
         if decider.lower() == "champlist":
-            file = open("LoLChamps.json", 'r')
+            file = open("LolData\LoLChamps.json", 'r')
             contents = file.read()
             json_contents = json.loads(contents)
             embed = discord.Embed(title="Champions List",
@@ -24,7 +24,7 @@ class LeagueCommandsCog(commands.Cog):
 
         # Displays all the items in the bot currently.
         elif decider.lower() == "itemlist":
-            file = open("LoLItems.json", 'r')
+            file = open("LolData\LoLItems.json", 'r')
             contents = file.read()
             json_contents = json.loads(contents)
             embed = discord.Embed(title="Items List",
@@ -34,7 +34,7 @@ class LeagueCommandsCog(commands.Cog):
 
         # Displays all the runes in the bot currently.
         elif decider.lower() == "runes":
-            file = open("LoLRunes.json", 'r')
+            file = open("LolData\LoLRunes.json", 'r')
             contents = file.read()
             json_contents = json.loads(contents)
             embed = discord.Embed(title="Runes List",
@@ -45,7 +45,7 @@ class LeagueCommandsCog(commands.Cog):
         # Displays a random set of 6 items.
         elif decider2 is not None:
             if decider.lower() == "random" and decider2.lower() == "champs":
-                file = open("LoLChamps.json", 'r')
+                file = open("LolData\LoLChamps.json", 'r')
                 contents = file.read()
                 json_contents = json.loads(contents)
                 randchamp = random.choice(json_contents)
@@ -56,7 +56,7 @@ class LeagueCommandsCog(commands.Cog):
                     response = await self.bot.wait_for('message', timeout=20)
                     if response.content.lower() == "top" or response.content.lower() == "mid" or response.content.lower() == "bot":
                         await ctx.send("You have selected top mid or bot.")
-                        file = open("LoLItems.json", 'r')
+                        file = open("LolData\LoLItems.json", 'r')
                         contents = file.read()
                         json_contents = json.loads(contents)
                         randitemone = random.choice(json_contents)
@@ -81,7 +81,7 @@ class LeagueCommandsCog(commands.Cog):
                                     break
 
                         file.close()
-                        file = open("LoLBoots.json", 'r')
+                        file = open("LolData\LoLBoots.json", 'r')
                         contents = file.read()
                         json_contents = json.loads(contents)
                         randboots = random.choice(json_contents)
@@ -89,12 +89,12 @@ class LeagueCommandsCog(commands.Cog):
                         await ctx.send(f"first item : {randitemone}\nsecond item : {randitemtwo}\nthird item : {randitemthree}\nfourth item : {randitemfour}\nfifth item : {randitemfive}\nboots : {randboots}")
                     elif response.content.lower() == "jungle":
                         await ctx.send("You have selected jungle!")
-                        file = open("LoLjgItems.json", 'r')
+                        file = open("LolData\LoLjgItems.json", 'r')
                         contents = file.read()
                         json_contents = json.loads(contents)
                         randitemone = random.choice(json_contents)
                         file.close()
-                        file = open("LoLItems.json", 'r')
+                        file = open("LolData\LoLItems.json", 'r')
                         contents = file.read()
                         json_contents = json.loads(contents)
                         randitemtwo = None
@@ -118,7 +118,7 @@ class LeagueCommandsCog(commands.Cog):
                                     break
 
                         file.close()
-                        file = open("LoLBoots.json", 'r')
+                        file = open("LolData\LoLBoots.json", 'r')
                         contents = file.read()
                         json_contents = json.loads(contents)
                         randboots = random.choice(json_contents)
@@ -126,12 +126,12 @@ class LeagueCommandsCog(commands.Cog):
                         await ctx.send(f"first item : {randitemone}\nsecond item : {randitemtwo}\nthird item : {randitemthree}\nfourth item : {randitemfour}\nfifth item : {randitemfive}\nboots : {randboots}")
                     elif response.content.lower() == "support":
                         await ctx.send("You have selected support!")
-                        file = open("LoLsuppItems.json", 'r')
+                        file = open("LolData\LoLsuppItems.json", 'r')
                         contents = file.read()
                         json_contents = json.loads(contents)
                         randitemone = random.choice(json_contents)
                         file.close()
-                        file = open("LoLItems.json", 'r')
+                        file = open("LolData\LoLItems.json", 'r')
                         contents = file.read()
                         json_contents = json.loads(contents)
                         randitemtwo = None
@@ -155,7 +155,7 @@ class LeagueCommandsCog(commands.Cog):
                                     break
 
                         file.close()
-                        file = open("LoLBoots.json", 'r')
+                        file = open("LolData\LoLBoots.json", 'r')
                         contents = file.read()
                         json_contents = json.loads(contents)
                         randboots = random.choice(json_contents)
@@ -166,7 +166,7 @@ class LeagueCommandsCog(commands.Cog):
                 except asyncio.TimeoutError:
                     await ctx.send("[LeagueCommands] Bot has timed out, please re-run the command.")
             elif decider.lower() == "random" and decider2.lower() == "runes":
-                file = open("LoLRunes.json", 'r')
+                file = open("LolData\LoLRunes.json", 'r')
                 contents = file.read()
                 json_contents = json.loads(contents)
                 randruneprimary = random.choice(json_contents)
