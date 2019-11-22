@@ -115,7 +115,7 @@ class GuildEventsCog(commands.Cog):
                                   color=discord.Color.red(),
                                   timestamp=datetime.utcnow())
             embed.add_field(name=f"Author", value=f"{message.author.mention} ({message.author.id})", inline=False)
-            embed.add_field(name=f"Content", value=message.content, inline=False)
+            embed.add_field(name=f"Content", value=f"{message.content}", inline=False)
             embed.add_field(name="Channel", value=message.channel.mention)
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             await log_channel.send(content=None, embed=embed)

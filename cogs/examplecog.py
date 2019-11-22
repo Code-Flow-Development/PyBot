@@ -1,4 +1,5 @@
 from discord.ext import commands
+import discord
 
 
 class ExampleCog(commands.Cog):
@@ -8,6 +9,7 @@ class ExampleCog(commands.Cog):
     @commands.command(name="examplecog")
     async def examplecog(self, ctx):
         await ctx.send(f"Hello, {ctx.author}! This is an example cog!")
+
 
 def setup(bot):
     bot.add_cog(ExampleCog(bot))
