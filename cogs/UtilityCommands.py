@@ -3,6 +3,7 @@ import time
 import sys
 import platform
 import os
+import requests
 from utils import ServerSettings
 from datetime import datetime
 from discord.ext import commands
@@ -15,6 +16,9 @@ class UtilityCommandsCog(commands.Cog):
     @commands.command(name="ping", help="Bot ping")
     @commands.guild_only()
     async def ping(self, ctx):
+        # make a request to discord status page to get latest api ping
+        response = requests.get("https://discord.statuspage.io/metrics-display/ztt4777v23lf/day.json").json()
+        latest_ping = response["summary"]["last"]
         # gets the time (as of the message being sent)
         before = time.monotonic()
         # sends a message to the channel
@@ -25,8 +29,9 @@ class UtilityCommandsCog(commands.Cog):
         embed = discord.Embed(title="Bot Response Time", description=None, color=discord.Colour.green(),
                               timestamp=datetime.utcnow())
         # adds a new field to the embed
-        embed.add_field(name="🤖 Bot Latency:", value=f"{int(ping)}ms", inline=True)
-        embed.add_field(name="🌐 API Latency:", value=f"{round(self.bot.latency, 2)}ms", inline=True)
+        embed.add_field(name="🤖 Bot Latency", value=f"{int(ping)}ms", inline=True)
+        embed.add_field(name="🌐 API Latency", value=f"{round(self.bot.latency, 2)}ms", inline=True)
+        embed.add_field(name="Latest API Ping", value=f"{latest_ping}ms")
         # adds a footer to the embed with the bot name and avatar
         embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
