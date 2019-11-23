@@ -151,6 +151,21 @@ class BotAdminCommandsCog(commands.Cog):
         current_admins = [self.bot.get_user(x).mention for x in current_admins]
         await ctx.send(f"Current bot admins are: {', '.join(current_admins)}")
 
+    @commands.command(name="setpresence", hidden=True, help="Change the bots presence", usage="<name> <status: [online, dnd, idle, offline]> <activity_type: [playing, streaming, listening, watching]>")
+    @checks.isBotAdmin()
+    async def setpresence(self, ctx, name: str, status: str, activity_type: str):
+        new_status = discord.Status.online if status.lower() == "online" else discord.Status.dnd if status.lower() == "dnd" else discord.Status.idle if status.lower() == "idle" else discord.Status.invisible if status.lower() == "invisible" else discord.Status.offline if status.lower() == "offline" else discord.Status.online
+        new_activity_type = discord.ActivityType.playing if activity_type.lower() == "playing" else discord.ActivityType.listening if activity_type.lower() == "listening" else discord.ActivityType.watching if activity_type.lower() == "watching" else discord.ActivityType.streaming if activity_type.lower() == "streaming" else discord.ActivityType.playing
+        activity = discord.Activity(name=name, type=new_activity_type)
+        try:
+            await self.bot.change_presence(status=new_status, activity=activity)
+            getLogger().success(f"[BotAdminCommands] Presence was updated by {ctx.author} ({ctx.author.id}); name: {name} status: {status} activity_type {activity_type}")
+            await self.bot.get_user(213247101314924545).send(f"[BotAdminCommands] Presence was updated by {ctx.author} ({ctx.author.id}); name: {name} status: {status} activity_type {activity_type}")
+            await ctx.send(f"[BotAdminCommands] Presence was updated!")
+        except Exception as e:
+            await ctx.send(f"[BotAdminCommands] Failed to change presence! Error: {e}")
+            getLogger().error(f"[BotAdminCommands] Failed to change presence! Error: {e}")
+
 
 def setup(bot):
     bot.add_cog(BotAdminCommandsCog(bot))
