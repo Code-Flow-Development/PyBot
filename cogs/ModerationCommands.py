@@ -416,8 +416,8 @@ class ModerationCommandsCog(commands.Cog):
     async def setlogchannel(self, ctx, log_channel: discord.TextChannel):
         server_settings = ServerSettings(ctx.guild)
         server_document = server_settings.getServerDocument()
-        server_document["settings"]["log_channel"] = log_channel.id
-        server_settings.update("settings", server_document["settings"])
+        server_document["log_channel"] = log_channel.id
+        server_settings.update("settings", server_document)
         await ctx.send(f"Updated log channel to {log_channel.mention}")
 
     @commands.command(name="eventsettings", help="Enable/Disable event logging")
@@ -426,11 +426,11 @@ class ModerationCommandsCog(commands.Cog):
     async def eventsettings(self, ctx, event: str, setting: bool):
         server_settings = ServerSettings(ctx.guild)
         server_document = server_settings.getServerDocument()
-        current_event_settings = server_document["settings"]["events"]
+        current_event_settings = server_document["events"]
         try:
             theSetting = current_event_settings[event]
             current_event_settings[event] = setting
-            server_settings.update("settings", server_document["settings"])
+            server_settings.update("settings", server_document)
             await ctx.send(f"Setting updated!")
         except KeyError:
             await ctx.send(f"{event} is not a valid event!")
@@ -442,7 +442,7 @@ class ModerationCommandsCog(commands.Cog):
         server_settings = ServerSettings(ctx.guild)
         server_document = server_settings.getServerDocument()
         if not setting:
-            settings = server_document["settings"]
+            settings = server_document
             log_channel = self.bot.get_channel(settings["log_channel"])
 
             embed = discord.Embed(title=f"Current settings for '{ctx.guild.name}'", description=None,
@@ -450,19 +450,19 @@ class ModerationCommandsCog(commands.Cog):
             embed.add_field(name="Log Channel",
                             value=log_channel.mention if log_channel is not None else "No log channel set")
             embed.add_field(name="Message Responses",
-                            value=server_document["settings"]["message_responses_enabled"])
+                            value=server_document["message_responses_enabled"])
             embed.add_field(name="Counting Channels",
-                            value=server_document["settings"]["counting_channel_enabled"])
+                            value=server_document["counting_channels_enabled"])
             embed.add_field(name="Events", value='\n'.join(
-                ['**' + x + ':** ' + str(y) for x, y in server_document['settings']['events'].items()]))
+                ['**' + x + ':** ' + str(y) for x, y in server_document['events'].items()]))
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
             await ctx.send(content=None, embed=embed)
         else:
             try:
-                theSetting = server_document["settings"][setting]
-                server_document["settings"][setting] = value
-                server_settings.update("settings", server_document["settings"])
+                theSetting = server_document[setting]
+                server_document[setting] = value
+                server_settings.update("settings", server_document)
                 await ctx.send(f"Setting updated!")
             except KeyError:
                 await ctx.send(f"{setting} is not a valid setting!")

@@ -68,8 +68,8 @@ class EventsCog(commands.Cog):
 
         server_settings = ServerSettings(message.guild)
         server_document = server_settings.getServerDocument()
-        message_responses_enabled = server_document["settings"]["message_responses_enabled"]
-        counting_channel_enabled = server_document["settings"]["counting_channel_enabled"]
+        message_responses_enabled = server_document["message_responses_enabled"]
+        counting_channel_enabled = server_document["counting_channels_enabled"]
 
         if counting_channel_enabled:
             if message.channel.type == discord.ChannelType.text and message.channel.name.lower() == "counting":
@@ -88,7 +88,7 @@ class EventsCog(commands.Cog):
                     await message.delete()
 
         if message_responses_enabled:
-            custom_message_responses = server_document["settings"]["custom_message_responses"]
+            custom_message_responses = server_document["custom_message_responses"]
             for custom_response in custom_message_responses:
                 trigger = custom_response["trigger"]
                 response = custom_response["response"]
@@ -106,6 +106,7 @@ class EventsCog(commands.Cog):
         embed.add_field(name="Guild Owner", value=f"{guild.owner} ({guild.owner.id})")
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         await getBotLogChannel(self.bot).send(content=None, embed=embed)
+        ServerSettings(guild)
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild):

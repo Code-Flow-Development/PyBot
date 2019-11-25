@@ -119,6 +119,7 @@ class ServerSettings(discord.Guild):
         if not server:
             guild_payload = {
                 "id": guild.id,
+                "name": guild.name,
                 "settings": {
                     "log_channel": None,
                     "message_responses_enabled": False,
@@ -159,7 +160,7 @@ class ServerSettings(discord.Guild):
 
     def getServerDocument(self):
         document = self.server_collection.find_one({"id": self.guild.id})
-        return json.loads(dumps(document))
+        return json.loads(dumps(document))["settings"]
 
     def update(self, key, value):
         self.server_collection.update_one({"id": self.guild.id}, {"$set": {key: value}})
@@ -169,7 +170,8 @@ class ServerSettings(discord.Guild):
         return result
 
     def getLogChannel(self, bot: discord.ext.commands.Bot):
-        return bot.get_channel(self.server_settings["settings"]["log_channel"]) if self.server_settings["settings"]["log_channel"] else None
+        return bot.get_channel(self.server_settings["log_channel"]) if self.server_settings[
+            "log_channel"] else None
 
 
 def getRandomFact():
@@ -177,3 +179,39 @@ def getRandomFact():
     file_content = file.read()
     json_data = json.loads(file_content)
     return random.choice(json_data)
+
+
+def getLoLBootsJson():
+    contents = open("LoLData\\LoLBoots.json", 'r').read()
+    return json.loads(contents)
+
+
+def getLoLChampsJson():
+    contents = open("LoLData\\LoLChamps.json", 'r').read()
+    return json.loads(contents)
+
+
+def getLoLItemsJson():
+    contents = open("LoLData\\LoLItems.json", 'r').read()
+    return json.loads(contents)
+
+
+def getLoLjgItemsJson():
+    contents = open("LoLData\\LoLjgItems.json", 'r').read()
+    return json.loads(contents)
+
+
+def getLoLRunesJson():
+    contents = open("LoLData\\LoLRunes.json", 'r').read()
+    return json.loads(contents)
+
+
+def getLoLSuppItemsJson():
+    contents = open("LoLData\\LoLsuppItems.json", 'r').read()
+    return json.loads(contents)
+
+
+def getLoLChampsList():
+    champs_json = getLoLChampsJson()
+    for x in champs_json:
+        return [a for a in x]

@@ -160,7 +160,7 @@ class BotAdminCommandsCog(commands.Cog):
         try:
             await self.bot.change_presence(status=new_status, activity=activity)
             getLogger().success(f"[BotAdminCommands] Presence was updated by {ctx.author} ({ctx.author.id}); name: {name} status: {status} activity_type {activity_type}")
-            await self.bot.get_user(213247101314924545).send(f"[BotAdminCommands] Presence was updated by {ctx.author} ({ctx.author.id}); name: {name} status: {status} activity_type {activity_type}")
+            await self.bot.get_user(213247101314924545).send(f"[BotAdminCommands] Presence was updated by {ctx.author} ({ctx.author.id})! ```name: {name}\nstatus: {status}\nactivity_type: {activity_type}```")
             await ctx.send(f"[BotAdminCommands] Presence was updated!")
         except Exception as e:
             await ctx.send(f"[BotAdminCommands] Failed to change presence! Error: {e}")

@@ -208,15 +208,15 @@ class UtilityCommandsCog(commands.Cog):
     async def addmessageresponse(self, ctx, trigger: str, response: str):
         server_settings = ServerSettings(ctx.guild)
         server_document = server_settings.getServerDocument()
-        custom_message_responses = server_document["settings"]["custom_message_responses"]
+        custom_message_responses = server_document["custom_message_responses"]
         current_triggers = [x["trigger"] for x in custom_message_responses]
         if trigger not in current_triggers:
             new_trigger = {
                 "trigger": trigger,
                 "response": response
             }
-            server_document["settings"]["custom_message_responses"].append(new_trigger)
-            server_settings.update("settings", server_document["settings"])
+            server_document["custom_message_responses"].append(new_trigger)
+            server_settings.update("settings", server_document)
             await ctx.send(f"Message response added!")
         else:
             await ctx.send(f"{trigger} is already added!")
@@ -227,7 +227,7 @@ class UtilityCommandsCog(commands.Cog):
     async def listresponses(self, ctx):
         server_document = ServerSettings(ctx.guild)
         server_settings = server_document.getServerDocument()
-        responses_list = server_settings["settings"]["custom_message_responses"]
+        responses_list = server_settings["custom_message_responses"]
         new_list = []
         for response in responses_list:
             response_dict = dict(response)

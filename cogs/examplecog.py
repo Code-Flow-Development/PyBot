@@ -1,5 +1,5 @@
 from discord.ext import commands
-import discord
+# from utils import getLoLChampsList
 
 
 class ExampleCog(commands.Cog):
@@ -8,6 +8,7 @@ class ExampleCog(commands.Cog):
 
     @commands.command(name="examplecog")
     async def examplecog(self, ctx):
+        # getLoLChampsList()
         await ctx.send(f"Hello, {ctx.author}! This is an example cog!")
 
 

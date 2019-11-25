@@ -1,9 +1,7 @@
 import discord
-import random
 from datetime import datetime
 from utils import utc_to_epoch, ServerSettings
 from discord.ext import commands
-from config import getLogger
 
 
 class GuildEventsCog(commands.Cog):
@@ -13,8 +11,8 @@ class GuildEventsCog(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         server_settings = ServerSettings(member.guild).getServerDocument()
-        log_channel = self.bot.get_channel(server_settings["settings"]["log_channel"]) if server_settings["settings"]["log_channel"] else None
-        enabled = server_settings["settings"]["events"]["guild_member_join"]
+        log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings["log_channel"] else None
+        enabled = server_settings["events"]["guild_member_join"]
         if log_channel and enabled:
             created_at_unix = utc_to_epoch(member.created_at)
             created_date = datetime.fromtimestamp(created_at_unix)
@@ -38,9 +36,9 @@ class GuildEventsCog(commands.Cog):
             return
 
         server_settings = ServerSettings(member.guild).getServerDocument()
-        log_channel = self.bot.get_channel(server_settings["settings"]["log_channel"]) if server_settings["settings"][
+        log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
-        enabled = server_settings["settings"]["events"]["guild_member_leave"]
+        enabled = server_settings["events"]["guild_member_leave"]
         if log_channel and enabled:
             created_at_unix = utc_to_epoch(member.created_at)
             created_date = datetime.fromtimestamp(created_at_unix)
@@ -81,9 +79,9 @@ class GuildEventsCog(commands.Cog):
         if member == self.bot.user:
             return
         server_settings = ServerSettings(guild).getServerDocument()
-        log_channel = self.bot.get_channel(server_settings["settings"]["log_channel"]) if server_settings["settings"][
+        log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
-        enabled = server_settings["settings"]["events"]["guild_member_unban"]
+        enabled = server_settings["events"]["guild_member_unban"]
         if log_channel and enabled:
             embed = discord.Embed(title="User was unbanned from the server!", description=None, color=discord.Color.green(),
                                   timestamp=datetime.utcnow())
@@ -97,8 +95,8 @@ class GuildEventsCog(commands.Cog):
     @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
         server_settings = ServerSettings(before.guild).getServerDocument()
-        log_channel = self.bot.get_channel(server_settings["settings"]["log_channel"]) if server_settings["settings"]["log_channel"] else None
-        enabled = server_settings["settings"]["events"]["guild_member_update"]
+        log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings["log_channel"] else None
+        enabled = server_settings["events"]["guild_member_update"]
         if log_channel and enabled:
             pass
 
@@ -107,9 +105,9 @@ class GuildEventsCog(commands.Cog):
         if message.author.bot:
             return
         server_settings = ServerSettings(message.guild).getServerDocument()
-        log_channel = self.bot.get_channel(server_settings["settings"]["log_channel"]) if server_settings["settings"][
+        log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
-        enabled = server_settings["settings"]["events"]["guild_message_delete"]
+        enabled = server_settings["events"]["guild_message_delete"]
         if log_channel and enabled:
             embed = discord.Embed(title=f"Message deleted", description=None,
                                   color=discord.Color.red(),
@@ -125,9 +123,9 @@ class GuildEventsCog(commands.Cog):
         if before.author.bot:
             return
         server_settings = ServerSettings(before.guild).getServerDocument()
-        log_channel = self.bot.get_channel(server_settings["settings"]["log_channel"]) if server_settings["settings"][
+        log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
-        enabled = server_settings["settings"]["events"]["guild_message_edit"]
+        enabled = server_settings["events"]["guild_message_edit"]
         if log_channel and enabled:
             embed = discord.Embed(title=f"Message edited", description=None,
                                   color=discord.Color.green(),
@@ -142,18 +140,18 @@ class GuildEventsCog(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_channel_create(self, channel: discord.abc.GuildChannel):
         server_settings = ServerSettings(channel.guild).getServerDocument()
-        log_channel = self.bot.get_channel(server_settings["settings"]["log_channel"]) if server_settings["settings"][
+        log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
-        enabled = server_settings["settings"]["events"]["guild_channel_create"]
+        enabled = server_settings["events"]["guild_channel_create"]
         if log_channel and enabled:
             await log_channel.send(f"Channel created: {channel.mention} [{channel.name}] ({channel.id})")
 
     @commands.Cog.listener()
     async def on_guild_channel_delete(self, channel: discord.abc.GuildChannel):
         server_settings = ServerSettings(channel.guild).getServerDocument()
-        log_channel = self.bot.get_channel(server_settings["settings"]["log_channel"]) if server_settings["settings"][
+        log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
-        enabled = server_settings["settings"]["events"]["guild_channel_delete"]
+        enabled = server_settings["events"]["guild_channel_delete"]
         if log_channel and enabled:
             await log_channel.send(f"Channel deleted: {channel.name} ({channel.id})")
 

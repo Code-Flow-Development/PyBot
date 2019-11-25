@@ -1,51 +1,251 @@
 [
-  "Aatrox",
-  "Ahri",
-  "Akali",
-  "Alistar",
-  "Amumu",
-  "Anivia",
-  "Annie",
-  "Ashe",
-  "Aurelion Sol",
-  "Azir",
-  "Bard",
-  "Blitzcrank",
-  "Brand",
-  "Braum",
-  "Caitlyn",
-  "Camille",
-  "Cassiopeia",
-  "Cho'Gath",
-  "Corki",
-  "Darius",
-  "Diana",
-  "Dr. Mundo",
-  "Draven",
-  "Ekko",
-  "Elise",
-  "Evelynn",
-  "Ezreal",
-  "Fiddlesticks",
-  "Fiora",
-  "Fizz",
-  "Galio",
-  "Gangplank",
-  "Garen",
-  "Gnar",
-  "Gragas",
-  "Graves",
-  "Hecarim",
-  "Heimerdinger",
-  "Illaoi",
-  "Irelia",
-  "Ivern",
-  "Janna",
-  "Jarvan IV",
-  "Jax",
-  "Jayce",
-  "Jhin",
-  "Jinx",
+  {
+    "Aatrox": {
+      "type": ""
+    }
+  },
+  {
+    "Ahri": {
+      "type": ""
+    }
+  },
+  {
+    "Akali": {
+      "type": ""
+    }
+  },
+  {
+    "Alistar": {
+      "type": ""
+    }
+  },
+  {
+    "Amumu": {
+      "type": ""
+    }
+  },
+  {
+    "Anivia": {
+      "type": ""
+    }
+  },
+  {
+    "Annie": {
+      "type": ""
+    }
+  },
+  {
+    "Ashe": {
+      "type": ""
+    }
+  },
+  {
+    "Aurelion Sol": {
+      "type": ""
+    }
+  },
+  {
+    "Azir": {
+      "type": ""
+    }
+  },
+  {
+    "Bard": {
+      "type": ""
+    }
+  },
+  {
+    "Blitzcrank": {
+      "type": ""
+    }
+  },
+  {
+    "Brand": {
+      "type": ""
+    }
+  },
+  {
+    "Braum": {
+      "type": ""
+    }
+  },
+  {
+    "Caitlyn": {
+      "type": ""
+    }
+  },
+  {
+    "Camille": {
+      "type": ""
+    }
+  },
+  {
+    "Cassiopeia": {
+      "type": ""
+    }
+  },
+  {
+    "Cho'Gath": {
+      "type": ""
+    }
+  },
+  {
+    "Corki": {
+      "type": ""
+    }
+  },
+  {
+    "Darius": {
+      "type": ""
+    }
+  },
+  {
+    "Diana": {
+      "type": ""
+    }
+  },
+  {
+    "Dr. Mundo": {
+      "type": ""
+    }
+  },
+  {
+    "Draven": {
+      "type": ""
+    }
+  },
+  {
+    "Ekko": {
+      "type": ""
+    }
+  },
+  {
+    "Elise": {
+      "type": ""
+    }
+  },
+  {
+    "Evelynn": {
+      "type": ""
+    }
+  },
+  {
+    "Ezreal": {
+      "type": ""
+    }
+  },
+  {
+    "Fiddlesticks": {
+      "type": ""
+    }
+  },
+  {
+    "Fiora": {
+      "type": ""
+    }
+  },
+  {
+    "Fizz": {
+      "type": ""
+    }
+  },
+  {
+    "Galio": {
+      "type": ""
+    }
+  },
+  {
+    "Gangplank": {
+      "type": ""
+    }
+  },
+  {
+    "Garen": {
+      "type": ""
+    }
+  },
+  {
+    "Gnar": {
+      "type": ""
+    }
+  },
+  {
+    "Gragas": {
+      "type": ""
+    }
+  },
+  {
+    "Graves": {
+      "type": ""
+    }
+  },
+
+  {
+    "Hecarim": {
+      "type": ""
+    }
+  },
+
+  {
+    "Heimerdinger": {
+      "type": ""
+    }
+  },
+  
+  {
+    "Illaoi": {
+      "type": ""
+    }
+  },
+
+  {
+    "Irelia": {
+      "type": ""
+    }
+  },
+
+  {
+    "Ivern":{
+      "type": ""
+    }
+  },
+
+  {
+    "Janna": {
+      "type": ""
+    }
+  },
+
+  {
+    "Jarvan IV": {
+      "type": ""
+    }
+  },
+
+  {
+    "Jax": {
+      "type": ""
+    }
+  },
+
+  {
+    "Jayce": {
+      "type": ""
+    }
+  },
+
+  {
+    "Jhin": {
+      "type": ""
+    }
+  },
+
+  {
+    "Jinx": {
+      "type": ""
+    }
+  },
+
   "Kai'Sa",
   "Kalista",
   "Karma",
@@ -126,23 +326,99 @@
   "Varus",
   "Vayne",
   "Veigar",
-  "Vel'Koz",
-  "Vi",
-  "Viktor",
-  "Vladimir",
-  "Volibear",
-  "Warwick",
-  "Wukong",
-  "Xayah",
-  "Xerath",
-  "Xin Zhao",
-  "Yasuo",
-  "Yorick",
-  "Yuumi",
-  "Zac",
-  "Zed",
-  "Ziggs",
-  "Zilean",
-  "Zoe",
-  "Zyra."
+  {
+    "Vel'Koz": {
+      "type": ""
+    }
+  },
+  {
+    "Vi": {
+      "type": ""
+    }
+  },
+  {
+    "Viktor": {
+      "type": ""
+    }
+  },
+  {
+    "Vladimir": {
+      "type": ""
+    }
+  },
+  {
+    "Volibear": {
+      "type": ""
+    }
+  },
+  {
+    "Warwick": {
+      "type": ""
+    }
+  },
+  {
+    "Wukong": {
+      "type": ""
+    }
+  },
+  {
+    "Xayah": {
+      "type": ""
+    }
+  },
+  {
+    "Xerath": {
+      "type": ""
+    }
+  },
+  {
+    "Xin Zhao": {
+      "type": ""
+    }
+  },
+  {
+    "Yasuo": {
+      "type": ""
+    }
+  },
+  {
+    "Yorick": {
+      "type": ""
+    }
+  },
+  {
+    "Yuumi": {
+      "type": ""
+    }
+  },
+  {
+    "Zac": {
+      "type": ""
+    }
+  },
+  {
+    "Zed": {
+      "type": ""
+    }
+  },
+  {
+    "Ziggs": {
+      "type": ""
+    }
+  },
+  {
+    "Zilean": {
+      "type": ""
+    }
+  },
+  {
+    "Zoe": {
+      "type": ""
+    }
+  },
+  {
+    "Zyra": {
+      "type": ""
+    }
+  }
 ]
