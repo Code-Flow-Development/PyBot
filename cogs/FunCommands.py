@@ -3,10 +3,12 @@ import html
 import random
 import discord
 import requests
+from prawcore import exceptions
 from datetime import datetime
 from discord import Forbidden, HTTPException, InvalidArgument, NotFound
 from discord.ext import commands
 from utils import getRandomFact
+from config import getRedditClient
 
 
 class FunCommandsCog(commands.Cog):
@@ -294,7 +296,8 @@ class FunCommandsCog(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def spamrole(self, ctx, role: discord.Role):
         for x in range(0, 5):
-            await ctx.send(f"Hello {role.mention}, how are you doing?" if not "everyone" in role.name else f"Hello {role}, how are you doing?")
+            await ctx.send(
+                f"Hello {role.mention}, how are you doing?" if not "everyone" in role.name else f"Hello {role}, how are you doing?")
 
     @commands.command(name="insult", help="Insult a user", usage="<@user>")
     @commands.guild_only()
@@ -425,62 +428,73 @@ class FunCommandsCog(commands.Cog):
             elif choice == 3:
                 await ctx.send(f"You would have been safe!")
 
-    @commands.command(name="meme", usage="[r/{subreddit name}] [top, rising, new, hot, random, best]", help="Gets a meme from r/funny or another subreddit",
-                      description="Defaults to top if no listing type is specified")
-    async def meme(self, ctx, subreddit: str = "r/funny", listing_type: str = "top"):
+    @commands.command(name="meme", usage="[r/{subreddit name}] [top, rising, new, hot, random]",
+                      help="Gets a meme from r/funny or another subreddit",
+                      description="Defaults to new if no listing type is specified")
+    async def meme(self, ctx, subreddit: str = "funny", listing_type: str = "new"):
         # NOTE: posts that dont contain images will throw an error
-
-        if listing_type.lower() == "new" or listing_type.lower() == "top" or listing_type.lower() == "rising" or listing_type.lower() == "hot" or listing_type.lower() == "best":
-            result = requests.get(f"https://www.reddit.com/{subreddit}/{listing_type.lower()}.json?count=50",
-                                  headers={'User-agent': f'PyBot ({ctx.author.id})'}).json()
-            posts = result["data"]["children"]
-            if len(posts) == 0:
-                return await ctx.send(f"Nothing found! Is it a valid subreddit?")
-            else:
-                post = pickRandomPost(posts)
-            title = post["data"]["title"]
-            image_url = post["data"]["preview"]["images"][0]["source"]["url"]
-            embed = discord.Embed(title=None,
-                                  description=title,
-                                  color=discord.Color.green(), timestamp=datetime.utcnow())
-            embed.set_image(url=html.unescape(image_url))
-            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
-            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-            return await ctx.send(content=None, embed=embed)
-        elif listing_type.lower() == "random":
-            posts = requests.get(f"https://www.reddit.com/{subreddit}/{listing_type.lower()}.json?count=50",
-                                 headers={'User-agent': f'PyBot ({ctx.author.id})'}).json()[0]["data"]["children"]
-            if len(posts) == 0:
-                return await ctx.send(f"Nothing found! Is it a valid subreddit?")
-            else:
-                post = posts[0]
-            title = post["data"]["title"]
-            image_url = post["data"]["preview"]["images"][0]["source"]["url"]
-            embed = discord.Embed(title=None,
-                                  description=title,
-                                  color=discord.Color.green(), timestamp=datetime.utcnow())
-            embed.set_image(url=html.unescape(image_url))
-            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
-            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-            return await ctx.send(content=None, embed=embed)
-        else:
+        valid_types = ["new", "top", "rising", "hot"]
+        if not listing_type.lower() in valid_types:
             return await ctx.send(
                 f"{listing_type.lower()} is not a valid type! Valid types are: "
                 f"```top\nhot\nnew\nbest\nrandom\nrising\ntop```")
 
+        try:
+            # get a post
+            post = getPostsByListingType(subreddit, listing_type)
 
-def pickRandomPost(posts: []):
-    random.shuffle(posts)
-    post = random.choice(posts)
-    over18 = post["data"]["over_18"]
-    try:
-        images = post["data"]["preview"]["images"]
-        if len(images) > 0 and not over18:
-            return post
+            embed = discord.Embed(title=None,
+                                  description=post.title,
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_image(url=post.url)
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            return await ctx.send(content=None, embed=embed)
+        except exceptions.Forbidden:
+            return await ctx.send(f"[PRAW] Forbidden!")
+        except exceptions.NotFound:
+            return await ctx.send(f"[PRAW] Not Found!")
+        except Exception as e:
+            print(f"[FunCommands] Cought error in meme command! Error: {e}")
+            return await ctx.send(f"An error occured!")
+
+
+def getPostsByListingType(subreddit: str, type: str):
+    if type == "top":
+        posts = getRedditClient().subreddit(subreddit).top(limit=1)
+        post = [x for x in posts][0]
+        if post.over_18:
+            getPostsByListingType(subreddit, type)
         else:
-            pickRandomPost(posts)
-    except KeyError:
-        return pickRandomPost(posts)
+            return post
+    elif type == "rising":
+        posts = getRedditClient().subreddit(subreddit).rising(limit=1)
+        post = [x for x in posts][0]
+        if post.over_18:
+            getPostsByListingType(subreddit, type)
+        else:
+            return post
+    elif type == "new":
+        posts = getRedditClient().subreddit(subreddit).new(limit=1)
+        post = [x for x in posts][0]
+        if post.over_18:
+            getPostsByListingType(subreddit, type)
+        else:
+            return post
+    elif type == "hot":
+        posts = getRedditClient().subreddit(subreddit).hot(limit=1)
+        post = [x for x in posts][0]
+        if post.over_18:
+            getPostsByListingType(subreddit, type)
+        else:
+            return post
+    elif type == "random":
+        posts = getRedditClient().subreddit(subreddit).random(limit=1)
+        post = [x for x in posts][0]
+        if post.over_18:
+            getPostsByListingType(subreddit, type)
+        else:
+            return post
 
 
 def setup(bot):

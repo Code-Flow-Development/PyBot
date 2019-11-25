@@ -3,10 +3,18 @@ import logging
 import verboselogs
 import json
 import discord
+from praw import Reddit
 from pymongo import MongoClient
+from dotenv import load_dotenv
+
+load_dotenv()
 
 PREFIX = "{"
 BOT_LOG_CHANNEL_ID = 647218189218086937
+
+REDDIT_CLIENT_ID = "dYF3mlDC8WKNxw"
+REDDIT_CLIENT_SECRET = "_PYKXI1zCMrLWLQMOgSwkc90jb4"
+REDDIT_CLIENT = Reddit(client_id=REDDIT_CLIENT_ID, client_secret=REDDIT_CLIENT_SECRET, user_agent="PyBot")
 
 
 def getBotLogChannel(bot: discord.ext.commands.Bot):
@@ -49,3 +57,7 @@ def getLogger():
 
 def getMongoClient():
     return MongoClient('mongodb://185.230.160.118:27017')
+
+
+def getRedditClient():
+    return REDDIT_CLIENT

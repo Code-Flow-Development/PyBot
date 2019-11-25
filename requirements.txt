@@ -1,3 +1,4 @@
+praw
 timeago
 verboselogs
 coloredlogs
