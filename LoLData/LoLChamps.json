@@ -179,153 +179,461 @@
       "type": ""
     }
   },
-
   {
     "Hecarim": {
       "type": ""
     }
   },
-
   {
     "Heimerdinger": {
       "type": ""
     }
   },
-  
   {
     "Illaoi": {
       "type": ""
     }
   },
-
   {
     "Irelia": {
       "type": ""
     }
   },
-
   {
-    "Ivern":{
+    "Ivern": {
       "type": ""
     }
   },
-
   {
     "Janna": {
       "type": ""
     }
   },
-
   {
     "Jarvan IV": {
       "type": ""
     }
   },
-
   {
     "Jax": {
       "type": ""
     }
   },
-
   {
     "Jayce": {
       "type": ""
     }
   },
-
   {
     "Jhin": {
       "type": ""
     }
   },
-
   {
     "Jinx": {
       "type": ""
     }
   },
-
-  "Kai'Sa",
-  "Kalista",
-  "Karma",
-  "Karthus",
-  "Kassadin",
-  "Katarina",
-  "Kayle",
-  "Kayn",
-  "Kennen",
-  "Kha'Zix",
-  "Kindred",
-  "Kled",
-  "Kog'Maw",
-  "LeBlanc",
-  "Lee Sin",
-  "Leona",
-  "Lissandra",
-  "Lucian",
-  "Lulu",
-  "Lux",
-  "Malphite",
-  "Malzahar",
-  "Maokai",
-  "Master Yi",
-  "Miss Fortune",
-  "Mordekaiser",
-  "Morgana",
-  "Nami",
-  "Nasus",
-  "Nautilus",
-  "Neeko",
-  "Nidalee",
-  "Nocturne",
-  "Numu & Willump",
-  "Olaf",
-  "Orianna",
-  "Ornn",
-  "Pantheon",
-  "Poppy",
-  "Pyke",
-  "Qiyana",
-  "Quinn",
-  "Rakan",
-  "Rammus",
-  "Rek'Sai",
-  "Renekton",
-  "Rengar",
-  "Riven",
-  "Rumble",
-  "Ryze",
-  "Sejuani",
-  "Senna",
-  "Shaco",
-  "Shen",
-  "Shyvana",
-  "Singed",
-  "Sion",
-  "Sivir",
-  "Skarner",
-  "Sona",
-  "Soraka",
-  "Swain",
-  "Sylas",
-  "Syndra",
-  "Tahm Kench",
-  "Taliyah",
-  "Talon",
-  "Taric",
-  "Teemo",
-  "Thresh",
-  "Tristana",
-  "Trundle",
-  "Tryndamere",
-  "Twisted Fate",
-  "Twitch",
-  "Udyr",
-  "Urgot",
-  "Varus",
-  "Vayne",
-  "Veigar",
+  {
+    "Kai'Sa": {
+      "type": ""
+    }
+  },
+  {
+    "Kalista": {
+      "type": ""
+    }
+  },
+  {
+    "Karma": {
+      "type": ""
+    }
+  },
+  {
+    "Karthus": {
+      "type": ""
+    }
+  },
+  {
+    "Kassadin": {
+      "type": ""
+    }
+  },
+  {
+    "Katarina": {
+      "type": ""
+    }
+  },
+  {
+    "Kayle": {
+      "type": ""
+    }
+  },
+  {
+    "Kayn": {
+      "type": ""
+    }
+  },
+  {
+    "Kennen": {
+      "type": ""
+    }
+  },
+  {
+    "Kha'Zix": {
+      "type": ""
+    }
+  },
+  {
+    "Kindred": {
+      "type": ""
+    }
+  },
+  {
+    "Kled": {
+      "type": ""
+    }
+  },
+  {
+    "Kog'Maw": {
+      "type": ""
+    }
+  },
+  {
+    "LeBlanc": {
+      "type": ""
+    }
+  },
+  {
+    "Lee Sin": {
+      "type": ""
+    }
+  },
+  {
+    "Leona": {
+      "type": ""
+    }
+  },
+  {
+    "Lissandra": {
+      "type": ""
+    }
+  },
+  {
+    "Lucian": {
+      "type": ""
+    }
+  },
+  {
+    "Lulu": {
+      "type": ""
+    }
+  },
+  {
+    "Lux": {
+      "type": ""
+    }
+  },
+  {
+    "Malphite": {
+      "type": ""
+    }
+  },
+  {
+    "Malzahar": {
+      "type": ""
+    }
+  },
+  {
+    "Maokai": {
+      "type": ""
+    }
+  },
+  {
+    "Master Yi": {
+      "type": ""
+    }
+  },
+  {
+    "Miss Fortune": {
+      "type": ""
+    }
+  },
+  {
+    "Mordekaiser": {
+      "type": ""
+    }
+  },
+  {
+    "Morgana": {
+      "type": ""
+    }
+  },
+  {
+    "Nami": {
+      "type": ""
+    }
+  },
+  {
+    "Nasus": {
+      "type": ""
+    }
+  },
+  {
+    "Nautilus": {
+      "type": ""
+    }
+  },
+  {
+    "Neeko": {
+      "type": ""
+    }
+  },
+  {
+    "Nidalee": {
+      "type": ""
+    }
+  },
+  {
+    "Nocturne": {
+      "type": ""
+    }
+  },
+  {
+    "Numu & Willump": {
+      "type": ""
+    }
+  },
+  {
+    "Olaf": {
+      "type": ""
+    }
+  },
+  {
+    "Orianna": {
+      "type": ""
+    }
+  },
+  {
+    "Ornn": {
+      "type": ""
+    }
+  },
+  {
+    "Pantheon": {
+      "type": ""
+    }
+  },
+  {
+    "Poppy": {
+      "type": ""
+    }
+  },
+  {
+    "Pyke": {
+      "type": ""
+    }
+  },
+  {
+    "Qiyana": {
+      "type": ""
+    }
+  },
+  {
+    "Quinn": {
+      "type": ""
+    }
+  },
+  {
+    "Rakan": {
+      "type": ""
+    }
+  },
+  {
+    "Rammus": {
+      "type": ""
+    }
+  },
+  {
+    "Rek'Sai": {
+      "type": ""
+    }
+  },
+  {
+    "Renekton": {
+      "type": ""
+    }
+  },
+  {
+    "Rengar": {
+      "type": ""
+    }
+  },
+  {
+    "Riven": {
+      "type": ""
+    }
+  },
+  {
+    "Rumble": {
+      "type": ""
+    }
+  },
+  {
+    "Ryze": {
+      "type": ""
+    }
+  },
+  {
+    "Sejuani": {
+      "type": ""
+    }
+  },
+  {
+    "Senna": {
+      "type": ""
+    }
+  },
+  {
+    "Shaco": {
+      "type": ""
+    }
+  },
+  {
+    "Shen": {
+      "type": ""
+    }
+  },
+  {
+    "Shyvana": {
+      "type": ""
+    }
+  },
+  {
+    "Singed": {
+      "type": ""
+    }
+  },
+  {
+    "Sion": {
+      "type": ""
+    }
+  },
+  {
+    "Sivir": {
+      "type": ""
+    }
+  },
+  {
+    "Skarner": {
+      "type": ""
+    }
+  },
+  {
+    "Sona": {
+      "type": ""
+    }
+  },
+  {
+    "Soraka": {
+      "type": ""
+    }
+  },
+  {
+    "Swain": {
+      "type": ""
+    }
+  },
+  {
+    "Sylas": {
+      "type": ""
+    }
+  },
+  {
+    "Syndra": {
+      "type": ""
+    }
+  },
+  {
+    "Tahm Kench": {
+      "type": ""
+    }
+  },
+  {
+    "Taliyah": {
+      "type": ""
+    }
+  },
+  {
+    "Talon": {
+      "type": ""
+    }
+  },
+  {
+    "Taric": {
+      "type": ""
+    }
+  },
+  {
+    "Teemo": {
+      "type": ""
+    }
+  },
+  {
+    "Thresh": {
+      "type": ""
+    }
+  },
+  {
+    "Tristana": {
+      "type": ""
+    }
+  },
+  {
+    "Trundle": {
+      "type": ""
+    }
+  },
+  {
+    "Tryndamere": {
+      "type": ""
+    }
+  },
+  {
+    "Twisted Fate": {
+      "type": ""
+    }
+  },
+  {
+    "Twitch": {
+      "type": ""
+    }
+  },
+  {
+    "Udyr": {
+      "type": ""
+    }
+  },
+  {
+    "Urgot": {
+      "type": ""
+    }
+  },
+  {
+    "Varus": {
+      "type": ""
+    }
+  },
+  {
+    "Vayne": {
+      "type": ""
+    }
+  },
+  {
+    "Veigar": {
+      "type": ""
+    }
+  },
   {
     "Vel'Koz": {
       "type": ""

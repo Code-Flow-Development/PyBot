@@ -5,7 +5,7 @@ import asyncio
 from datetime import datetime
 from discord.ext import commands
 from datetime import datetime
-from utils import getLoLBootsJson, getLoLChampsJson, getLoLItemsJson, getLoLjgItemsJson, getLoLRunesJson, getLoLSuppItemsJson
+from utils import getLoLBootsJson, getLoLChampsJson, getLoLItemsJson, getLoLjgItemsJson, getLoLRunesJson, getLoLSuppItemsJson, getLoLChampsKeyList
 
 
 class LeagueCommandsCog(commands.Cog):
@@ -17,9 +17,9 @@ class LeagueCommandsCog(commands.Cog):
     async def league(self, ctx, decider: str, decider2: str = None):
         # Displays all the champions in the bot currently.
         if decider.lower() == "champlist":
-            champ_list = getLoLChampsJson()
+            champ_key_list = getLoLChampsKeyList()
             embed = discord.Embed(title="Champions List",
-                                  description=', '.join(champ_list),
+                                  description=', '.join(champ_key_list),
                                   color=discord.Color.orange(),
                                   timestamp=datetime.utcnow())
             embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)

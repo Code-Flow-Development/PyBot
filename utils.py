@@ -211,7 +211,10 @@ def getLoLSuppItemsJson():
     return json.loads(contents)
 
 
-def getLoLChampsList():
+def getLoLChampsKeyList():
     champs_json = getLoLChampsJson()
+    keys = []
     for x in champs_json:
-        return [a for a in x]
+        for key in x:
+            keys.append(key)
+    return keys
