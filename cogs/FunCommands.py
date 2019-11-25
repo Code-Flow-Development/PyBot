@@ -443,13 +443,16 @@ class FunCommandsCog(commands.Cog):
             # get a post
             post = getPostsByListingType(subreddit, listing_type)
 
-            embed = discord.Embed(title=None,
-                                  description=post.title,
-                                  color=discord.Color.green(), timestamp=datetime.utcnow())
-            embed.set_image(url=post.url)
-            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
-            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-            return await ctx.send(content=None, embed=embed)
+            if post:
+                embed = discord.Embed(title=None,
+                                      description=post.title,
+                                      color=discord.Color.green(), timestamp=datetime.utcnow())
+                embed.set_image(url=post.url)
+                embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+                embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                return await ctx.send(content=None, embed=embed)
+            else:
+                return await ctx.send(f"Oops! is that an nsfw subreddit? maybe it was just an nsfw post :/")
         except exceptions.Forbidden:
             return await ctx.send(f"[PRAW] Forbidden!")
         except exceptions.NotFound:
@@ -464,21 +467,21 @@ def getPostsByListingType(subreddit: str, type: str):
         posts = getRedditClient().subreddit(subreddit).top(limit=1)
         post = [x for x in posts][0]
         if post.over_18:
-            getPostsByListingType(subreddit, type)
+            return
         else:
             return post
     elif type == "rising":
         posts = getRedditClient().subreddit(subreddit).rising(limit=1)
         post = [x for x in posts][0]
         if post.over_18:
-            getPostsByListingType(subreddit, type)
+            return
         else:
             return post
     elif type == "new":
         posts = getRedditClient().subreddit(subreddit).new(limit=1)
         post = [x for x in posts][0]
         if post.over_18:
-            getPostsByListingType(subreddit, type)
+            return
         else:
             return post
     elif type == "hot":
@@ -492,7 +495,7 @@ def getPostsByListingType(subreddit: str, type: str):
         posts = getRedditClient().subreddit(subreddit).random(limit=1)
         post = [x for x in posts][0]
         if post.over_18:
-            getPostsByListingType(subreddit, type)
+            return
         else:
             return post
 
