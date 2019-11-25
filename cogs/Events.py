@@ -72,14 +72,16 @@ class EventsCog(commands.Cog):
         counting_channel_enabled = server_document["counting_channels_enabled"]
 
         if counting_channel_enabled:
-            if message.channel.type == discord.ChannelType.text and message.channel.name.lower() == "counting":
+            if message.channel.type == discord.ChannelType.text and message.channel.name.lower().startswith("count-to-"):
                 try:
                     # try to convert the string to a number
                     number = int(message.content)
-                    next_number = int(message.channel.topic)
-                    if number == next_number:
+                    next_number = int(message.channel.name.split("-")[-1])
+                    if number == next_number and next_number >= 0:
                         # user gave the correct next number
-                        await message.channel.edit(topic=str(number + 1))
+                        await message.channel.edit(name=f"count-to-{number + 1}")
+                    elif int(next_number - 2) == number and next_number >= 0:
+                        await message.channel.edit(name=f"count-to-{next_number - 1}")
                     else:
                         # not the next number so delete the message
                         await message.delete()

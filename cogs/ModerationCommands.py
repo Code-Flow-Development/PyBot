@@ -401,7 +401,7 @@ class ModerationCommandsCog(commands.Cog):
     @commands.guild_only()
     async def newcountingchannel(self, ctx):
         try:
-            channel = await ctx.guild.create_text_channel(name="counting", topic="1")
+            channel = await ctx.guild.create_text_channel(name="count-to-1")
             await ctx.send(f"Channel created! {channel.mention}")
         except Forbidden as e:
             return await ctx.send(f"[ModerationCommands] Missing permission to create channel! Error: {e.text}")
