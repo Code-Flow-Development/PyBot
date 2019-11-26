@@ -3,6 +3,7 @@ import logging
 import verboselogs
 import json
 import discord
+import os
 from praw import Reddit
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -56,7 +57,9 @@ def getLogger():
 
 
 def getMongoClient():
-    return MongoClient('mongodb://185.230.160.118:27017')
+    username = os.getenv('MONGODB_USERNAME')
+    password = os.getenv('MONGODB_PASSWORD')
+    return MongoClient(f"mongodb://{username}:{password}@185.230.160.118:27017")
 
 
 def getRedditClient():
