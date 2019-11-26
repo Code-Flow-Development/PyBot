@@ -289,7 +289,7 @@ class FunCommandsCog(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def spam(self, ctx, member: discord.Member):
         for x in range(0, 5):
-            await ctx.send(f"Hello, {member.mention}, how are you doing?")
+            await ctx.send(f"Hello {member.mention}, how are you doing?")
 
     @commands.command(name="spamrole", help="Spams a role with 5 mentions", usage="<@role>")
     @commands.guild_only()
