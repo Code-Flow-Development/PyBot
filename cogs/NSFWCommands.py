@@ -11,12 +11,14 @@ gfycat_regex = re.compile(r'(https://gfycat.com/(.*))(\?.*)?')
 imgur_regex = re.compile(r'(https://i.imgur.com/(.*))(\?.*)?')
 reddit_regex = re.compile(r'(https://i.redd.it/(.*))(\?.*)?')
 
+ENABLED = True
+
 
 class NSFWCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="boobs", hidden=True, enabled=False)
+    @commands.command(name="boobs", hidden=True, enabled=ENABLED)
     @commands.has_role("NSFW Tester")
     @commands.is_nsfw()
     @commands.guild_only()
@@ -45,7 +47,7 @@ class NSFWCommands(commands.Cog):
         else:
             return await ctx.send(f"Nothing found :(")
 
-    @commands.command(name="boobdrop", hidden=True, enabled=False)
+    @commands.command(name="boobdrop", hidden=True, enabled=ENABLED)
     @commands.has_role("NSFW Tester")
     @commands.is_nsfw()
     @commands.guild_only()
@@ -72,7 +74,7 @@ class NSFWCommands(commands.Cog):
         else:
             return await ctx.send(f"Nothing found :(")
 
-    @commands.command(name="pussy", hidden=True, enabled=False)
+    @commands.command(name="pussy", hidden=True, enabled=ENABLED)
     @commands.has_role("NSFW Tester")
     @commands.is_nsfw()
     @commands.guild_only()
@@ -100,13 +102,13 @@ class NSFWCommands(commands.Cog):
         else:
             return await ctx.send(f"Nothing found :(")
 
-    @commands.command(name="ass", hidden=True, enabled=False)
+    @commands.command(name="ass", hidden=True, enabled=ENABLED)
     @commands.has_role("NSFW Tester")
     @commands.is_nsfw()
     @commands.guild_only()
     async def ass(self, ctx):
-        pussy_subreddits = ["asshole", "AssOnTheGlass", "SpreadEm", "booty_gifs"]
-        posts = getRedditClient().subreddit(random.choice(pussy_subreddits)).new(limit=100)
+        ass_subreddits = ["asshole", "AssOnTheGlass", "SpreadEm", "booty_gifs"]
+        posts = getRedditClient().subreddit(random.choice(ass_subreddits)).new(limit=100)
         post = random.choice([x for x in posts])
         print(post.url)
 
@@ -128,12 +130,20 @@ class NSFWCommands(commands.Cog):
         else:
             return await ctx.send(f"Nothing found :(")
 
-    @commands.command(name="nsfw", hidden=True, enabled=False)
+    @commands.command(name="nsfw", hidden=True, enabled=ENABLED)
     @commands.has_role("NSFW Tester")
     @commands.is_nsfw()
     @commands.guild_only()
     async def nsfw(self, ctx):
-        nsfw_subreddits = ["nsfw", "NSFW_GIFS", "squirting", "pussy", "whenitgoesin", "scissoring", "boobs", "gonewild", "RealGirls", "OnOff", "bdsm", "Bondage", "pawg", "PetiteGoneWild", "GirlsWithToys", "NSFW_4K", "NsfwAss", "60fpsporn", "NSFW_HTML5", "iWantToFuckHer", "HighResNSFW", "nsfwhardcore", "celebnsfw", "Amateur", "Nsfw_Amateurs", "ass", "bigasses", "anal", "asshole", "AssOnTheGlass", "SpreadEm", "booty_gifs", "SheLikesItRough", "facesitting", "curvy", "petite", "xsmallgirls", "collegesluts", "CollegeAmateurs", "collegensfw", "Gonewild18", "gonewildcouples", "gwcumsluts", "workgonewild", "LegalTeens", "Just18", "barelylegalteens", "Barelylegal", "LipsThatGrip", "rearpussy", "Boobies", "TittyDrop", "Bigtitssmalltits", "BustyPetite", "naturaltitties"]
+        nsfw_subreddits = ["nsfw", "NSFW_GIFS", "squirting", "pussy", "whenitgoesin", "scissoring", "boobs", "gonewild",
+                           "RealGirls", "OnOff", "bdsm", "Bondage", "pawg", "PetiteGoneWild", "GirlsWithToys",
+                           "NSFW_4K", "NsfwAss", "60fpsporn", "NSFW_HTML5", "iWantToFuckHer", "HighResNSFW",
+                           "nsfwhardcore", "celebnsfw", "Amateur", "Nsfw_Amateurs", "ass", "bigasses", "anal",
+                           "asshole", "AssOnTheGlass", "SpreadEm", "booty_gifs", "SheLikesItRough", "facesitting",
+                           "curvy", "petite", "xsmallgirls", "collegesluts", "CollegeAmateurs", "collegensfw",
+                           "Gonewild18", "gonewildcouples", "gwcumsluts", "workgonewild", "LegalTeens", "Just18",
+                           "barelylegalteens", "Barelylegal", "LipsThatGrip", "rearpussy", "Boobies", "TittyDrop",
+                           "Bigtitssmalltits", "BustyPetite", "naturaltitties"]
         posts = getRedditClient().subreddit(random.choice(nsfw_subreddits)).new(limit=100)
         post = random.choice([x for x in posts])
         print(post.url)
