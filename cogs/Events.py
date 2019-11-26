@@ -52,6 +52,9 @@ class EventsCog(commands.Cog):
         elif isinstance(error, commands.TooManyArguments):
             return await ctx.send(f"Too many arguments! Usage: {ctx.command.usage}")
 
+        elif isinstance(error, commands.NSFWChannelRequired):
+            return await ctx.send(f"That command is NSFW and required an NSFW channel!")
+
         # All other Errors not returned come here... And we can just print the default TraceBack.
         print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)

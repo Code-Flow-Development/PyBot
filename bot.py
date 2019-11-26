@@ -20,8 +20,8 @@ if __name__ == '__main__':
 async def on_ready():
     bot.startedAt = time.time()
     getLogger().info(f'Logged in as {bot.user}')
-    await bot.change_presence(
-        activity=discord.Activity(name='in ' + str(len(bot.guilds)) + " servers!", type=discord.ActivityType.playing))
+    # await bot.change_presence(activity=discord.Activity(name='in ' + str(len(bot.guilds)) + " servers!", type=discord.ActivityType.playing))
+    await bot.change_presence(activity=discord.Activity(name="hentai! 😳", type=discord.ActivityType.watching), status=discord.Status.dnd)
     # Create server documents for each server
     for guild in bot.guilds:
         ServerSettings(guild)
