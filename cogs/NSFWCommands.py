@@ -30,7 +30,7 @@ class NSFWCommands(commands.Cog):
         print(post.url)
 
         if gfycat_regex.match(post.url):
-            direct_link = getGfycatDirect(post.url)
+            direct_link = await getGfycatDirect(post.url)
             if direct_link:
                 embed = discord.Embed(title=f"{post.title}", description=None, color=discord.Color.green(),
                                       timestamp=datetime.utcnow())
@@ -45,34 +45,34 @@ class NSFWCommands(commands.Cog):
             getLogger().debug(post.url)
             return await ctx.send(content=None, embed=embed)
         else:
-            return await ctx.send(f"Nothing found :(")
+            await ctx.send(f"Nothing found :(")
+            return self.boobs(ctx)
 
     @commands.command(name="boobdrop", hidden=True, enabled=ENABLED)
     @commands.has_role("NSFW Tester")
     @commands.is_nsfw()
     @commands.guild_only()
     async def boobdrop(self, ctx):
-        posts = getRedditClient().subreddit("TittyDrop").new(limit=1000)
-        post = random.choice([x for x in posts])
-        print(post.url)
+        async with ctx.typing():
+            posts = getRedditClient().subreddit("TittyDrop").new(limit=1000)
+            post = random.choice([x for x in posts])
+            getLogger().debug(f"Post URL: {post.url}")
 
-        if gfycat_regex.match(post.url):
-            direct_link = getGfycatDirect(post.url)
-            if direct_link:
-                embed = discord.Embed(title=f"{post.title}", description=None, color=discord.Color.green(),
-                                      timestamp=datetime.utcnow())
-                embed.set_image(url=direct_link)
-                embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
-                return await ctx.send(content=None, embed=embed)
-        elif imgur_regex.match(post.url) or reddit_regex.match(post.url):
+            if gfycat_regex.match(post.url):
+                direct_link = await getGfycatDirect(post.url)
+            elif imgur_regex.match(post.url) or reddit_regex.match(post.url):
+                direct_link = post.url
+            else:
+                await ctx.send(f"Nothing found :(")
+                await self.boobdrop(ctx)
+
+            getLogger().debug(f"Direct Link: {direct_link}")
+
             embed = discord.Embed(title=f"{post.title}", description=None, color=discord.Color.green(),
                                   timestamp=datetime.utcnow())
-            embed.set_image(url=post.url)
+            embed.set_image(url=direct_link)
             embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
-            getLogger().debug(post.url)
-            return await ctx.send(content=None, embed=embed)
-        else:
-            return await ctx.send(f"Nothing found :(")
+        return await ctx.send(content=None, embed=embed)
 
     @commands.command(name="pussy", hidden=True, enabled=ENABLED)
     @commands.has_role("NSFW Tester")
@@ -85,7 +85,7 @@ class NSFWCommands(commands.Cog):
         print(post.url)
 
         if gfycat_regex.match(post.url):
-            direct_link = getGfycatDirect(post.url)
+            direct_link = await getGfycatDirect(post.url)
             if direct_link:
                 embed = discord.Embed(title=f"{post.title}", description=None, color=discord.Color.green(),
                                       timestamp=datetime.utcnow())
@@ -113,7 +113,7 @@ class NSFWCommands(commands.Cog):
         print(post.url)
 
         if gfycat_regex.match(post.url):
-            direct_link = getGfycatDirect(post.url)
+            direct_link = await getGfycatDirect(post.url)
             if direct_link:
                 embed = discord.Embed(title=f"{post.title}", description=None, color=discord.Color.green(),
                                       timestamp=datetime.utcnow())
@@ -149,7 +149,7 @@ class NSFWCommands(commands.Cog):
         print(post.url)
 
         if gfycat_regex.match(post.url):
-            direct_link = getGfycatDirect(post.url)
+            direct_link = await getGfycatDirect(post.url)
             if direct_link:
                 embed = discord.Embed(title=f"{post.title}", description=None, color=discord.Color.green(),
                                       timestamp=datetime.utcnow())
@@ -167,7 +167,7 @@ class NSFWCommands(commands.Cog):
             return await ctx.send(f"Nothing found :(")
 
 
-def getGfycatDirect(link):
+async def getGfycatDirect(link):
     try:
         gfycat_id = link.split("/")[-1].split("-")[0].split("?")[0]
         response = requests.get(f"https://api.gfycat.com/v1/gfycats/{gfycat_id}").json()
