@@ -3,8 +3,9 @@ import os
 import json
 import discord
 import random
+import asyncio
 from datetime import datetime
-from config import getLogger, getMongoClient
+from config import getLogger, getMongoClient, getYoutubeDLPlay, getYoutubeDLStream, ffmpeg_options
 from dateutil.relativedelta import relativedelta
 from discord.ext.commands import errors
 from bson.json_util import dumps
@@ -218,3 +219,42 @@ def getLoLChampsKeyList():
         for key in x:
             keys.append(key)
     return keys
+
+
+class YTDLSource(discord.PCMVolumeTransformer):
+    def __init__(self, source, *, filename, data, volume=0.5):
+        super().__init__(source, volume)
+
+        self.data = data
+        self.title = data.get("title")
+        self.url = data.get("url")
+        self.filename = filename
+
+    @classmethod
+    async def from_url_play(cls, url, *, loop=None):
+        loop = loop or asyncio.get_event_loop()
+        data = await loop.run_in_executor(None, lambda: getYoutubeDLPlay().extract_info(url, download=True))
+
+        if "entries" in data:
+            data = data["entries"][0]
+
+        filename = getYoutubeDLPlay().prepare_filename(data)
+        if os.path.exists(filename):
+            return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), filename=filename, data=data)
+        else:
+            return None
+
+    @classmethod
+    async def from_url_stream(cls, url, *, loop=None):
+        loop = loop or asyncio.get_event_loop()
+        data = await loop.run_in_executor(None, lambda: getYoutubeDLStream().extract_info(url, download=False))
+
+        if "entries" in data:
+            data = data["entries"][0]
+
+        filename = data["url"]
+        return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), filename=filename, data=data)
+
+    @classmethod
+    def cleanup_file(cls, filename):
+        os.remove(filename)

@@ -4,6 +4,7 @@ import verboselogs
 import json
 import discord
 import os
+import youtube_dl
 from praw import Reddit
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -16,6 +17,46 @@ BOT_LOG_CHANNEL_ID = 647218189218086937
 REDDIT_CLIENT_ID = "dYF3mlDC8WKNxw"
 REDDIT_CLIENT_SECRET = "_PYKXI1zCMrLWLQMOgSwkc90jb4"
 REDDIT_CLIENT = Reddit(client_id=REDDIT_CLIENT_ID, client_secret=REDDIT_CLIENT_SECRET, user_agent="PyBot")
+
+youtube_dl.utils.bug_reports_message = lambda: ''
+
+ytdlP_format_options = {
+    "format": "bestaudio/best",
+    "outtmpl": "%(extractor)s-%(id)s-%(title)s.%(ext)s",
+    "restrictfilenames": True,
+    "noplaylist": True,
+    "nocheckcertificate": True,
+    "ignoreerrors": False,
+    "logtostderr": False,
+    "quiet": True,
+    "no_warnings": True,
+    "default_search": "auto",
+    "source_address": "0.0.0.0",
+    "max_filesize": 100000000,  # 50 megabytes
+    "age_limit": 13
+}
+
+ytdlS_format_options = {
+    "format": "bestaudio/best",
+    "outtmpl": "%(extractor)s-%(id)s-%(title)s.%(ext)s",
+    "restrictfilenames": True,
+    "noplaylist": False,
+    "nocheckcertificate": True,
+    "ignoreerrors": False,
+    "logtostderr": False,
+    "quiet": True,
+    "no_warnings": True,
+    "default_search": "auto",
+    "source_address": "0.0.0.0",
+    "age_limit": 13
+}
+
+ffmpeg_options = {
+    'options': '-vn'
+}
+
+ytdlP = youtube_dl.YoutubeDL(ytdlP_format_options)
+ytdlS = youtube_dl.YoutubeDL(ytdlS_format_options)
 
 
 def getBotLogChannel(bot: discord.ext.commands.Bot):
@@ -64,3 +105,11 @@ def getMongoClient():
 
 def getRedditClient():
     return REDDIT_CLIENT
+
+
+def getYoutubeDLPlay():
+    return ytdlP
+
+
+def getYoutubeDLStream():
+    return ytdlS

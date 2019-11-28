@@ -91,7 +91,12 @@ class BotAdminCommandsCog(commands.Cog):
     @commands.command(name="stop", hidden=True, help="Stops the bot")
     @checks.isBotAdmin()
     async def stop(self, ctx):
-        await ctx.send("Shutting down...")
+        if len(self.bot.voice_clients) > 0:
+            await ctx.send(f"Shutting down {len(self.bot.voice_clients)} voice clients...")
+            for client in self.bot.voice_clients:
+                client.stop()
+                await client.disconnect()
+        await ctx.send("Good Bye :(")
         try:
             await self.bot.close()
         except Exception as e:
