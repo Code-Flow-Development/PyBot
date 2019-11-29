@@ -58,7 +58,7 @@ if __name__ == '__main__':
     loadAllExtensions(bot)
 
 # run flask in partial
-partial_run = partial(app.run, port=5001, debug=True, use_reloader=False)
+partial_run = partial(app.run, host=os.getenv("API_HOST"), port=os.getenv("API_PORT"), debug=False, use_reloader=False)
 
 # run flask in another thread (multithreading)
 APIServer(partial_run).start()
