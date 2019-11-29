@@ -33,7 +33,8 @@ async def on_ready():
 @app.route("/api/users")
 def api_users():
     if bot.is_ready():
-        users = [{"username": x.name, "id": x.id, "discriminator": x.discriminator, "avatar_url": str(x.avatar_url)} for x in
+        users = [{"username": x.name, "id": x.id, "discriminator": x.discriminator, "avatar_url": str(x.avatar_url)} for
+                 x in
                  bot.users if not x.bot]
         return jsonify(users)
     else:
@@ -48,6 +49,31 @@ def api_servers():
                     "category_amount": len(x.categories), "member_count": x.member_count, "role_amount": len(x.roles)}
                    for x in bot.guilds]
         return jsonify(servers)
+    else:
+        return "bot is not ready!", 500
+
+
+@app.route("/api/server/<int:server_id>")
+def api_get_server(server_id):
+    if bot.is_ready():
+        server = bot.get_guild(server_id)
+        return jsonify(
+            {"name": server.name, "id": server.id, "region": server.region.name, "icon_url": str(server.icon_url),
+             "voice_channel_amount": len(server.voice_channels), "text_channel_amount": len(server.text_channels),
+             "category_amount": len(server.categories), "member_count": server.member_count,
+             "role_amount": len(server.roles),
+             "text_channels": [{"name": y.name, "id": y.id} for y in server.text_channels],
+             "roles": [{"name": z.name, "id": z.id} for z in server.roles if z.name != "@everyone"]})
+    else:
+        return "bot is not ready!", 500
+
+
+@app.route("/api/user/<int:user_id>")
+def api_get_user(user_id):
+    if bot.is_ready():
+        user = bot.get_user(user_id)
+        return jsonify({"username": user.name, "id": user.id, "discriminator": user.discriminator,
+                        "avatar_url": str(user.avatar_url)})
     else:
         return "bot is not ready!", 500
 
