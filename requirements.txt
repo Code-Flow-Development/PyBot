@@ -1,3 +1,4 @@
+flask
 pynacl
 youtube_dl
 praw

@@ -5,6 +5,7 @@ import json
 import discord
 import os
 import youtube_dl
+from threading import Thread
 from praw import Reddit
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -98,9 +99,7 @@ def getLogger():
 
 
 def getMongoClient():
-    username = os.getenv('MONGODB_USERNAME')
-    password = os.getenv('MONGODB_PASSWORD')
-    return MongoClient(f"mongodb://{username}:{password}@185.230.160.118:27017")
+    return MongoClient(os.getenv("MONGO_URI"))
 
 
 def getRedditClient():
@@ -113,3 +112,19 @@ def getYoutubeDLPlay():
 
 def getYoutubeDLStream():
     return ytdlS
+
+
+class APIServer:
+    def __init__(self, partial):
+        self.FLASK_THREAD: Thread = Thread(target=partial)
+        self.FLASK_THREAD.daemon = True
+
+    def getThread(self):
+        return self.FLASK_THREAD
+
+    def start(self):
+        self.FLASK_THREAD.start()
+
+    def stop(self):
+        self.FLASK_THREAD.join()
+
