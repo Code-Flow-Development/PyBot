@@ -33,7 +33,7 @@ async def on_ready():
 @app.route("/api/users")
 def api_users():
     if bot.is_ready():
-        users = [{"username": x.name, "id": x.id, "discriminator": x.discriminator, "avatar": x.avatar} for x in
+        users = [{"username": x.name, "id": x.id, "discriminator": x.discriminator, "avatar": x.avatar_url} for x in
                  bot.users if not x.bot]
         return jsonify(users)
     else:
