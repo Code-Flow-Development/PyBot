@@ -63,17 +63,17 @@ class EpochUtils(float):
         return self.rdelta.years
 
 
-class UserProfiles(discord.Member):
-    def __init__(self, member):
+class UserProfiles(discord.User):
+    def __init__(self, user):
         mongoclient = getMongoClient()
         self.db = mongoclient["PyBot"]
         self.user_collection = self.db["users"]
-        self.member = member
+        self.user = user
 
-        user = self.user_collection.find_one({"id": member.id})
-        if not user:
+        user_document = self.user_collection.find_one({"id": user.id})
+        if not user_document:
             user_payload = {
-                "id": member.id,
+                "id": user.id,
                 "RPGData": {
                     "CreatedCharacter": False,
                     "Name": {
@@ -91,21 +91,22 @@ class UserProfiles(discord.Member):
                     "Inventory": [],
                 },
                 "MiscData": {
-                    "strikes": []
+                    "strikes": [],
+                    "is_banned": False
                 }
             }
             idd = self.user_collection.insert_one(user_payload).inserted_id
-            getLogger().debug(f"[MongoDB] Created user document for '{member.name}' ({member.id}), Document ID: {idd}")
+            getLogger().debug(f"[MongoDB] Created user document for '{user.name}' ({user.id}), Document ID: {idd}")
 
     def getUserProfile(self):
-        profile = self.user_collection.find_one({"id": self.member.id})
+        profile = self.user_collection.find_one({"id": self.user.id})
         return json.loads(dumps(profile))
 
     def update(self, key, value):
-        self.user_collection.update_one({"id": self.member.id}, {"$set": {key: value}})
+        self.user_collection.update_one({"id": self.user.id}, {"$set": {key: value}})
 
     def reset(self):
-        result = self.user_collection.delete_one({"id": self.member.id})
+        result = self.user_collection.delete_one({"id": self.user.id})
         return result
 
 

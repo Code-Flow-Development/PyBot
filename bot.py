@@ -1,13 +1,12 @@
 import discord
 import os
 import time
-import json
 from flask import Flask, jsonify
 from functools import partial
 from discord.ext import commands
 from dotenv import load_dotenv
 from config import getLogger, PREFIX, APIServer
-from utils import ServerSettings, loadAllCogs, loadAllExtensions
+from utils import ServerSettings, loadAllCogs, loadAllExtensions, UserProfiles
 
 # create flask app
 app = Flask(__name__)
@@ -29,11 +28,15 @@ async def on_ready():
     for guild in bot.guilds:
         ServerSettings(guild)
 
+    for user in bot.users:
+        UserProfiles(user)
 
-@app.route("/api/users")
+
+@app.route("/api/v1/users")
 def api_users():
     if bot.is_ready():
-        users = [{"username": x.name, "id": x.id, "discriminator": x.discriminator, "avatar_url": str(x.avatar_url)} for
+        users = [{"username": x.name, "id": x.id, "discriminator": x.discriminator, "avatar_url": str(x.avatar_url),
+                  "is_banned": UserProfiles(x).getUserProfile()["MiscData"]["is_banned"]} for
                  x in
                  bot.users if not x.bot]
         return jsonify(users)
@@ -41,7 +44,7 @@ def api_users():
         return "bot is not ready!", 500
 
 
-@app.route("/api/servers")
+@app.route("/api/v1/servers")
 def api_servers():
     if bot.is_ready():
         servers = [{"name": x.name, "id": x.id, "region": x.region.name, "icon_url": str(x.icon_url),
@@ -53,7 +56,7 @@ def api_servers():
         return "bot is not ready!", 500
 
 
-@app.route("/api/server/<int:server_id>")
+@app.route("/api/v1/server/<int:server_id>")
 def api_get_server(server_id):
     if bot.is_ready():
         server = bot.get_guild(server_id)
@@ -71,13 +74,13 @@ def api_get_server(server_id):
         return "bot is not ready!", 500
 
 
-@app.route("/api/user/<int:user_id>")
+@app.route("/api/v1/user/<int:user_id>")
 def api_get_user(user_id):
     if bot.is_ready():
         user = bot.get_user(user_id)
         if user is not None:
             return jsonify({"username": user.name, "id": user.id, "discriminator": user.discriminator,
-                            "avatar_url": str(user.avatar_url)})
+                            "avatar_url": str(user.avatar_url), "is_banned": UserProfiles(user).getUserProfile()["MiscData"]["is_banned"]})
         else:
             return "", 400
     else:
