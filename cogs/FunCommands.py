@@ -284,14 +284,14 @@ class FunCommandsCog(commands.Cog):
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         await ctx.send(content=None, embed=embed)
 
-    @commands.command(name="spam", help="Spams a user with 5 mentions", usage="<@user>")
+    @commands.command(name="spam", help="Spams a user with 5 mentions", usage="<@user>", hidden=True, enabled=False)
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
     async def spam(self, ctx, member: discord.Member):
         for x in range(0, 5):
             await ctx.send(f"Hello {member.mention}, how are you doing?")
 
-    @commands.command(name="spamrole", help="Spams a role with 5 mentions", usage="<@role>")
+    @commands.command(name="spamrole", help="Spams a role with 5 mentions", usage="<@role>", hidden=True, enabled=False)
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
     async def spamrole(self, ctx, role: discord.Role):
