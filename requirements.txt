@@ -1,3 +1,4 @@
+redis
 flask
 pynacl
 youtube_dl
