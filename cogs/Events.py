@@ -62,45 +62,7 @@ class EventsCog(commands.Cog):
     @commands.Cog.listener()
     async def on_command(self, ctx):
         getLogger().info(
-            f"[Commands] {ctx.author.name}#{ctx.author.discriminator} ({ctx.author.id}) ran command {ctx.command.name}")
-
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        if message.author.bot:
-            return
-
-        UserProfiles(message.author)
-        server_settings = ServerSettings(message.guild)
-        server_document = server_settings.getServerDocument()
-        message_responses_enabled = server_document["message_responses_enabled"]
-        counting_channel_enabled = server_document["counting_channels_enabled"]
-
-        if counting_channel_enabled:
-            if message.channel.type == discord.ChannelType.text and message.channel.name.lower().startswith("count-to-"):
-                try:
-                    # try to convert the string to a number
-                    number = int(message.content)
-                    next_number = int(message.channel.name.split("-")[-1])
-                    if number == next_number and next_number >= 0:
-                        # user gave the correct next number
-                        await message.channel.edit(name=f"count-to-{number + 1}")
-                    elif int(next_number - 2) == number and next_number >= 0:
-                        await message.channel.edit(name=f"count-to-{next_number - 1}")
-                    else:
-                        # not the next number so delete the message
-                        await message.delete()
-                except ValueError:
-                    # not a valid number so delete the message
-                    await message.delete()
-
-        if message_responses_enabled:
-            custom_message_responses = server_document["custom_message_responses"]
-            for custom_response in custom_message_responses:
-                trigger = custom_response["trigger"]
-                response = custom_response["response"]
-                if trigger in message.content.lower():
-                    await message.channel.send(response)
-                    return
+            f"[Commands] {ctx.author} ({ctx.author.id}) ran command {ctx.command.name}")
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):

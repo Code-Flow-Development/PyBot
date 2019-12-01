@@ -2,6 +2,7 @@ import discord
 from datetime import datetime
 from utils import utc_to_epoch, ServerSettings
 from discord.ext import commands
+from utils import UserProfiles
 
 
 class GuildEventsCog(commands.Cog):
@@ -10,6 +11,7 @@ class GuildEventsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
+        UserProfiles(member)
         server_settings = ServerSettings(member.guild).getServerDocument()
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings["log_channel"] else None
         enabled = server_settings["events"]["guild_member_join"]

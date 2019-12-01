@@ -1,5 +1,6 @@
 from discord.ext import commands
-from config import getBotAdmins
+from config import getBotAdmins, getLogger
+from utils import UserProfiles
 
 
 def isBotAdminCheck(ctx):

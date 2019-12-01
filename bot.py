@@ -44,6 +44,7 @@ TOKEN_URL = "https://discordapp.com/api/oauth2/token"
 # Create a new 'bot' with prefix
 bot = commands.Bot(command_prefix=PREFIX, description="PyBot")
 bot.remove_command('help')
+bot.remove_listener(func=bot.on_message)
 
 
 def worker():
@@ -74,6 +75,50 @@ async def on_ready():
     # Create server documents for each server
     thread = Thread(target=worker, daemon=True)
     thread.start()
+
+
+@bot.event
+async def on_message(message):
+    if message.author.bot:
+        return
+
+    user_profile = UserProfiles(message.author).getUserProfile()
+    if message.content.startswith(PREFIX):
+        if not user_profile["MiscData"]["is_banned"]:
+            await bot.process_commands(message)
+    else:
+        server_settings = ServerSettings(message.guild)
+        server_document = server_settings.getServerDocument()
+        message_responses_enabled = server_document["message_responses_enabled"]
+        counting_channel_enabled = server_document["counting_channels_enabled"]
+
+        if counting_channel_enabled:
+            if message.channel.type == discord.ChannelType.text and message.channel.name.lower().startswith(
+                    "count-to-"):
+                try:
+                    # try to convert the string to a number
+                    number = int(message.content)
+                    next_number = int(message.channel.name.split("-")[-1])
+                    if number == next_number and next_number >= 0:
+                        # user gave the correct next number
+                        await message.channel.edit(name=f"count-to-{number + 1}")
+                    elif int(next_number - 2) == number and next_number >= 0:
+                        await message.channel.edit(name=f"count-to-{next_number - 1}")
+                    else:
+                        # not the next number so delete the message
+                        await message.delete()
+                except ValueError:
+                    # not a valid number so delete the message
+                    await message.delete()
+
+        if message_responses_enabled:
+            custom_message_responses = server_document["custom_message_responses"]
+            for custom_response in custom_message_responses:
+                trigger = custom_response["trigger"]
+                response = custom_response["response"]
+                if trigger in message.content.lower():
+                    await message.channel.send(response)
+                    return
 
 
 @app.route("/api/v1/users")
