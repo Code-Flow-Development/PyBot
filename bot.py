@@ -9,8 +9,9 @@ from requests_oauthlib import OAuth2Session
 from flask import Flask, jsonify, session, request
 from functools import partial
 from discord.ext import commands
+from bson.json_util import dumps
 from dotenv import load_dotenv
-from config import getLogger, PREFIX, APIServer
+from config import getLogger, PREFIX, APIServer, getMongoClient
 from utils import ServerSettings, loadAllCogs, loadAllExtensions, UserProfiles
 
 # create flask app
@@ -47,12 +48,7 @@ bot.remove_command('help')
 
 def worker():
     for guild in bot.guilds:
-        getLogger().debug(f"Guild: {guild.name}")
         ServerSettings(guild)
-
-    for user in bot.users:
-        getLogger().debug(f"User: {user.name}")
-        UserProfiles(user)
 
 
 # Ready event
@@ -88,11 +84,14 @@ def api_users():
             token = json.loads(token)
             discord_session = make_session(token=token)
             if discord_session.authorized:
-                users = [
-                    {"username": x.name, "id": x.id, "discriminator": x.discriminator, "avatar_url": str(x.avatar_url),
-                     "is_banned": UserProfiles(x).getUserProfile()["MiscData"]["is_banned"]} for
-                    x in
-                    bot.users if not x.bot]
+                user_collection = getMongoClient()["PyBot"]["users"]
+                users = []
+                for user in user_collection.find():
+                    user_json = json.loads(dumps(user))
+                    x = bot.get_user(user_json["id"])
+                    users.append({"username": x.name, "id": x.id, "discriminator": x.discriminator,
+                                  "avatar_url": str(x.avatar_url),
+                                  "is_banned": UserProfiles(x).getUserProfile()["MiscData"]["is_banned"]})
                 return jsonify(users)
             else:
                 return "", 401

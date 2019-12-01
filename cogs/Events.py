@@ -4,7 +4,7 @@ import discord
 from datetime import datetime
 from discord.ext import commands
 from config import getLogger, getBotLogChannel
-from utils import ServerSettings
+from utils import ServerSettings, UserProfiles
 
 
 class EventsCog(commands.Cog):
@@ -69,6 +69,7 @@ class EventsCog(commands.Cog):
         if message.author.bot:
             return
 
+        UserProfiles(message.author)
         server_settings = ServerSettings(message.guild)
         server_document = server_settings.getServerDocument()
         message_responses_enabled = server_document["message_responses_enabled"]
