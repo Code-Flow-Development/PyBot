@@ -3,6 +3,7 @@ import os
 import time
 import redis
 import json
+from threading import Thread
 from flask_session import Session
 from requests_oauthlib import OAuth2Session
 from flask import Flask, jsonify, session, request
@@ -44,6 +45,16 @@ bot = commands.Bot(command_prefix=PREFIX, description="PyBot")
 bot.remove_command('help')
 
 
+def worker():
+    for guild in bot.guilds:
+        getLogger().debug(f"Guild: {guild.name}")
+        ServerSettings(guild)
+
+    for user in bot.users:
+        getLogger().debug(f"User: {user.name}")
+        UserProfiles(user)
+
+
 # Ready event
 @bot.event
 async def on_ready():
@@ -53,13 +64,20 @@ async def on_ready():
     await bot.change_presence(activity=discord.Activity(name="hentai! 😳", type=discord.ActivityType.watching),
                               status=discord.Status.dnd)
 
-    # Create server documents for each server
-    for guild in bot.guilds:
-        ServerSettings(guild)
+    # Load cogs
+    loadAllCogs(bot)
 
-    for user in bot.users:
-        # we need to ensure all users have profiles (mainly for the dashboard to operate correctly), but using the UserProfile function is way to slow for large guilds and it would block the bot util loading finished
-        pass
+    # load extensions
+    loadAllExtensions(bot)
+
+    # Start the flask api
+    partial_run = partial(app.run, host=os.getenv("API_HOST"), port=os.getenv("API_PORT"), debug=True,
+                          use_reloader=False)
+    APIServer(partial_run).start()
+
+    # Create server documents for each server
+    thread = Thread(target=worker, daemon=True)
+    thread.start()
 
 
 @app.route("/api/v1/users")
@@ -176,17 +194,6 @@ def make_session(token=None, state=None, scope=None):
         auto_refresh_url=TOKEN_URL,
         token_updater=token_updater)
 
-
-# Loads cogs from cogs folder, no need to touch this when adding new cogs, it loads them automagically!
-if __name__ == '__main__':
-    loadAllCogs(bot)
-    loadAllExtensions(bot)
-
-# run flask in partial
-partial_run = partial(app.run, host=os.getenv("API_HOST"), port=os.getenv("API_PORT"), debug=True, use_reloader=False)
-
-# run flask in another thread (multithreading)
-APIServer(partial_run).start()
 
 # load the .env file with token
 load_dotenv()

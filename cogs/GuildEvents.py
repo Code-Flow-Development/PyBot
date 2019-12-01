@@ -92,13 +92,13 @@ class GuildEventsCog(commands.Cog):
             embed.set_footer(text=member.name, icon_url=member.avatar_url)
             await log_channel.send(content=None, embed=embed)
 
-    @commands.Cog.listener()
-    async def on_member_update(self, before: discord.Member, after: discord.Member):
-        server_settings = ServerSettings(before.guild).getServerDocument()
-        log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings["log_channel"] else None
-        enabled = server_settings["events"]["guild_member_update"]
-        if log_channel and enabled:
-            pass
+    # @commands.Cog.listener()
+    # async def on_member_update(self, before: discord.Member, after: discord.Member):
+    #     server_settings = ServerSettings(before.guild).getServerDocument()
+    #     log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings["log_channel"] else None
+    #     enabled = server_settings["events"]["guild_member_update"]
+    #     if log_channel and enabled:
+    #         pass
 
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
@@ -199,15 +199,15 @@ class GuildEventsCog(commands.Cog):
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             await log_channel.send(f"Role updated: {before.name}")
 
-    @commands.Cog.listener()
-    async def on_guild_emojis_update(self, guild: discord.Guild, before: discord.Emoji, after: discord.Emoji):
-        # TODO: Make this an embed and correctly log this change
-        log_channel = ServerSettings(guild).getLogChannel(self.bot)
-        if log_channel:
-            embed = discord.Embed(title=f"Emoji Updated", description=None, color=discord.Color.green(),
-                                  timestamp=datetime.utcnow())
-            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-            await log_channel.send(f"Emoji Updated: {before.name}")
+    # @commands.Cog.listener()
+    # async def on_guild_emojis_update(self, guild: discord.Guild, before: discord.Emoji, after: discord.Emoji):
+    #     # TODO: Make this an embed and correctly log this change
+    #     log_channel = ServerSettings(guild).getLogChannel(self.bot)
+    #     if log_channel:
+    #         embed = discord.Embed(title=f"Emoji Updated", description=None, color=discord.Color.green(),
+    #                               timestamp=datetime.utcnow())
+    #         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+    #         await log_channel.send(f"Emoji Updated: {before.name}")
 
 
 def setup(bot):

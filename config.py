@@ -116,8 +116,7 @@ def getYoutubeDLStream():
 
 class APIServer:
     def __init__(self, partial):
-        self.FLASK_THREAD: Thread = Thread(target=partial)
-        self.FLASK_THREAD.daemon = True
+        self.FLASK_THREAD: Thread = Thread(target=partial, daemon=True)
 
     def getThread(self):
         return self.FLASK_THREAD
