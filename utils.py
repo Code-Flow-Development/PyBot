@@ -95,7 +95,7 @@ class UserProfiles(discord.User):
                     "is_banned": False
                 }
             }
-            idd = self.user_collection.insert_one(user_payload).inserted_id
+            self.user_collection.insert_one(user_payload).inserted_id
             getLogger().debug(f"[MongoDB] Created user document for '{user.name}' ({user.id})")
 
     def getUserProfile(self):
@@ -126,8 +126,6 @@ class ServerSettings(discord.Guild):
                 "settings": {
                     "is_banned": False,
                     "log_channel": None,
-                    "message_responses_enabled": False,
-                    "counting_channels_enabled": False,
                     "events": {
                         "guild_member_join": True,
                         "guild_member_leave": True,
@@ -146,6 +144,14 @@ class ServerSettings(discord.Guild):
                         "guild_emojis_update": True,
                         "user_update": True
                     },
+                    "modules": {
+                        "message_responses": False,
+                        "counting_channels": False,
+                        "music": False,
+                        "lol": False,
+                        "nsfw_commands": False
+
+                    },
                     "custom_message_responses": [
                         {
                             "trigger": "xd",
@@ -158,7 +164,7 @@ class ServerSettings(discord.Guild):
                     ]
                 }
             }
-            idd = self.server_collection.insert_one(guild_payload).inserted_id
+            self.server_collection.insert_one(guild_payload).inserted_id
             getLogger().debug(f"[MongoDB] Created server document for '{guild.name}' ({guild.id})")
         self.server_settings = self.getServerDocument()
 

@@ -46,14 +46,14 @@ class EventsCog(commands.Cog):
         elif isinstance(error, commands.MissingRequiredArgument):
             return await ctx.send(f"Missing arguments! Usage: {ctx.command.usage}")
 
-        elif isinstance(error, commands.CheckFailure):
-            return await ctx.send("You don't have permission to use that command!")
-
         elif isinstance(error, commands.TooManyArguments):
             return await ctx.send(f"Too many arguments! Usage: {ctx.command.usage}")
 
         elif isinstance(error, commands.NSFWChannelRequired):
-            return await ctx.send(f"That command is NSFW and required an NSFW channel!")
+            return await ctx.send(f"That command is NSFW and requires an NSFW channel!")
+
+        elif isinstance(error, commands.CheckFailure):
+            return await ctx.send("You don't have permission to use that command!")
 
         # All other Errors not returned come here... And we can just print the default TraceBack.
         print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)

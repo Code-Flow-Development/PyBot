@@ -8,7 +8,6 @@ from threading import Thread
 from flask_session import Session
 from requests_oauthlib import OAuth2Session
 from flask import Flask, jsonify, session, request
-# from quart import Quart, jsonify, session, request  #
 from functools import partial
 from discord.ext import commands
 from bson.json_util import dumps
@@ -92,8 +91,8 @@ async def on_message(message):
         if not server_settings["is_banned"] and not user_profile["MiscData"]["is_banned"]:
             await bot.process_commands(message)
     else:
-        message_responses_enabled = server_settings["message_responses_enabled"]
-        counting_channel_enabled = server_settings["counting_channels_enabled"]
+        message_responses_enabled = server_settings["modules"]["message_responses"]
+        counting_channel_enabled = server_settings["modules"]["counting_channels"]
 
         if counting_channel_enabled:
             if message.channel.type == discord.ChannelType.text and message.channel.name.lower().startswith(
@@ -327,6 +326,28 @@ def api_get_server(server_id):
                          "role_amount": len(server.roles),
                          "text_channels": [{"name": y.name, "id": y.id} for y in server.text_channels],
                          "roles": [{"name": z.name, "id": z.id} for z in server.roles if z.name != "@everyone"]})
+                else:
+                    return "", 400
+            else:
+                return "", 401
+        else:
+            return "", 403
+    else:
+        return "bot is not ready!", 500
+
+
+@app.route("/api/v1/server/<int:server_id>/modules")
+def api_get_server_modules(server_id):
+    if bot.is_ready():
+        token = request.headers.get("Token")
+        if token is not None:
+            token = json.loads(token)
+            discord_session = make_session(token=token)
+            if discord_session.authorized:
+                server = bot.get_guild(server_id)
+                server_document = ServerSettings(server).getServerDocument()
+                if server is not None:
+                    return jsonify(server_document["modules"])
                 else:
                     return "", 400
             else:
