@@ -32,11 +32,11 @@ class GuildEventsCog(commands.Cog):
     async def on_member_remove(self, member):
         if member == self.bot.user:
             return
+        UserProfiles(member).reset()
         banned_users = await member.guild.bans()
         is_banned = [x for x in banned_users if x.user.id == member.id]
         if is_banned:
             return
-        UserProfiles(member).reset()
 
         server_settings = ServerSettings(member.guild).getServerDocument()
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
