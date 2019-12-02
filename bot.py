@@ -3,17 +3,20 @@ import os
 import time
 import redis
 import json
+import asyncio
 from threading import Thread
 from flask_session import Session
 from requests_oauthlib import OAuth2Session
 # from flask import Flask, jsonify, session, request
-from quart import Quart, jsonify, session, request#
+from quart import Quart, jsonify, session, request  #
 from functools import partial
 from discord.ext import commands
 from bson.json_util import dumps
 from dotenv import load_dotenv
 from config import getLogger, PREFIX, APIServer, getMongoClient
 from utils import ServerSettings, loadAllCogs, loadAllExtensions, UserProfiles
+
+loop = asyncio.get_event_loop()
 
 # create flask app
 app = Quart(__name__)
@@ -54,12 +57,7 @@ def worker():
 
 
 async def leave_guild(guild):
-    try:
-        await guild.leave()
-        return True
-    except Exception as e:
-        getLogger().critical(f"Failed to leave guild: {guild.name}; Error: {e}")
-        return False
+    await guild.leave()
 
 
 # Ready event
@@ -93,14 +91,13 @@ async def on_message(message):
         return
 
     user_profile = UserProfiles(message.author).getUserProfile()
+    server_settings = ServerSettings(message.guild).getServerDocument()
     if message.content.startswith(PREFIX):
-        if not user_profile["MiscData"]["is_banned"]:
+        if not server_settings["is_banned"] or user_profile["MiscData"]["is_banned"]:
             await bot.process_commands(message)
     else:
-        server_settings = ServerSettings(message.guild)
-        server_document = server_settings.getServerDocument()
-        message_responses_enabled = server_document["message_responses_enabled"]
-        counting_channel_enabled = server_document["counting_channels_enabled"]
+        message_responses_enabled = server_settings["message_responses_enabled"]
+        counting_channel_enabled = server_settings["counting_channels_enabled"]
 
         if counting_channel_enabled:
             if message.channel.type == discord.ChannelType.text and message.channel.name.lower().startswith(
@@ -122,7 +119,7 @@ async def on_message(message):
                     await message.delete()
 
         if message_responses_enabled:
-            custom_message_responses = server_document["custom_message_responses"]
+            custom_message_responses = server_settings["custom_message_responses"]
             for custom_response in custom_message_responses:
                 trigger = custom_response["trigger"]
                 response = custom_response["response"]
@@ -146,7 +143,7 @@ def api_users():
                     x = bot.get_user(user_json["id"])
                     users.append({"username": x.name, "id": x.id, "discriminator": x.discriminator,
                                   "avatar_url": str(x.avatar_url),
-                                  "is_banned": UserProfiles(x).getUserProfile()["MiscData"]["is_banned"]})
+                                  "is_banned": user_json["MiscData"]["is_banned"]})
                 return jsonify(users)
             else:
                 return "", 401
@@ -164,11 +161,17 @@ def api_servers():
             token = json.loads(token)
             discord_session = make_session(token=token)
             if discord_session.authorized:
-                servers = [{"name": x.name, "id": x.id, "region": x.region.name, "icon_url": str(x.icon_url),
-                            "voice_channel_amount": len(x.voice_channels), "text_channel_amount": len(x.text_channels),
-                            "category_amount": len(x.categories), "member_count": x.member_count,
-                            "role_amount": len(x.roles)}
-                           for x in bot.guilds]
+                server_collection = getMongoClient()["PyBot"]["servers"]
+                servers = []
+                for server in server_collection.find():
+                    server_json = json.loads(dumps(server))
+                    x = bot.get_guild(server_json["id"])
+                    servers.append({"name": x.name, "id": x.id, "region": x.region.name, "icon_url": str(x.icon_url),
+                                    "voice_channel_amount": len(x.voice_channels),
+                                    "text_channel_amount": len(x.text_channels),
+                                    "category_amount": len(x.categories), "member_count": x.member_count,
+                                    "role_amount": len(x.roles),
+                                    "is_banned": server_json["settings"]["is_banned"]})
                 return jsonify(servers)
             else:
                 return "", 401
@@ -192,8 +195,17 @@ async def admin_leave_server():
                     server_id = int(req_json["server_id"])
                     guild = bot.get_guild(server_id)
                     if guild is not None:
-                        await leave_guild(guild)
-                        return "OK", 200
+                        try:
+                            leave_fut = asyncio.run_coroutine_threadsafe(
+                                guild.leave(),
+                                loop
+                            )
+                            leave_fut.result()
+                            ServerSettings(guild).reset()
+                            return "Guild left", 200
+                        except Exception as e:
+                            getLogger().critical(f"Failed to leave guild: {guild.name}; Error: {e}")
+                            return "Error leaving guild", 500
                     else:
                         return "Guild is none", 400
                 else:

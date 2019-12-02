@@ -1,731 +1,1169 @@
 [
   {
     "Aatrox": {
+      "display_name": "Aatrox",
+      "title": ", The Darkin Blade",
+      "lore_snippet": "Once honored defenders of Shurima against the Void, Aatrox and his brethren would eventually become an even greater threat to Runeterra, and were defeated only by cunning mortal sorcery. But after centuries of imprisonment, Aatrox was the first to find freedom once more, corrupting and transforming those foolish enough to try and wield the magical weapon that contained his essence. Now, with stolen flesh, he walks Runeterra in a brutal approximation of his previous form, seeking an apocalyptic and long overdue vengeance.",
       "type": ""
     }
   },
   {
     "Ahri": {
+      "display_name": "Ahri",
+      "title": ", The Nine-Tailed Fox",
+      "lore_snippet": "Innately connected to the latent power of Runeterra, Ahri is a vastaya who can reshape magic into orbs of raw energy. She revels in toying with her prey by manipulating their emotions before devouring their life essence. Despite her predatory nature, Ahri retains a sense of empathy as she receives flashes of memory from each soul she consumes.",
       "type": ""
     }
   },
   {
     "Akali": {
+      "display_name": "Akali",
+      "title": ", The Rogue Assasin",
+      "lore_snippet": "Abandoning the Kinkou Order and her title of the Fist of Shadow, Akali now strikes alone, ready to be the deadly weapon her people need. Though she holds onto all she learned from her master Shen, she has pledged to defend Ionia from its enemies, one kill at a time. Akali may strike in silence, but her message will be heard loud and clear: fear the assassin with no master.",
       "type": ""
     }
   },
   {
     "Alistar": {
+      "display_name": "Alistar",
+      "title": ", The Minotaur",
+      "lore_snippet": "Always a mighty warrior with a fearsome reputation, Alistar seeks revenge for the death of his clan at the hands of the Noxian empire. Though he was enslaved and forced into the life of a gladiator, his unbreakable will was what kept him from truly becoming a beast. Now, free of the chains of his former masters, he fights in the name of the downtrodden and the disadvantaged, his rage as much a weapon as his horns, hooves and fists.\n",
       "type": ""
     }
   },
   {
     "Amumu": {
+      "display_name": "Amumu",
+      "title": ", The Sad Mummy",
+      "lore_snippet": "Legend claims that Amumu is a lonely and melancholy soul from ancient Shurima, roaming the world in search of a friend. Doomed by an ancient curse to remain alone forever, his touch is death, his affection ruin. Those who claim to have seen him describe a living cadaver, small in stature and wrapped in creeping bandages. Amumu has inspired myths, songs, and folklore told and retold for generations—such that it is impossible to separate truth from fiction.\n",
       "type": ""
     }
   },
   {
     "Anivia": {
+      "display_name": "Anivia",
+      "title": ", The Cryophoenix",
+      "lore_snippet": "Anivia is a benevolent winged spirit who endures endless cycles of life, death, and rebirth to protect the Freljord. A demigod born of unforgiving ice and bitter winds, she wields those elemental powers to thwart any who dare disturb her homeland. Anivia guides and protects the tribes of the harsh north, who revere her as a symbol of hope, and a portent of great change. She fights with every ounce of her being, knowing that through her sacrifice, her memory will endure, and she will be reborn into a new tomorrow.\n",
       "type": ""
     }
   },
   {
     "Annie": {
+      "display_name": "Annie",
+      "title": ", The Dark Child",
+      "lore_snippet": "Dangerous, yet disarmingly precocious, Annie is a child mage with immense pyromantic power. Even in the shadows of the mountains north of Noxus, she is a magical outlier. Her natural affinity for fire manifested early in life through unpredictable, emotional outbursts, though she eventually learned to control these “playful tricks.” Her favorite includes the summoning of her beloved teddy bear, Tibbers, as a fiery protector. Lost in the perpetual innocence of childhood, Annie wanders the dark forests, always looking for someone to play with.\n\n",
       "type": ""
     }
   },
   {
     "Ashe": {
+      "display_name": "Ashe",
+      "title": ", The Frost Archer",
+      "lore_snippet": "Iceborn warmother of the Avarosan tribe, Ashe commands the most populous horde in the north. Stoic, intelligent, and idealistic, yet uncomfortable with her role as leader, she taps into the ancestral magics of her lineage to wield a bow of True Ice. With her people’s belief that she is the mythological hero Avarosa reincarnated, Ashe hopes to unify the Freljord once more by retaking their ancient, tribal lands.\n",
       "type": ""
     }
   },
   {
     "Aurelion Sol": {
+      "display_name": "Aurelion Sol",
+      "title": ", The Star Forger",
+      "lore_snippet": "Aurelion Sol once graced the vast emptiness of the cosmos with celestial wonders of his own devising. Now, he is forced to wield his awesome power at the behest of a space-faring empire that tricked him into servitude. Desiring a return to his star-forging ways, Aurelion Sol will drag the very stars from the sky, if he must, in order to regain his freedom.\n",
       "type": ""
     }
   },
   {
     "Azir": {
+      "display_name": "Azir",
+      "title": ", The Emperor of the Sands",
+      "lore_snippet": "Azir was a mortal emperor of Shurima in a far distant age, a proud man who stood at the cusp of immortality. His hubris saw him betrayed and murdered at the moment of his greatest triumph, but now, millennia later, he has been reborn as an Ascended being of immense power. With his buried city risen from the sand, Azir seeks to restore Shurima to its former glory.\n",
       "type": ""
     }
   },
   {
     "Bard": {
+      "display_name": "Bard",
+      "title": ", The Wandering Caretaker",
+      "lore_snippet": "Atraveler from beyond the stars, Bard is an agent of serendipity who fights to maintain a balance where life can endure the indifference of chaos. Many Runeterrans sing songs that ponder his extraordinary nature, yet they all agree that the cosmic vagabond is drawn to artifacts of great magical power. Surrounded by a jubilant choir of helpful spirit meeps, it is impossible to mistake his actions as malevolent, as Bard always serves the greater good... in his own odd way.\n",
       "type": ""
     }
   },
   {
     "Blitzcrank": {
+      "display_name": "Blitzcrank",
+      "title": ", The Great Steam Golem",
+      "lore_snippet": "Abehemoth of burnished metal, steam, and crackling electricity, Blitzcrank walks the streets of Zaun in a tireless effort to improve the undercity and give aid to those in need. Created to descend into the most caustic and dangerous of environments in Zaun to dispose of harmful waste, they have evolved beyond the bounds of their original programming, thanks to the genius of their inventor, and the mysterious power of hextech.\n",
       "type": ""
     }
   },
   {
     "Brand": {
+      "display_name": "Brand",
+      "title": "The Burning Vengeance",
+      "lore_snippet": "Once a tribesman of the icy Freljord named Kegan Rodhe, the creature known as Brand is a lesson in the temptation of greater power. Seeking one of the legendary World Runes, Kegan betrayed his companions and seized it for himself—and, in an instant, the man was no more. His soul burned away, his body a vessel of living flame, Brand now roams Valoran in search of other Runes, swearing revenge for wrongs he could not have suffered in a dozen mortal lifetimes.\n\n",
       "type": ""
     }
   },
   {
     "Braum": {
+      "display_name": "Braum",
+      "title": "The Heart of the Freljord",
+      "lore_snippet": "Blessed with massive biceps and an even bigger heart, Braum is a beloved hero of the Freljord. Every mead hall north of Frostheld toasts his legendary strength, said to have felled a forest of oaks in a single night, and punched an entire mountain into rubble. Bearing an enchanted vault door as his shield, Braum roams the frozen north sporting a mustachioed smile as big as his muscles—a true friend to all those in need.\n",
       "type": ""
     }
   },
   {
     "Caitlyn": {
+      "display_name": "Caitlyn",
+      "title": ", The Sheriff of Piltover",
+      "lore_snippet": "Renowned as its finest peacekeeper, Caitlyn is also Piltover’s best shot at ridding the city of its elusive criminal elements. She is often paired with Vi, acting as a cool counterpoint to her partner’s more impetuous nature. Even though she carries a one-of-a-kind hextech rifle, Caitlyn’s most powerful weapon is her superior intellect, allowing her to lay elaborate traps for any lawbreakers foolish enough to operate in the City of Progress.\n",
       "type": ""
     }
   },
   {
     "Camille": {
+      "display_name": "Camille",
+      "title": ", The Steel Shadow",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Cassiopeia": {
+      "display_name": "Cassiopeia",
+      "title": ", The Serpent's Embrace",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Cho'Gath": {
+      "display_name": "Cho'Gath",
+      "title": ", The Terror of the Void",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Corki": {
+      "display_name": "Corki",
+      "title": ", The Daring Bombardier",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Darius": {
+      "display_name": "Darius",
+      "title": "The Hand of Noxus",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Diana": {
+      "display_name": "Diana",
+      "title": ", Scorn of the Moon",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Dr. Mundo": {
+      "display_name": "Dr. Mundo",
+      "title": ", The Madman of Zaun",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Draven": {
+      "display_name": "Draven",
+      "title": ", The Glorious Executioner",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Ekko": {
+      "display_name": "Ekko",
+      "title": ", The Glorious Executioner",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Elise": {
+      "display_name": "Elise",
+      "title": ", The Spider Queen",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Evelynn": {
+      "display_name": "Evelynn",
+      "title": ", Agony's Embrace",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Ezreal": {
+      "display_name": "Ezreal",
+      "title": ", The Prodigal Explorer",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Fiddlesticks": {
+      "display_name": "Fiddlesticks",
+      "title": ", The Harbinger of Doom",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Fiora": {
+      "display_name": "Fiora",
+      "title": ", The Grand Duelist",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Fizz": {
+      "display_name": "Fizz",
+      "title": ", The Tidal Trickster",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Galio": {
+      "display_name": "Galio",
+      "title": ", The Colossus",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Gangplank": {
+      "display_name": "Gangplank",
+      "title": ", The Saltwater Scourge",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Garen": {
+      "display_name": "Garen",
+      "title": "The Might of Demacia",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Gnar": {
+      "display_name": "Gnar",
+      "title": ", The Missing Link",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Gragas": {
+      "display_name": "Gragas",
+      "title": ", The Rabble Rouser",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Graves": {
+      "display_name": "Graves",
+      "title": ", The Outlaw",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Hecarim": {
+      "display_name": "Hecarim",
+      "title": ", The Shadow of War",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Heimerdinger": {
+      "display_name": "Heimerdinger",
+      "title": ", The Revered Inventor",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Illaoi": {
+      "display_name": "Illaoi",
+      "title": ", The Kraken Priestess",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Irelia": {
+      "display_name": "Irelia",
+      "title": ", The Blade Dancer",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Ivern": {
+      "display_name": "Ivern",
+      "title": ", The Green Father",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Janna": {
+      "display_name": "Janna",
+      "title": ", The Storm's Fury",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Jarvan IV": {
+      "display_name": "Jarvan IV",
+      "title": ", The Exemplar of Demacia",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Jax": {
+      "display_name": "Jax",
+      "title": ", Grandmaster at Arms",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Jayce": {
+      "display_name": "Jayce",
+      "title": ", The Defender of Tomorrow",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Jhin": {
+      "display_name": "Jhin",
+      "title": ", The Virtuoso",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Jinx": {
+      "display_name": "Jinx",
+      "title": ", The Loose Cannon",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Kai'Sa": {
+      "display_name": "Kai'Sa",
+      "title": ", Daughter of the Void",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Kalista": {
+      "display_name": "Kalista",
+      "title": ", The Spear of Vengeance",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Karma": {
+      "display_name": "Karma",
+      "title": ", The Enlightened One",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Karthus": {
+      "display_name": "Karthus",
+      "title": ", The Deathsinger",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Kassadin": {
+      "display_name": "Kassadin",
+      "title": ", The Void Walker",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Katarina": {
+      "display_name": "Katarina",
+      "title": ", The Sinister Blade",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Kayle": {
+      "display_name": "Kayle",
+      "title": ", The Righteous",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Kayn": {
+      "display_name": "Kayn",
+      "title": ", The Shadow Reaper",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Kennen": {
+      "display_name": "Kennen",
+      "title": ", The Heart of the Tempest",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Kha'Zix": {
+      "display_name": "Kha'Zix",
+      "title": "The Voidreaver",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Kindred": {
+      "display_name": "Kindred",
+      "title": ", The Eternal Huntres",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Kled": {
+      "display_name": "Kd",
+      "title": ", The Cantankerous Cavalier",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Kog'Maw": {
+      "display_name": "Kog'Maw",
+      "title": ", The Mouth of the Abyss",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "LeBlanc": {
+      "display_name": "LeBlanc",
+      "title": ", The Deceiver",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Lee Sin": {
+      "display_name": "Lee Sin",
+      "title": ", The Blind Monk",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Leona": {
+      "display_name": "Leona",
+      "title": ", The Radiant Dawn",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Lissandra": {
+      "display_name": "Lissandra",
+      "title": ", The Ice Witch",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Lucian": {
+      "display_name": "Lucian",
+      "title": ", The Purifier",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Lulu": {
+      "display_name": "Lulu",
+      "title": ", The Fae Sorceress",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Lux": {
+      "display_name": "Lux",
+      "title": ", The Lady of Luminosity",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Malphite": {
+      "display_name": "Malphite",
+      "title": ", Shard of the Monoith",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Malzahar": {
+      "display_name": "Malzahar",
+      "title": ", The Prophet of the Void",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Maokai": {
+      "display_name": "Maokai",
+      "title": ", The Twisted Treant",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Master Yi": {
+      "display_name": "Master Yi",
+      "title": ", The Wuju Bladesman",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Miss Fortune": {
+      "display_name": "Miss Fortune",
+      "title": ", The Bounty Hunter",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Mordekaiser": {
+      "display_name": "Mordekaiser",
+      "title": ", The Iron Revenant",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Morgana": {
+      "display_name": "Morgana",
+      "title": ", The Fallen",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Nami": {
+      "display_name": "Nami",
+      "title": ", The Tidecaller",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Nasus": {
+      "display_name": "Nasus",
+      "title": ", The Curator of the Sands",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Nautilus": {
+      "display_name": "Nautilus",
+      "title": ", The Titanof the Depths",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Neeko": {
+      "display_name": "Neeko",
+      "title": ", The Curious Chameleon",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Nidalee": {
+      "display_name": "Nidalee",
+      "title": ", The Bestial Huntress",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Nocturne": {
+      "display_name": "Nocturne",
+      "title": ", The Eternal Nightmare",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Numu & Willump": {
+      "display_name": "Nunu & Willump",
+      "title": ", The Boy and his Yeti",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Olaf": {
+      "display_name": "Olaf",
+      "title": ", The Beserker",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Orianna": {
+      "display_name": "Orianna",
+      "title": ", The Lady of the Clockwork",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Ornn": {
+      "display_name": "Ornn",
+      "title": ", The Fire Below the Mountain",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Pantheon": {
+      "display_name": "Pantheon",
+      "title": ", The Unbreakable Spear",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Poppy": {
+      "display_name": "Poppy",
+      "title": ", Keeper of the Hammer",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Pyke": {
+      "display_name": "Pyke",
+      "title": ", The Bloodharbor Ripper",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Qiyana": {
+      "display_name": "Qiyana",
+      "title": ", Empress of the Elements",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Quinn": {
+      "display_name": "Quinn",
+      "title": ", Demacia's Wings",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Rakan": {
+      "display_name": "Rakan",
+      "title": ", The Charmer",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Rammus": {
+      "display_name": "Rammus",
+      "title": ", The Armordillo",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Rek'Sai": {
+      "display_name": "Rek'Sai",
+      "title": ", The Vod Burrower",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Renekton": {
+      "display_name": "Renekton",
+      "title": ", The Butcher of the Sands",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Rengar": {
+      "display_name": "Rengar",
+      "title": ", The Pridestalker",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Riven": {
+      "display_name": "Riven",
+      "title": ", The Exile",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Rumble": {
+      "display_name": "Rumble",
+      "title": ", The Mechanized Menace",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Ryze": {
+      "display_name": "Ryze",
+      "title": ", The Rune Mage",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Sejuani": {
+      "display_name": "Sejuani",
+      "title": ", Fury of the North",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Senna": {
+      "display_name": "Senna",
+      "title": ", The Redeemer",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Shaco": {
+      "display_name": "Shaco",
+      "title": ", The Demon Jester",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Shen": {
+      "display_name": "Shen",
+      "title": ", The Eye of Twilight",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Shyvana": {
+      "display_name": "Shyvana",
+      "title": ", The Half-Dragon",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Singed": {
+      "display_name": "Singed",
+      "title": ", The Mad Chemist",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Sion": {
+      "display_name": "Sion",
+      "title": ", The Undead Juggernaut",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Sivir": {
+      "display_name": "Sivir",
+      "title": ", The Battle Mistress",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Skarner": {
+      "display_name": "Skarner",
+      "title": ", The Crystal Vanguard",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Sona": {
+      "display_name": "Sona",
+      "title": ", The Maven of the Strings",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Soraka": {
+      "display_name": "Soraka",
+      "title": ", The Starchild",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Swain": {
+      "display_name": "Swain",
+      "title": ", The Noxian Grand General",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Sylas": {
+      "display_name": "Sylas",
+      "title": ", The Unshackled",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Syndra": {
+      "display_name": "Syndra",
+      "title": ", The Dark Sovereign",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Tahm Kench": {
+      "display_name": "Tahm Kench",
+      "title": ", The River King",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Taliyah": {
+      "display_name": "Taliyah",
+      "title": ", The Stoneweaver",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Talon": {
+      "display_name": "Talon",
+      "title": ", The Blades Shadow",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Taric": {
+      "display_name": "Taric",
+      "title": ", The Shield of Valoran",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Teemo": {
+      "display_name": "Teemo",
+      "title": ", The Swift Scout",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Thresh": {
+      "display_name": "Thresh",
+      "title": ", The Chain Warden",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Tristana": {
+      "display_name": "Tristana",
+      "title": ", The Yordle Gunner",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Trundle": {
+      "display_name": "Trundle",
+      "title": ", The Troll King",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Tryndamere": {
+      "display_name": "Tryndamere",
+      "title": ", The Barbarian King",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Twisted Fate": {
+      "display_name": "Twisted Fate",
+      "title": ", The Card Master",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Twitch": {
+      "display_name": "Twitch",
+      "title": ", The Plague Rat",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Udyr": {
+      "display_name": "Udyr",
+      "title": ", The Spirit Walker",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Urgot": {
+      "display_name": "Urgot",
+      "title": ", The Dreadnought",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Varus": {
+      "display_name": "Varus",
+      "title": ", The Arrow of Retribution",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Vayne": {
+      "display_name": "Vayne",
+      "title": ", The Night Hunter",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Veigar": {
+      "display_name": "Veigar",
+      "title": ", The Tiny Master of Evil",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Vel'Koz": {
+      "display_name": "Vel'Koz",
+      "title": ", The Eye of the Void",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Vi": {
+      "display_name": "Vi",
+      "title": ", The Piltover Enforcer",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Viktor": {
+      "display_name": "Viktor",
+      "title": ", The Machine Herald",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Vladimir": {
+      "display_name": "Vladimir",
+      "title": ", The Crimson Reaper",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Volibear": {
+      "display_name": "Volibear",
+      "title": ", The Thunders Roar",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Warwick": {
+      "display_name": "Warwick",
+      "title": ", The Uncaged Wrath of Zaun",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Wukong": {
+      "display_name": "Wukong",
+      "title": ", The Monkey King",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Xayah": {
+      "display_name": "Xayah",
+      "title": ", The Rebel",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Xerath": {
+      "display_name": "Xerath",
+      "title": ", The Magus Ascendant",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Xin Zhao": {
+      "display_name": "Xin Zhao",
+      "title": ", The Seneschal of Demacia",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Yasuo": {
+      "display_name": "Yasuo",
+      "title": ", The Unforgiven",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Yorick": {
+      "display_name": "Yorick",
+      "title": ", The Shepherd of Souls",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Yuumi": {
+      "display_name": "Yuumi",
+      "title": ", The Magical Cat",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Zac": {
+      "display_name": "Zac",
+      "title": ", The Secret Weapon",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Zed": {
+      "display_name": "Zed",
+      "title": ", The Master of Shadows",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Ziggs": {
+      "display_name": "Ziggs",
+      "title": ", The Hexplosives Expert",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Zilean": {
+      "display_name": "Zilean",
+      "title": ", The Chronokeeper",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Zoe": {
+      "display_name": "Zoe",
+      "title": ", The Aspect of Twilight",
+      "lore_snippet": "",
       "type": ""
     }
   },
   {
     "Zyra": {
+      "display_name": "Zyra",
+      "title": ", Rise of the Thorns",
+      "lore_snippet": "",
       "type": ""
     }
   }

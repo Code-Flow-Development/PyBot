@@ -96,7 +96,7 @@ class UserProfiles(discord.User):
                 }
             }
             idd = self.user_collection.insert_one(user_payload).inserted_id
-            getLogger().debug(f"[MongoDB] Created user document for '{user.name}' ({user.id}), Document ID: {idd}")
+            getLogger().debug(f"[MongoDB] Created user document for '{user.name}' ({user.id})")
 
     def getUserProfile(self):
         profile = self.user_collection.find_one({"id": self.user.id})
@@ -107,6 +107,7 @@ class UserProfiles(discord.User):
 
     def reset(self):
         result = self.user_collection.delete_one({"id": self.user.id})
+        getLogger().debug(f"[MongoDB] Created user document for '{self.user.name}' ({self.user.id})")
         return result
 
 
@@ -123,6 +124,7 @@ class ServerSettings(discord.Guild):
                 "id": guild.id,
                 "name": guild.name,
                 "settings": {
+                    "is_banned": False,
                     "log_channel": None,
                     "message_responses_enabled": False,
                     "counting_channels_enabled": False,
@@ -157,7 +159,7 @@ class ServerSettings(discord.Guild):
                 }
             }
             idd = self.server_collection.insert_one(guild_payload).inserted_id
-            getLogger().debug(f"[MongoDB] Created server document for '{guild.name}' ({guild.id}), Document ID: {idd}")
+            getLogger().debug(f"[MongoDB] Created server document for '{guild.name}' ({guild.id})")
         self.server_settings = self.getServerDocument()
 
     def getServerDocument(self):
@@ -169,6 +171,7 @@ class ServerSettings(discord.Guild):
 
     def reset(self):
         result = self.server_collection.delete_one({"id": self.guild.id})
+        getLogger().debug(f"[MongoDB] Reset server document for '{self.guild.name}' ({self.guild.id})")
         return result
 
     def getLogChannel(self, bot: discord.ext.commands.Bot):
@@ -184,32 +187,32 @@ def getRandomFact():
 
 
 def getLoLBootsJson():
-    contents = open("LoLData\\LoLBoots.json", 'r').read()
+    contents = open("LoLData\\LoLBoots.json", 'r', encoding='utf8').read()
     return json.loads(contents)
 
 
 def getLoLChampsJson():
-    contents = open("LoLData\\LoLChamps.json", 'r').read()
+    contents = open("LoLData\\LoLChamps.json", 'r', encoding='utf8').read()
     return json.loads(contents)
 
 
 def getLoLItemsJson():
-    contents = open("LoLData\\LoLItems.json", 'r').read()
+    contents = open("LoLData\\LoLItems.json", 'r', encoding='utf8').read()
     return json.loads(contents)
 
 
 def getLoLjgItemsJson():
-    contents = open("LoLData\\LoLjgItems.json", 'r').read()
+    contents = open("LoLData\\LoLjgItems.json", 'r', encoding='utf8').read()
     return json.loads(contents)
 
 
 def getLoLRunesJson():
-    contents = open("LoLData\\LoLRunes.json", 'r').read()
+    contents = open("LoLData\\LoLRunes.json", 'r', encoding='utf8').read()
     return json.loads(contents)
 
 
 def getLoLSuppItemsJson():
-    contents = open("LoLData\\LoLsuppItems.json", 'r').read()
+    contents = open("LoLData\\LoLsuppItems.json", 'r', encoding='utf8').read()
     return json.loads(contents)
 
 

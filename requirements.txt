@@ -12,3 +12,5 @@ discord.py
 python-dotenv
 pymongo
 requests
+flask_session
+requests_oauthlib

@@ -66,6 +66,7 @@ class EventsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
+        ServerSettings(guild)
         embed = discord.Embed(title=f"New Guild", description=None, color=discord.Color.green(),
                               timestamp=datetime.utcnow())
         embed.add_field(name="Guild Name", value=f"{guild.name}")
@@ -74,10 +75,10 @@ class EventsCog(commands.Cog):
         embed.add_field(name="Guild Owner", value=f"{guild.owner} ({guild.owner.id})")
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         await getBotLogChannel(self.bot).send(content=None, embed=embed)
-        ServerSettings(guild)
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild):
+        ServerSettings(guild).reset()
         embed = discord.Embed(title=f"Guild Left", description=None, color=discord.Color.red(),
                               timestamp=datetime.utcnow())
         embed.add_field(name="Guild Name", value=f"{guild.name}")

@@ -53,8 +53,11 @@ class LeagueCommandsCog(commands.Cog):
             if decider.lower() == "random" and decider2.lower() == "champs":
                 champs_list = getLoLChampsJson()
                 randchamp = random.choice(champs_list)
-                embed = discord.Embed(title=f"{randchamp}",
-                                      description=None,
+                displayname = randchamp[list(randchamp.keys())[0]]["display_name"]
+                titlename = randchamp[list(randchamp.keys())[0]]['title']
+                loresnippet = randchamp[list(randchamp.keys())[0]]['lore_snippet']
+                embed = discord.Embed(title=f"{displayname} {titlename}",
+                                      description=f"{loresnippet} \n **Goodluck with the random champion!**",
                                       color=discord.Color.orange(),
                                       timestamp=datetime.utcnow())
                 embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)

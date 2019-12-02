@@ -36,6 +36,7 @@ class GuildEventsCog(commands.Cog):
         is_banned = [x for x in banned_users if x.user.id == member.id]
         if is_banned:
             return
+        UserProfiles(member).reset()
 
         server_settings = ServerSettings(member.guild).getServerDocument()
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
