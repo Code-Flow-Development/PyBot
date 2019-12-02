@@ -213,6 +213,101 @@ def admin_leave_server():
         return "", 400
 
 
+@app.route("/api/v1/admin/banServerNotification", methods=["POST"])
+def admin_ban_server_notify():
+    if request.is_json:
+        if bot.is_ready():
+            token = request.headers.get("Token")
+            if token is not None:
+                token = json.loads(token)
+                discord_session = make_session(token=token)
+                if discord_session.authorized:
+                    # leave server
+                    server_id = int(request.get_json()["server_id"])
+                    guild = bot.get_guild(server_id)
+                    if guild is not None:
+                        reason = request.get_json()["reason"] if request.get_json()["reason"] != "" else "not specified"
+                        # get guild owner
+                        try:
+                            banner_user = discord_session.get("https://discordapp.com/api/users/@me").json()
+                            send_fut = asyncio.run_coroutine_threadsafe(
+                                guild.owner.send(
+                                    f"Hello, {guild.owner.name}! Your server ``{guild.name}`` has been banned! Members won't be able to use my commands! This ban was issued by ``{banner_user['username']}`` with reason: ``{reason}``."),
+                                loop
+                            )
+                            send_fut.result()
+                            return "OK", 200
+                        except discord.Forbidden as e:
+                            getLogger().error(
+                                f"Missing permission to send server ban notification to user {guild.owner} ({guild.owner.id})! Error: {e.text}")
+                            return "missing permissions", 500
+                        except discord.HTTPException as e:
+                            getLogger().error(
+                                f"Failed to send server ban notification to user {guild.owner} ({guild.owner.id})! Error: {e.text}")
+                            return "failed", 500
+                        except discord.InvalidArgument as e:
+                            getLogger().error(
+                                f"Failed to send server ban notification to user {guild.owner} ({guild.owner.id})! Error: {e}")
+                            return "invalid argument, we shouldnt be here?!", 500
+                    else:
+                        return "Guild is none", 400
+                else:
+                    return "", 401
+            else:
+                return "", 403
+        else:
+            return "bot is not ready!", 500
+    else:
+        return "", 400
+
+
+@app.route("/api/v1/admin/unbanServerNotification", methods=["POST"])
+def admin_unban_server_notify():
+    if request.is_json:
+        if bot.is_ready():
+            token = request.headers.get("Token")
+            if token is not None:
+                token = json.loads(token)
+                discord_session = make_session(token=token)
+                if discord_session.authorized:
+                    # leave server
+                    server_id = int(request.get_json()["server_id"])
+                    guild = bot.get_guild(server_id)
+                    if guild is not None:
+                        # get guild owner
+                        try:
+                            banner_user = discord_session.get("https://discordapp.com/api/users/@me").json()
+                            send_fut = asyncio.run_coroutine_threadsafe(
+                                guild.owner.send(
+                                    f"Hello, {guild.owner.name}! Your server ``{guild.name}`` has been unbanned! Members can now use my commands again! This unban was issued by ``{banner_user['username']}``."),
+                                loop
+                            )
+                            send_fut.result()
+                            return "OK", 200
+                        except discord.Forbidden as e:
+                            getLogger().error(
+                                f"Missing permission to send server unban notification to user {guild.owner} ({guild.owner.id})! Error: {e.text}")
+                            return "missing permissions", 500
+                        except discord.HTTPException as e:
+                            getLogger().error(
+                                f"Failed to send server unban notification to user {guild.owner} ({guild.owner.id})! Error: {e.text}")
+                            return "failed", 500
+                        except discord.InvalidArgument as e:
+                            getLogger().error(
+                                f"Failed to send server unban notification to user {guild.owner} ({guild.owner.id})! Error: {e}")
+                            return "invalid argument, we shouldnt be here?!", 500
+                    else:
+                        return "Guild is none", 400
+                else:
+                    return "", 401
+            else:
+                return "", 403
+        else:
+            return "bot is not ready!", 500
+    else:
+        return "", 400
+
+
 @app.route("/api/v1/server/<int:server_id>")
 def api_get_server(server_id):
     if bot.is_ready():
