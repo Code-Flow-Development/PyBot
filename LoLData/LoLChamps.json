@@ -4,7 +4,7 @@
       "display_name": "Aatrox",
       "title": ", The Darkin Blade",
       "lore_snippet": "Once honored defenders of Shurima against the Void, Aatrox and his brethren would eventually become an even greater threat to Runeterra, and were defeated only by cunning mortal sorcery. But after centuries of imprisonment, Aatrox was the first to find freedom once more, corrupting and transforming those foolish enough to try and wield the magical weapon that contained his essence. Now, with stolen flesh, he walks Runeterra in a brutal approximation of his previous form, seeking an apocalyptic and long overdue vengeance.",
-      "type": ""
+      "type": "Physical"
     }
   },
   {
@@ -12,7 +12,7 @@
       "display_name": "Ahri",
       "title": ", The Nine-Tailed Fox",
       "lore_snippet": "Innately connected to the latent power of Runeterra, Ahri is a vastaya who can reshape magic into orbs of raw energy. She revels in toying with her prey by manipulating their emotions before devouring their life essence. Despite her predatory nature, Ahri retains a sense of empathy as she receives flashes of memory from each soul she consumes.",
-      "type": ""
+      "type": "Magic"
     }
   },
   {
@@ -20,7 +20,7 @@
       "display_name": "Akali",
       "title": ", The Rogue Assasin",
       "lore_snippet": "Abandoning the Kinkou Order and her title of the Fist of Shadow, Akali now strikes alone, ready to be the deadly weapon her people need. Though she holds onto all she learned from her master Shen, she has pledged to defend Ionia from its enemies, one kill at a time. Akali may strike in silence, but her message will be heard loud and clear: fear the assassin with no master.",
-      "type": ""
+      "type": "Mixed"
     }
   },
   {
@@ -28,7 +28,7 @@
       "display_name": "Alistar",
       "title": ", The Minotaur",
       "lore_snippet": "Always a mighty warrior with a fearsome reputation, Alistar seeks revenge for the death of his clan at the hands of the Noxian empire. Though he was enslaved and forced into the life of a gladiator, his unbreakable will was what kept him from truly becoming a beast. Now, free of the chains of his former masters, he fights in the name of the downtrodden and the disadvantaged, his rage as much a weapon as his horns, hooves and fists.\n",
-      "type": ""
+      "type": "Magic"
     }
   },
   {
@@ -36,7 +36,7 @@
       "display_name": "Amumu",
       "title": ", The Sad Mummy",
       "lore_snippet": "Legend claims that Amumu is a lonely and melancholy soul from ancient Shurima, roaming the world in search of a friend. Doomed by an ancient curse to remain alone forever, his touch is death, his affection ruin. Those who claim to have seen him describe a living cadaver, small in stature and wrapped in creeping bandages. Amumu has inspired myths, songs, and folklore told and retold for generations—such that it is impossible to separate truth from fiction.\n",
-      "type": ""
+      "type": "Magic"
     }
   },
   {
@@ -44,7 +44,7 @@
       "display_name": "Anivia",
       "title": ", The Cryophoenix",
       "lore_snippet": "Anivia is a benevolent winged spirit who endures endless cycles of life, death, and rebirth to protect the Freljord. A demigod born of unforgiving ice and bitter winds, she wields those elemental powers to thwart any who dare disturb her homeland. Anivia guides and protects the tribes of the harsh north, who revere her as a symbol of hope, and a portent of great change. She fights with every ounce of her being, knowing that through her sacrifice, her memory will endure, and she will be reborn into a new tomorrow.\n",
-      "type": ""
+      "type": "Magic"
     }
   },
   {
@@ -52,7 +52,7 @@
       "display_name": "Annie",
       "title": ", The Dark Child",
       "lore_snippet": "Dangerous, yet disarmingly precocious, Annie is a child mage with immense pyromantic power. Even in the shadows of the mountains north of Noxus, she is a magical outlier. Her natural affinity for fire manifested early in life through unpredictable, emotional outbursts, though she eventually learned to control these “playful tricks.” Her favorite includes the summoning of her beloved teddy bear, Tibbers, as a fiery protector. Lost in the perpetual innocence of childhood, Annie wanders the dark forests, always looking for someone to play with.\n\n",
-      "type": ""
+      "type": "Magic"
     }
   },
   {
@@ -60,7 +60,7 @@
       "display_name": "Ashe",
       "title": ", The Frost Archer",
       "lore_snippet": "Iceborn warmother of the Avarosan tribe, Ashe commands the most populous horde in the north. Stoic, intelligent, and idealistic, yet uncomfortable with her role as leader, she taps into the ancestral magics of her lineage to wield a bow of True Ice. With her people’s belief that she is the mythological hero Avarosa reincarnated, Ashe hopes to unify the Freljord once more by retaking their ancient, tribal lands.\n",
-      "type": ""
+      "type": "Physical"
     }
   },
   {
@@ -68,7 +68,7 @@
       "display_name": "Aurelion Sol",
       "title": ", The Star Forger",
       "lore_snippet": "Aurelion Sol once graced the vast emptiness of the cosmos with celestial wonders of his own devising. Now, he is forced to wield his awesome power at the behest of a space-faring empire that tricked him into servitude. Desiring a return to his star-forging ways, Aurelion Sol will drag the very stars from the sky, if he must, in order to regain his freedom.\n",
-      "type": ""
+      "type": "M"
     }
   },
   {

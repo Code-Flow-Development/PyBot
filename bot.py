@@ -7,8 +7,8 @@ import asyncio
 from threading import Thread
 from flask_session import Session
 from requests_oauthlib import OAuth2Session
-# from flask import Flask, jsonify, session, request
-from quart import Quart, jsonify, session, request  #
+from flask import Flask, jsonify, session, request
+#from quart import Quart, jsonify, session, request  #
 from functools import partial
 from discord.ext import commands
 from bson.json_util import dumps
@@ -19,7 +19,7 @@ from utils import ServerSettings, loadAllCogs, loadAllExtensions, UserProfiles
 loop = asyncio.get_event_loop()
 
 # create flask app
-app = Quart(__name__)
+app = Flask(__name__)
 
 # load redis settings
 REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")
@@ -54,10 +54,6 @@ bot.remove_listener(func=bot.on_message)
 def worker():
     for guild in bot.guilds:
         ServerSettings(guild)
-
-
-async def leave_guild(guild):
-    await guild.leave()
 
 
 # Ready event
@@ -182,7 +178,7 @@ def api_servers():
 
 
 @app.route("/api/v1/admin/leaveServer", methods=["POST"])
-async def admin_leave_server():
+def admin_leave_server():
     if request.is_json:
         if bot.is_ready():
             token = request.headers.get("Token")
@@ -191,8 +187,7 @@ async def admin_leave_server():
                 discord_session = make_session(token=token)
                 if discord_session.authorized:
                     # leave server
-                    req_json = await request.get_json()
-                    server_id = int(req_json["server_id"])
+                    server_id = int(request.get_json()["server_id"])
                     guild = bot.get_guild(server_id)
                     if guild is not None:
                         try:
