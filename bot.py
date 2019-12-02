@@ -89,7 +89,7 @@ async def on_message(message):
     user_profile = UserProfiles(message.author).getUserProfile()
     server_settings = ServerSettings(message.guild).getServerDocument()
     if message.content.startswith(PREFIX):
-        if not server_settings["is_banned"] or user_profile["MiscData"]["is_banned"]:
+        if not server_settings["is_banned"] and not user_profile["MiscData"]["is_banned"]:
             await bot.process_commands(message)
     else:
         message_responses_enabled = server_settings["message_responses_enabled"]
