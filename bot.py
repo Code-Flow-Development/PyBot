@@ -8,7 +8,7 @@ from threading import Thread
 from flask_session import Session
 from requests_oauthlib import OAuth2Session
 from flask import Flask, jsonify, session, request
-#from quart import Quart, jsonify, session, request  #
+# from quart import Quart, jsonify, session, request  #
 from functools import partial
 from discord.ext import commands
 from bson.json_util import dumps
@@ -213,56 +213,56 @@ def admin_leave_server():
         return "", 400
 
 
-# @app.route("/api/v1/server/<int:server_id>")
-# def api_get_server(server_id):
-#     if bot.is_ready():
-#         token = request.headers.get("Token")
-#         if token is not None:
-#             token = json.loads(token)
-#             discord_session = make_session(token=token)
-#             if discord_session.authorized:
-#                 server = bot.get_guild(server_id)
-#                 if server is not None:
-#                     return jsonify(
-#                         {"name": server.name, "id": server.id, "region": server.region.name,
-#                          "icon_url": str(server.icon_url),
-#                          "voice_channel_amount": len(server.voice_channels),
-#                          "text_channel_amount": len(server.text_channels),
-#                          "category_amount": len(server.categories), "member_count": server.member_count,
-#                          "role_amount": len(server.roles),
-#                          "text_channels": [{"name": y.name, "id": y.id} for y in server.text_channels],
-#                          "roles": [{"name": z.name, "id": z.id} for z in server.roles if z.name != "@everyone"]})
-#                 else:
-#                     return "", 400
-#             else:
-#                 return "", 401
-#         else:
-#             return "", 403
-#     else:
-#         return "bot is not ready!", 500
-#
-#
-# @app.route("/api/v1/user/<int:user_id>")
-# def api_get_user(user_id):
-#     if bot.is_ready():
-#         token = request.headers.get("Token")
-#         if token is not None:
-#             token = json.loads(token)
-#             discord_session = make_session(token=token)
-#             if discord_session.authorized:
-#                 user = bot.get_user(user_id)
-#                 if user is not None:
-#                     return jsonify({"username": user.name, "id": user.id, "discriminator": user.discriminator,
-#                                     "avatar_url": str(user.avatar_url),
-#                                     "is_banned": UserProfiles(user).getUserProfile()["MiscData"]["is_banned"]})
-#                 else:
-#                     return "", 400
-#             else:
-#                 return "", 401
-#         else:
-#             return "", 403
-#     else:
-#        return "bot is not ready!", 500
+@app.route("/api/v1/server/<int:server_id>")
+def api_get_server(server_id):
+    if bot.is_ready():
+        token = request.headers.get("Token")
+        if token is not None:
+            token = json.loads(token)
+            discord_session = make_session(token=token)
+            if discord_session.authorized:
+                server = bot.get_guild(server_id)
+                if server is not None:
+                    return jsonify(
+                        {"name": server.name, "id": server.id, "region": server.region.name,
+                         "icon_url": str(server.icon_url),
+                         "voice_channel_amount": len(server.voice_channels),
+                         "text_channel_amount": len(server.text_channels),
+                         "category_amount": len(server.categories), "member_count": server.member_count,
+                         "role_amount": len(server.roles),
+                         "text_channels": [{"name": y.name, "id": y.id} for y in server.text_channels],
+                         "roles": [{"name": z.name, "id": z.id} for z in server.roles if z.name != "@everyone"]})
+                else:
+                    return "", 400
+            else:
+                return "", 401
+        else:
+            return "", 403
+    else:
+        return "bot is not ready!", 500
+
+
+@app.route("/api/v1/user/<int:user_id>")
+def api_get_user(user_id):
+    if bot.is_ready():
+        token = request.headers.get("Token")
+        if token is not None:
+            token = json.loads(token)
+            discord_session = make_session(token=token)
+            if discord_session.authorized:
+                user = bot.get_user(user_id)
+                if user is not None:
+                    return jsonify({"username": user.name, "id": user.id, "discriminator": user.discriminator,
+                                    "avatar_url": str(user.avatar_url),
+                                    "is_banned": UserProfiles(user).getUserProfile()["MiscData"]["is_banned"]})
+                else:
+                    return "", 400
+            else:
+                return "", 401
+        else:
+            return "", 403
+    else:
+        return "bot is not ready!", 500
 
 
 def token_updater(token):
