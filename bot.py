@@ -1,48 +1,48 @@
-import discord
+import asyncio
+import json
 import os
 import time
-import redis
-import json
-import asyncio
+from functools import partial
 from threading import Thread
+from dotenv import load_dotenv
+import discord
+import redis
+from bson.json_util import dumps
+from discord.ext import commands
+from dotenv import load_dotenv
+from flask import Flask, jsonify, session, request
 from flask_session import Session
 from requests_oauthlib import OAuth2Session
-from flask import Flask, jsonify, session, request
-from functools import partial
-from discord.ext import commands
-from bson.json_util import dumps
-from dotenv import load_dotenv
-from config import getLogger, PREFIX, APIServer, getMongoClient
-from utils import ServerSettings, loadAllCogs, loadAllExtensions, UserProfiles
+from utils import ServerSettings, loadAllCogs, loadAllExtensions, UserProfiles, SetupLogger, APIServer, getLogger, \
+    RedisClient, Mongo
 
+# get asyncio loop
 loop = asyncio.get_event_loop()
 
 # create flask app
 app = Flask(__name__)
 
-# load redis settings
-REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")
-REDIS_PORT = os.getenv("REDIS_PORT", 6379)
-REDIS_DB = os.getenv("REDIS_DB", 0)
-REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
-
-# load redis for sessions
-redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, password=REDIS_PASSWORD)
+# load dotenv
+load_dotenv()
 
 # load env variables
-OAUTH2_CLIENT_ID = os.getenv("CLIENT_ID", "")
-OAUTH2_CLIENT_SECRET = os.getenv("CLIENT_SECRET", "")
+OAUTH2_CLIENT_ID = os.getenv("CLIENT_ID")
+OAUTH2_CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 
+# setup session
 app.config['SESSION_TYPE'] = 'redis'
-app.config["SESSION_REDIS"] = redis_client
+app.config["SESSION_REDIS"] = RedisClient().getRedisClient()
 app.config['SECRET_KEY'] = OAUTH2_CLIENT_SECRET
 sess = Session()
 
 API_VERSION = os.getenv('API_VERSION')
 
-BASE_URL = os.getenv("BASE_URL", "127.0.0.1:5000")
+BASE_URL = os.getenv("BASE_URL")
 REDIRECT_URI = f"{BASE_URL}/api/{API_VERSION}/login/callback"
 TOKEN_URL = "https://discordapp.com/api/oauth2/token"
+
+# get prefix from .env
+PREFIX = os.getenv("BOT_PREFIX")
 
 # Create a new 'bot' with prefix
 bot = commands.Bot(command_prefix=PREFIX, description="PyBot")
@@ -80,6 +80,7 @@ async def on_ready():
     thread.start()
 
 
+# message event
 @bot.event
 async def on_message(message):
     if message.author.bot:
@@ -131,7 +132,7 @@ def api_users():
             token = json.loads(token)
             discord_session = make_session(token=token)
             if discord_session.authorized:
-                user_collection = getMongoClient()["PyBot"]["users"]
+                user_collection = Mongo().Mongo().getMongoClient()["PyBot"]["users"]
                 users = []
                 for user in user_collection.find():
                     user_json = json.loads(dumps(user))
@@ -156,7 +157,7 @@ def api_servers():
             token = json.loads(token)
             discord_session = make_session(token=token)
             if discord_session.authorized:
-                server_collection = getMongoClient()["PyBot"]["servers"]
+                server_collection = Mongo().getMongoClient()["PyBot"]["servers"]
                 servers = []
                 for server in server_collection.find():
                     server_json = json.loads(dumps(server))
@@ -534,6 +535,9 @@ def make_session(token=None, state=None, scope=None):
         auto_refresh_url=TOKEN_URL,
         token_updater=token_updater)
 
+
+if __name__ == "__main__":
+    SetupLogger()  # setup the logger with colored logger and verbose logging
 
 # load the .env file with token
 load_dotenv()

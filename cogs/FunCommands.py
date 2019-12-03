@@ -1,14 +1,14 @@
 import asyncio
-import html
 import random
+from datetime import datetime
+
 import discord
 import requests
-from prawcore import exceptions
-from datetime import datetime
 from discord import Forbidden, HTTPException, InvalidArgument, NotFound
 from discord.ext import commands
-from utils import getRandomFact
-from config import getRedditClient
+from prawcore import exceptions
+
+from utils import getRandomFact, RedditClient
 
 
 class FunCommandsCog(commands.Cog):
@@ -284,6 +284,41 @@ class FunCommandsCog(commands.Cog):
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         await ctx.send(content=None, embed=embed)
 
+    @commands.command(name="alexjones", help="YOU'RE NOT AN INTELLECTUAL!")
+    @commands.guild_only()
+    async def alex_jones(self, ctx):
+        embed = discord.Embed(title=None,
+                              description=None,
+                              color=discord.Color.green(), timestamp=datetime.utcnow())
+        embed.set_image(url="https://media.discordapp.net/attachments/644927766197698593/647167462315393053/ezgif.com-video-to-gif.gif")
+        embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+        await ctx.send(content=None, embed=embed)
+
+    @commands.command(name="cybertruck", help="That might have been a little *too* hard")
+    @commands.guild_only()
+    async def cyber_truck(self, ctx):
+        embed = discord.Embed(title="oops" if random.randint(0, 100) > 50 else None,
+                              description=None,
+                              color=discord.Color.green(), timestamp=datetime.utcnow())
+        embed.set_image(
+            url="https://cdn.discordapp.com/attachments/645773103296675880/651548504870617088/tesla-oops.gif")
+        embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+        await ctx.send(content=None, embed=embed)
+
+    @commands.command(name="whothefuckjustpingedme", aliases=["whotfpingedme", "whotfjustpingedme", "wtfjpm"])
+    @commands.guild_only()
+    async def who_just_pinged_me(self, ctx):
+        embed = discord.Embed(title=None,
+                              description=None,
+                              color=discord.Color.green(), timestamp=datetime.utcnow())
+        embed.set_image(
+            url="https://media.discordapp.net/attachments/363695761004691456/645734741575729188/ac3.gif")
+        embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+        await ctx.send(content=None, embed=embed)
+
     @commands.command(name="spam", help="Spams a user with 5 mentions", usage="<@user>", hidden=True, enabled=False)
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
@@ -464,35 +499,35 @@ class FunCommandsCog(commands.Cog):
 
 def getPostsByListingType(subreddit: str, type: str):
     if type == "top":
-        posts = getRedditClient().subreddit(subreddit).top(limit=1)
+        posts = RedditClient().RedditClient().getRedditClient().subreddit(subreddit).top(limit=1)
         post = [x for x in posts][0]
         if post.over_18:
             return
         else:
             return post
     elif type == "rising":
-        posts = getRedditClient().subreddit(subreddit).rising(limit=1)
+        posts = RedditClient().getRedditClient().subreddit(subreddit).rising(limit=1)
         post = [x for x in posts][0]
         if post.over_18:
             return
         else:
             return post
     elif type == "new":
-        posts = getRedditClient().subreddit(subreddit).new(limit=1)
+        posts = RedditClient().getRedditClient().subreddit(subreddit).new(limit=1)
         post = [x for x in posts][0]
         if post.over_18:
             return
         else:
             return post
     elif type == "hot":
-        posts = getRedditClient().subreddit(subreddit).hot(limit=1)
+        posts = RedditClient().getRedditClient().subreddit(subreddit).hot(limit=1)
         post = [x for x in posts][0]
         if post.over_18:
             getPostsByListingType(subreddit, type)
         else:
             return post
     elif type == "random":
-        posts = getRedditClient().subreddit(subreddit).random(limit=1)
+        posts = RedditClient().getRedditClient().subreddit(subreddit).random(limit=1)
         post = [x for x in posts][0]
         if post.over_18:
             return

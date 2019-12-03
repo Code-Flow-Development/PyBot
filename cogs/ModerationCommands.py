@@ -7,8 +7,7 @@ from datetime import datetime
 from discord.errors import HTTPException, Forbidden, InvalidArgument
 from discord.ext.commands.errors import BadArgument
 from discord.errors import NotFound
-from utils import UserProfiles, ServerSettings
-from config import getLogger
+from utils import UserProfiles, ServerSettings, getLogger
 
 
 class ModerationCommandsCog(commands.Cog):

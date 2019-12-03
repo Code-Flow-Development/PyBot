@@ -4,8 +4,7 @@ import re
 import requests
 from datetime import datetime
 from discord.ext import commands
-from config import getRedditClient
-from utils import getLogger, ServerSettings
+from utils import getLogger, ServerSettings, RedditClient
 from .utils.checks import isNSFWEnabled
 
 gfycat_regex = re.compile(r'(https://gfycat.com/(.*))(\?.*)?')
@@ -29,7 +28,7 @@ class NSFWCommands(commands.Cog):
         if server_document["modules"]["nsfw_commands"]:
             boob_subreddits = ["boobs", "Boobies", "Bigtitssmalltits", "naturaltitties", "BustyPetite"]
             subreddit = random.choice(boob_subreddits)
-            posts = getRedditClient().subreddit(subreddit).new(limit=100)
+            posts = Reddit().RedditClient().getRedditClient().subreddit(subreddit).new(limit=100)
             post = random.choice([x for x in posts])
             print(post.url)
 
@@ -61,7 +60,7 @@ class NSFWCommands(commands.Cog):
         server_document = ServerSettings(ctx.guild).getServerDocument()
         if server_document["modules"]["nsfw_commands"]:
             async with ctx.typing():
-                posts = getRedditClient().subreddit("TittyDrop").new(limit=1000)
+                posts = RedditClient().getRedditClient().subreddit("TittyDrop").new(limit=1000)
                 post = random.choice([x for x in posts])
                 getLogger().debug(f"Post URL: {post.url}")
 
@@ -90,7 +89,7 @@ class NSFWCommands(commands.Cog):
         server_document = ServerSettings(ctx.guild).getServerDocument()
         if server_document["modules"]["nsfw_commands"]:
             pussy_subreddits = ["pussy", "LipsThatGrip"]
-            posts = getRedditClient().subreddit(random.choice(pussy_subreddits)).new(limit=100)
+            posts = RedditClient().getRedditClient().subreddit(random.choice(pussy_subreddits)).new(limit=100)
             post = random.choice([x for x in posts])
             print(post.url)
 
@@ -121,7 +120,7 @@ class NSFWCommands(commands.Cog):
         server_document = ServerSettings(ctx.guild).getServerDocument()
         if server_document["modules"]["nsfw_commands"]:
             ass_subreddits = ["asshole", "AssOnTheGlass", "SpreadEm", "booty_gifs"]
-            posts = getRedditClient().subreddit(random.choice(ass_subreddits)).new(limit=100)
+            posts = RedditClient().getRedditClient().subreddit(random.choice(ass_subreddits)).new(limit=100)
             post = random.choice([x for x in posts])
             print(post.url)
 
@@ -160,7 +159,7 @@ class NSFWCommands(commands.Cog):
                                "Gonewild18", "gonewildcouples", "gwcumsluts", "workgonewild", "LegalTeens", "Just18",
                                "barelylegalteens", "Barelylegal", "LipsThatGrip", "rearpussy", "Boobies", "TittyDrop",
                                "Bigtitssmalltits", "BustyPetite", "naturaltitties"]
-            posts = getRedditClient().subreddit(random.choice(nsfw_subreddits)).new(limit=100)
+            posts = RedditClient().getRedditClient().subreddit(random.choice(nsfw_subreddits)).new(limit=100)
             post = random.choice([x for x in posts])
             print(post.url)
 

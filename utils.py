@@ -1,14 +1,27 @@
-import calendar
-import os
-import json
-import discord
-import random
 import asyncio
+import calendar
+import json
+import logging
+import os
+import random
 from datetime import datetime
-from config import getLogger, getMongoClient, getYoutubeDLPlay, getYoutubeDLStream, ffmpeg_options
+from threading import Thread
+
+import coloredlogs
+import discord
+import socketio
+import verboselogs
+import youtube_dl
+from bson.json_util import dumps
 from dateutil.relativedelta import relativedelta
 from discord.ext.commands import errors
-from bson.json_util import dumps
+from praw import Reddit
+from pymongo import MongoClient
+from redis import Redis
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def loadAllCogs(bot):
@@ -21,7 +34,7 @@ def loadAllCogs(bot):
                 getLogger().info(f"[Cog Management] Cog Loaded: {filename}")
             except (errors.ExtensionNotFound, errors.ExtensionAlreadyLoaded, errors.NoEntryPointError,
                     errors.ExtensionFailed) as e:
-                getLogger().error(f"[Cog Management] Error loading cog: {filename} - {e}")
+                getLogger().error(f"[Cog Management] Error loading cog: {filename}; Error: {e}")
 
 
 def loadAllExtensions(bot):
@@ -33,14 +46,14 @@ def loadAllExtensions(bot):
                 getLogger().info(f"[Extension Management] Extension Loaded: {file}")
             except (errors.ExtensionNotFound, errors.ExtensionAlreadyLoaded, errors.NoEntryPointError,
                     errors.ExtensionFailed) as e:
-                getLogger().error(f"[Extension Management] Error loading extension: {file} - {e}")
+                getLogger().error(f"[Extension Management] Error loading extension: {file}; Error: {e}")
 
 
 def utc_to_epoch(utc: datetime):
     return calendar.timegm(utc.utctimetuple())
 
 
-class EpochUtils(float):
+class EpochUtils:
     def __init__(self, unix):
         self.rdelta = relativedelta(datetime.now(), datetime.fromtimestamp(unix))
 
@@ -63,9 +76,9 @@ class EpochUtils(float):
         return self.rdelta.years
 
 
-class UserProfiles(discord.User):
+class UserProfiles:
     def __init__(self, user):
-        mongoclient = getMongoClient()
+        mongoclient = Mongo().getMongoClient()
         self.db = mongoclient["PyBot"]
         self.user_collection = self.db["users"]
         self.user = user
@@ -95,7 +108,7 @@ class UserProfiles(discord.User):
                     "is_banned": False
                 }
             }
-            self.user_collection.insert_one(user_payload).inserted_id
+            self.user_collection.insert_one(user_payload)
             getLogger().debug(f"[MongoDB] Created user document for '{user.name}' ({user.id})")
 
     def getUserProfile(self):
@@ -111,10 +124,10 @@ class UserProfiles(discord.User):
         return result
 
 
-class ServerSettings(discord.Guild):
+class ServerSettings:
     def __init__(self, guild):
         self.guild = guild
-        mongoclient = getMongoClient()
+        mongoclient = Mongo().getMongoClient()
         self.db = mongoclient["PyBot"]
         self.server_collection = self.db["servers"]
 
@@ -164,7 +177,7 @@ class ServerSettings(discord.Guild):
                     ]
                 }
             }
-            self.server_collection.insert_one(guild_payload).inserted_id
+            self.server_collection.insert_one(guild_payload)
             getLogger().debug(f"[MongoDB] Created server document for '{guild.name}' ({guild.id})")
         self.server_settings = self.getServerDocument()
 
@@ -243,28 +256,169 @@ class YTDLSource(discord.PCMVolumeTransformer):
     @classmethod
     async def from_url_play(cls, url, *, loop=None):
         loop = loop or asyncio.get_event_loop()
-        data = await loop.run_in_executor(None, lambda: getYoutubeDLPlay().extract_info(url, download=True))
+        data = await loop.run_in_executor(None, lambda: YoutubeDL().getPlay().extract_info(url, download=True))
 
         if "entries" in data:
             data = data["entries"][0]
 
-        filename = getYoutubeDLPlay().prepare_filename(data)
+        filename = YoutubeDL().getPlay().prepare_filename(data)
         if os.path.exists(filename):
-            return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), filename=filename, data=data)
+            return cls(discord.FFmpegPCMAudio(filename, {"options": "-vn"}), filename=filename, data=data)
         else:
             return None
 
     @classmethod
     async def from_url_stream(cls, url, *, loop=None):
         loop = loop or asyncio.get_event_loop()
-        data = await loop.run_in_executor(None, lambda: getYoutubeDLStream().extract_info(url, download=False))
+        data = await loop.run_in_executor(None, lambda: YoutubeDL().getStream().extract_info(url, download=False))
 
         if "entries" in data:
             data = data["entries"][0]
 
         filename = data["url"]
-        return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), filename=filename, data=data)
+        return cls(discord.FFmpegPCMAudio(filename, {"options": "-vn"}), filename=filename, data=data)
 
     @classmethod
     def cleanup_file(cls, filename):
         os.remove(filename)
+
+
+class SocketIO:
+    def __init__(self):
+        self.client = socketio.Client()
+
+    def getSocketIOClient(self):
+        return self.client
+
+
+class Mongo:
+    def __init__(self):
+        self.client = MongoClient(os.getenv("MONGO_URI"))
+
+    def getMongoClient(self):
+        return self.client
+
+
+class RedditClient:
+    def __init__(self):
+        client_id = os.getenv("REDDIT_CLIENT_ID")
+        client_secret = os.getenv("REDDIT_CLIENT_SECRET")
+        user_agent = os.getenv("REDDIT_USERAGENT")
+        self.client = Reddit(client_id=client_id, client_secret=client_secret, user_agent=user_agent)
+
+    def getRedditClient(self):
+        return self.client
+
+
+class APIServer:
+    def __init__(self, partial):
+        self.FLASK_THREAD: Thread = Thread(target=partial, daemon=True)
+
+    def getThread(self):
+        return self.FLASK_THREAD
+
+    def start(self):
+        self.FLASK_THREAD.start()
+
+    def stop(self):
+        self.FLASK_THREAD.join()
+
+
+class SetupLogger:
+    def __init__(self):
+        verboselogs.install()
+        self.logger = logging.getLogger(__name__)
+        coloredlogs.install(level="DEBUG", logger=self.logger, fmt="[%(levelname)s] %(asctime)s: %(message)s",
+                            datefmt="[%m-%d-%Y %I:%M:%S]")
+
+
+def getLogger():
+    return logging.getLogger(__name__)
+
+
+class BotAdmins:
+    def __init__(self):
+        pass
+
+    def get(self):
+        return json.loads(open("settings.json", 'r').read())["admins"]
+
+    def add(self, user_id: int):
+        admins = json.loads(open("settings.json", 'r').read())
+        try:
+            if user_id not in admins["admins"]:
+                admins["admins"].append(user_id)
+                open("settings.json", 'w').write(json.dumps(admins))
+                return True
+            else:
+                return False
+        except ValueError:
+            return False
+
+    def remove(self, user_id: int):
+        admins = json.loads(open("settings.json", 'r').read())
+        try:
+            admins["admins"].remove(user_id)
+            open("settings.json", 'w').write(json.dumps(admins))
+            return True
+        except ValueError:
+            return False
+
+
+class YoutubeDL:
+    def __init__(self):
+        youtube_dl.utils.bug_reports_message = lambda: ''
+        self.play_config = {
+            "format": "bestaudio/best",
+            "outtmpl": "%(extractor)s-%(id)s-%(title)s.%(ext)s",
+            "restrictfilenames": True,
+            "noplaylist": True,
+            "nocheckcertificate": True,
+            "ignoreerrors": False,
+            "logtostderr": False,
+            "quiet": True,
+            "no_warnings": True,
+            "default_search": "auto",
+            "source_address": "0.0.0.0",
+            "max_filesize": 100000000,  # 50 megabytes
+            "age_limit": 13
+        }
+        self.stream_config = {
+            "format": "bestaudio/best",
+            "outtmpl": "%(extractor)s-%(id)s-%(title)s.%(ext)s",
+            "restrictfilenames": True,
+            "noplaylist": False,
+            "nocheckcertificate": True,
+            "ignoreerrors": False,
+            "logtostderr": False,
+            "quiet": True,
+            "no_warnings": True,
+            "default_search": "auto",
+            "source_address": "0.0.0.0",
+            "age_limit": 13
+        }
+
+        self.play = youtube_dl.YoutubeDL(self.play_config)
+        self.stream = youtube_dl.YoutubeDL(self.stream_config)
+
+    def getPlay(self):
+        return self.play
+
+    def getStream(self):
+        return self.stream
+
+
+class RedisClient:
+    def __init__(self):
+        self.host = os.getenv("REDIS_HOST", "127.0.0.1")
+        self.port = os.getenv("REDIS_PORT", 6379)
+        self.db = os.getenv("REDIS_DB", 0)
+        self.password = os.getenv("REDIS_PASSWORD", None)
+        self.client = Redis(host=self.host, port=self.port, db=self.db, password=self.password)
+
+    def getRedisClient(self):
+        return self.client
+
+
+def getSystemLogChannel(bot):
+    return bot.get_channel(int(os.getenv("SYSTEM_LOG_CHANNEL_ID")))
