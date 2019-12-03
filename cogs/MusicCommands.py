@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from utils import YTDLSource
+from .utils.checks import isMusicEnabled
 
 
 class MusicCog(commands.Cog):
@@ -10,8 +11,9 @@ class MusicCog(commands.Cog):
 
     @commands.command(name="music_join")
     @commands.guild_only()
+    @isMusicEnabled()
     async def join(self, ctx, *, channel: discord.VoiceChannel = None):
-        if channel is None:
+        if channel is None and ctx.author.voice is not None:
             channel = ctx.author.voice.channel
 
         if channel is None:
@@ -22,6 +24,7 @@ class MusicCog(commands.Cog):
 
     @commands.command(name="music_play")
     @commands.guild_only()
+    @isMusicEnabled()
     async def play(self, ctx, *, url):
         try:
             warn_msg = await ctx.send(f"The file must download first, please wait...")
@@ -39,6 +42,7 @@ class MusicCog(commands.Cog):
 
     @commands.command(name="music_stream")
     @commands.guild_only()
+    @isMusicEnabled()
     async def stream(self, ctx, *, url):
         try:
             async with ctx.typing():
@@ -50,6 +54,7 @@ class MusicCog(commands.Cog):
 
     @commands.command(name="music_volume")
     @commands.guild_only()
+    @isMusicEnabled()
     async def volume(self, ctx, volume: int):
         if ctx.voice_client is None:
             return await ctx.send("Not connected to a voice channel.")
@@ -59,6 +64,7 @@ class MusicCog(commands.Cog):
 
     @commands.command(name="music_stop")
     @commands.guild_only()
+    @isMusicEnabled()
     async def stop(self, ctx: discord.ext.commands.Context):
         ctx.voice_client.stop()
         await ctx.voice_client.disconnect()
@@ -68,12 +74,14 @@ class MusicCog(commands.Cog):
 
     @commands.command(name="music_pause")
     @commands.guild_only()
+    @isMusicEnabled()
     async def pause(self, ctx: discord.ext.commands.Context):
         ctx.voice_client.pause()
         await ctx.send("Music paused! Use ``{music_resume`` to resume it!")
 
     @commands.command(name="music_resume")
     @commands.guild_only()
+    @isMusicEnabled()
     async def resume(self, ctx: discord.ext.commands.Context):
         ctx.voice_client.resume()
         await ctx.send(f"Music resumed!")

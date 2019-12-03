@@ -6,6 +6,7 @@ from datetime import datetime
 from discord.ext import commands
 from config import getRedditClient
 from utils import getLogger, ServerSettings
+from .utils.checks import isNSFWEnabled
 
 gfycat_regex = re.compile(r'(https://gfycat.com/(.*))(\?.*)?')
 imgur_regex = re.compile(r'(https://i.imgur.com/(.*))(\?.*)?')
@@ -22,6 +23,7 @@ class NSFWCommands(commands.Cog):
     @commands.has_role("NSFW Tester")
     @commands.is_nsfw()
     @commands.guild_only()
+    @isNSFWEnabled()
     async def boobs(self, ctx):
         server_document = ServerSettings(ctx.guild).getServerDocument()
         if server_document["modules"]["nsfw_commands"]:
@@ -54,6 +56,7 @@ class NSFWCommands(commands.Cog):
     @commands.has_role("NSFW Tester")
     @commands.is_nsfw()
     @commands.guild_only()
+    @isNSFWEnabled()
     async def boobdrop(self, ctx):
         server_document = ServerSettings(ctx.guild).getServerDocument()
         if server_document["modules"]["nsfw_commands"]:
@@ -82,6 +85,7 @@ class NSFWCommands(commands.Cog):
     @commands.has_role("NSFW Tester")
     @commands.is_nsfw()
     @commands.guild_only()
+    @isNSFWEnabled()
     async def pussy(self, ctx):
         server_document = ServerSettings(ctx.guild).getServerDocument()
         if server_document["modules"]["nsfw_commands"]:
@@ -112,6 +116,7 @@ class NSFWCommands(commands.Cog):
     @commands.has_role("NSFW Tester")
     @commands.is_nsfw()
     @commands.guild_only()
+    @isNSFWEnabled()
     async def ass(self, ctx):
         server_document = ServerSettings(ctx.guild).getServerDocument()
         if server_document["modules"]["nsfw_commands"]:
@@ -142,6 +147,7 @@ class NSFWCommands(commands.Cog):
     @commands.has_role("NSFW Tester")
     @commands.is_nsfw()
     @commands.guild_only()
+    @isNSFWEnabled()
     async def nsfw(self, ctx):
         server_document = ServerSettings(ctx.guild).getServerDocument()
         if server_document["modules"]["nsfw_commands"]:

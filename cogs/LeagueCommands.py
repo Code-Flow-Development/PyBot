@@ -1,11 +1,11 @@
 import discord
-import json
 import random
 import asyncio
-from datetime import datetime
 from discord.ext import commands
 from datetime import datetime
-from utils import getLoLBootsJson, getLoLChampsJson, getLoLItemsJson, getLoLjgItemsJson, getLoLRunesJson, getLoLSuppItemsJson, getLoLChampsKeyList
+from utils import getLoLBootsJson, getLoLChampsJson, getLoLItemsJson, getLoLjgItemsJson, getLoLRunesJson, \
+    getLoLSuppItemsJson, getLoLChampsKeyList
+from .utils.checks import isLoLEnabled
 
 
 class LeagueCommandsCog(commands.Cog):
@@ -13,7 +13,8 @@ class LeagueCommandsCog(commands.Cog):
         self.bot = bot
 
     # Main command for the league cog, might be the only one.
-    @commands.command(name="league")
+    @commands.command(name="league", usage="<decider> [decider2]")
+    @isLoLEnabled()
     async def league(self, ctx, decider: str, decider2: str = None):
         # Displays all the champions in the bot currently.
         if decider.lower() == "champlist":

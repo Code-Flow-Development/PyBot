@@ -52,6 +52,9 @@ class EventsCog(commands.Cog):
         elif isinstance(error, commands.NSFWChannelRequired):
             return await ctx.send(f"That command is NSFW and requires an NSFW channel!")
 
+        elif isinstance(error, commands.CommandError):
+            return
+
         elif isinstance(error, commands.CheckFailure):
             return await ctx.send("You don't have permission to use that command!")
 
