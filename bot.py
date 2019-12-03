@@ -396,6 +396,52 @@ def admin_unban_user_notify():
         return "", 400
 
 
+@app.route("/api/v1/admin/toggleModule", methods=["POST"])
+def admin_toggle_module():
+    if request.is_json:
+        if bot.is_ready():
+            token = request.headers.get("Token")
+            if token is not None:
+                token = json.loads(token)
+                discord_session = make_session(token=token)
+                if discord_session.authorized:
+                    module = request.get_json()["module"]
+                    enabled = request.get_json()["enabled"]
+
+                    old_json = json.loads(open("settings.json", 'r').read())
+                    old_json["modules"][module] = enabled
+
+                    with open("settings.json", 'w') as f:
+                        f.write(json.dumps(old_json))
+                        f.close()
+                    return "Settings Updated", 200
+                else:
+                    return "", 401
+            else:
+                return "", 403
+        else:
+            return "bot is not ready!", 500
+    else:
+        return "", 400
+
+
+@app.route("/api/v1/admin/modules", methods=["GET"])
+def admin_modules():
+    if bot.is_ready():
+        token = request.headers.get("Token")
+        if token is not None:
+            token = json.loads(token)
+            discord_session = make_session(token=token)
+            if discord_session.authorized:
+                return jsonify(json.loads(open("settings.json", 'r').read()))
+            else:
+                return "", 401
+        else:
+            return "", 403
+    else:
+        return "bot is not ready!", 500
+
+
 @app.route("/api/v1/server/<int:server_id>")
 def api_get_server(server_id):
     if bot.is_ready():

@@ -65,9 +65,9 @@ def getBotLogChannel(bot: discord.ext.commands.Bot):
 
 
 def getBotAdmins():
-    file = open("admins.json", 'r')
+    file = open("settings.json", 'r')
     contents = file.read()
-    return json.loads(contents)
+    return json.loads(contents)["admins"]
 
 
 def addBotAdmin(user_id: int):
