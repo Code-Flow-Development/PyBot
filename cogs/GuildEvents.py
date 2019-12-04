@@ -1,4 +1,5 @@
 import discord
+import re
 from datetime import datetime
 from utils import utc_to_epoch, ServerSettings
 from discord.ext import commands
@@ -86,7 +87,8 @@ class GuildEventsCog(commands.Cog):
             "log_channel"] else None
         enabled = server_settings["events"]["guild_member_unban"]
         if log_channel and enabled:
-            embed = discord.Embed(title="User was unbanned from the server!", description=None, color=discord.Color.green(),
+            embed = discord.Embed(title="User was unbanned from the server!", description=None,
+                                  color=discord.Color.green(),
                                   timestamp=datetime.utcnow())
             embed.add_field(name=f"Username", value=f"{member.name}#{member.discriminator}", inline=False)
             embed.add_field(name="User ID", value=member.id, inline=False)
@@ -215,3 +217,7 @@ class GuildEventsCog(commands.Cog):
 
 def setup(bot):
     bot.add_cog(GuildEventsCog(bot))
+
+
+def predicate(message):
+    return message.content.startswith("{")

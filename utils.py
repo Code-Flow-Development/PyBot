@@ -6,13 +6,14 @@ import os
 import random
 from datetime import datetime
 from threading import Thread
-
+from aiohttp import web
 import coloredlogs
 import discord
 import socketio
 import verboselogs
 import youtube_dl
 from bson.json_util import dumps
+import socketio
 from dateutil.relativedelta import relativedelta
 from discord.ext.commands import errors
 from praw import Reddit
@@ -139,6 +140,7 @@ class ServerSettings:
                 "settings": {
                     "is_banned": False,
                     "log_channel": None,
+                    "starboard_channel": None,
                     "events": {
                         "guild_member_join": True,
                         "guild_member_leave": True,
@@ -162,7 +164,8 @@ class ServerSettings:
                         "counting_channels": False,
                         "music": False,
                         "lol": False,
-                        "nsfw_commands": False
+                        "nsfw_commands": False,
+                        "starboard": False
 
                     },
                     "custom_message_responses": [
@@ -418,6 +421,28 @@ class RedisClient:
 
     def getRedisClient(self):
         return self.client
+
+
+# class Socket:
+#     def __init__(self):
+#         self.app = web.Application()
+#         self.client = socketio.AsyncServer(async_mode='aiohttp')
+#         self.client.attach(self.app)
+#         self.thread: Thread = Thread(target=web.run_app(self.app), daemon=True)
+#
+#         @self.client.event
+#         def connect(sid, environ):
+#             print('connect ', sid)
+#
+#         @self.client.event
+#         def disconnect(sid):
+#             print('disconnect ', sid)
+#
+#     def getClient(self):
+#         return self.client
+#
+#     def run(self):
+#         self.thread.start()
 
 
 def getSystemLogChannel(bot):

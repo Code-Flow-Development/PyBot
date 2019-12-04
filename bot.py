@@ -14,7 +14,7 @@ from flask import Flask, jsonify, session, request
 from flask_session import Session
 from requests_oauthlib import OAuth2Session
 from utils import ServerSettings, loadAllCogs, loadAllExtensions, UserProfiles, SetupLogger, APIServer, getLogger, \
-    RedisClient, Mongo
+    RedisClient, Mongo, Socket
 
 # get asyncio loop
 loop = asyncio.get_event_loop()
@@ -95,9 +95,9 @@ async def on_message(message):
         message_responses_enabled = server_settings["modules"]["message_responses"]
         counting_channel_enabled = server_settings["modules"]["counting_channels"]
 
-        if counting_channel_enabled:
-            if message.channel.type == discord.ChannelType.text and message.channel.name.lower().startswith(
-                    "count-to-"):
+        if message.channel.type == discord.ChannelType.text and message.channel.name.lower().startswith(
+                "count-to-"):
+            if counting_channel_enabled:
                 try:
                     # try to convert the string to a number
                     number = int(message.content)
@@ -123,6 +123,13 @@ async def on_message(message):
                     await message.channel.send(response)
                     return
 
+        # profanity filter
+        words = json.loads(open("settings.json", 'r').read())["profanity_words"]
+        if any(substring in message.content.lower() for substring in words):
+            await message.delete()
+            await asyncio.sleep(1)
+            await message.channel.send("A word you said is not allowed in this server! :rage:")
+
 
 @app.route("/api/v1/users", methods=["GET"])
 def api_users():
@@ -132,7 +139,7 @@ def api_users():
             token = json.loads(token)
             discord_session = make_session(token=token)
             if discord_session.authorized:
-                user_collection = Mongo().Mongo().getMongoClient()["PyBot"]["users"]
+                user_collection = Mongo().getMongoClient()["PyBot"]["users"]
                 users = []
                 for user in user_collection.find():
                     user_json = json.loads(dumps(user))
@@ -538,6 +545,7 @@ def make_session(token=None, state=None, scope=None):
 
 if __name__ == "__main__":
     SetupLogger()  # setup the logger with colored logger and verbose logging
+    # Socket().run()  # create socketio instance
 
 # load the .env file with token
 load_dotenv()

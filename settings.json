@@ -1,1 +1,30 @@
-{"admins": [213247101314924545, 399388398990786561, 276519987244695552], "modules": {"message_responses": true, "counting_channels": true, "music": true, "lol": true, "nsfw": false}}
+{
+  "admins": [
+    213247101314924545,
+    399388398990786561,
+    276519987244695552
+  ],
+  "modules": {
+    "message_responses": true,
+    "counting_channels": true,
+    "music": true,
+    "lol": true,
+    "nsfw": false
+  },
+  "profanity_words": [
+    "fuck",
+    "shit",
+    "ass",
+    "bitch",
+    "fucker",
+    "nigger",
+    "nigga",
+    "faggot",
+    "queere",
+    "dick",
+    "jacob",
+    "piss",
+    "fag",
+    "cock"
+  ]
+}

@@ -409,15 +409,25 @@ class ModerationCommandsCog(commands.Cog):
         except InvalidArgument as e:
             return await ctx.send(f"[ModerationCommands] Permission override information is invalid! Error: {e} ")
 
-    @commands.command(name="setlogchannel", help="Set the log channel for the server")
+    @commands.command(name="setlogchannel", help="Set the log channel for the server", aliases=["slc"])
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
-    async def setlogchannel(self, ctx, log_channel: discord.TextChannel):
+    async def set_log_channel(self, ctx, log_channel: discord.TextChannel):
         server_settings = ServerSettings(ctx.guild)
         server_document = server_settings.getServerDocument()
         server_document["log_channel"] = log_channel.id
         server_settings.update("settings", server_document)
         await ctx.send(f"Updated log channel to {log_channel.mention}")
+
+    # @commands.command(name="setstarboardchannel", help="Set the starboard channel for the server", aliases=["ssc"])
+    # @commands.guild_only()
+    # @commands.has_permissions(administrator=True)
+    # async def set_starboard_channel(self, ctx, starboard_channel: discord.TextChannel):
+    #     server_settings = ServerSettings(ctx.guild)
+    #     server_document = server_settings.getServerDocument()
+    #     server_document["starboard_channel"] = starboard_channel.id
+    #     server_settings.update("settings", server_document)
+    #     await ctx.send(f"Updated starboard channel to {starboard_channel.mention}")
 
     @commands.command(name="eventsettings", help="Enable/Disable event logging")
     @commands.guild_only()
