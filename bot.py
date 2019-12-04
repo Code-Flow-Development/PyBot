@@ -14,7 +14,7 @@ from flask import Flask, jsonify, session, request
 from flask_session import Session
 from requests_oauthlib import OAuth2Session
 from utils import ServerSettings, loadAllCogs, loadAllExtensions, UserProfiles, SetupLogger, APIServer, getLogger, \
-    RedisClient, Mongo, Socket
+    RedisClient, Mongo
 
 # get asyncio loop
 loop = asyncio.get_event_loop()
