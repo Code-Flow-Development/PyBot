@@ -144,20 +144,19 @@ class ServerSettings:
                     "events": {
                         "guild_member_join": True,
                         "guild_member_leave": True,
-                        "guild_member_update": True,
+                        "guild_member_update": False,
                         "guild_member_ban": True,
                         "guild_member_unban": True,
-                        "guild_update": True,
+                        "guild_update": False,
                         "guild_message_delete": True,
-                        "guild_message_edit": True,
+                        "guild_message_edit": False,
                         "guild_channel_delete": True,
                         "guild_channel_create": True,
-                        "guild_channel_update": True,
+                        "guild_channel_update": False,
                         "guild_role_created": True,
                         "guild_role_delete": True,
-                        "guild_role_update": True,
-                        "guild_emojis_update": True,
-                        "user_update": True
+                        "guild_role_update": False,
+                        "guild_emojis_update": False
                     },
                     "modules": {
                         "message_responses": False,
@@ -165,8 +164,8 @@ class ServerSettings:
                         "music": False,
                         "lol": False,
                         "nsfw_commands": False,
-                        "starboard": False
-
+                        "starboard": False,
+                        "profanity_filter": False,
                     },
                     "custom_message_responses": [
                         {
@@ -266,7 +265,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
         filename = YoutubeDL().getPlay().prepare_filename(data)
         if os.path.exists(filename):
-            return cls(discord.FFmpegPCMAudio(filename, {"options": "-vn"}), filename=filename, data=data)
+            return cls(discord.FFmpegPCMAudio(filename, **{"options": "-vn"}), filename=filename, data=data)
         else:
             return None
 
@@ -279,7 +278,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
             data = data["entries"][0]
 
         filename = data["url"]
-        return cls(discord.FFmpegPCMAudio(filename, {"options": "-vn"}), filename=filename, data=data)
+        return cls(discord.FFmpegPCMAudio(filename, **{"options": "-vn"}), filename=filename, data=data)
 
     @classmethod
     def cleanup_file(cls, filename):
