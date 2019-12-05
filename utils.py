@@ -24,6 +24,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+true = True
+false = False
+
 
 def loadAllCogs(bot):
     # loads cogs
@@ -163,7 +166,7 @@ class ServerSettings:
                         "counting_channels": False,
                         "music": False,
                         "lol": False,
-                        "nsfw_commands": False,
+                        "nsfw": False,
                         "starboard": False,
                         "profanity_filter": False,
                     },

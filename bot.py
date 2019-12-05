@@ -518,7 +518,8 @@ def api_get_server(server_id):
                          "role_amount": len(server.roles),
                          "text_channels": [{"name": y.name, "id": y.id} for y in server.text_channels],
                          "roles": [{"name": z.name, "id": z.id} for z in server.roles if z.name != "@everyone"],
-                         "log_channel": server_settings["log_channel"], "is_banned": server_settings["is_banned"]})
+                         "log_channel": server_settings["log_channel"], "is_banned": server_settings["is_banned"],
+                         "events": server_settings["events"], "modules": server_settings["modules"]})
                 else:
                     return "", 400
             else:
@@ -529,20 +530,32 @@ def api_get_server(server_id):
         return "bot is not ready!", 500
 
 
-@app.route("/api/v1/server/<int:server_id>/modules")
-def api_get_server_modules(server_id):
+@app.route("/api/v1/modules")
+def api_get_modules():
     if bot.is_ready():
         token = request.headers.get("Token")
         if token is not None:
             token = json.loads(token)
             discord_session = make_session(token=token)
             if discord_session.authorized:
-                server = bot.get_guild(server_id)
-                server_document = ServerSettings(server).getServerDocument()
-                if server is not None:
-                    return jsonify(server_document["modules"])
-                else:
-                    return "", 400
+                return jsonify(json.loads(open("settings.json", 'r').read())["modules"])
+            else:
+                return "", 401
+        else:
+            return "", 403
+    else:
+        return "bot is not ready!", 500
+
+
+@app.route("/api/v1/events")
+def api_get_events():
+    if bot.is_ready():
+        token = request.headers.get("Token")
+        if token is not None:
+            token = json.loads(token)
+            discord_session = make_session(token=token)
+            if discord_session.authorized:
+                return jsonify(json.loads(open("settings.json", 'r').read())["events"])
             else:
                 return "", 401
         else:

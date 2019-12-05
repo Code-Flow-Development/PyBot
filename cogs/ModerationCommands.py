@@ -458,12 +458,10 @@ class ModerationCommandsCog(commands.Cog):
                                   color=discord.Color.green(), timestamp=datetime.utcnow())
             embed.add_field(name="Log Channel",
                             value=log_channel.mention if log_channel is not None else "No log channel set")
-            embed.add_field(name="Message Responses",
-                            value=server_document["message_responses_enabled"])
-            embed.add_field(name="Counting Channels",
-                            value=server_document["counting_channels_enabled"])
             embed.add_field(name="Events", value='\n'.join(
                 ['**' + x + ':** ' + str(y) for x, y in server_document['events'].items()]))
+            embed.add_field(name="Modules", value='\n'.join(
+                ['**' + x + ':** ' + str(y) for x, y in server_document['modules'].items()]))
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
             await ctx.send(content=None, embed=embed)

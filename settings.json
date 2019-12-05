@@ -1,1 +1,153 @@
-{"admins": [276519987244695552, 213247101314924545, 399388398990786561], "modules": {"message_responses": {"name": "Message Responses", "enabled": true, "description": "Toggle Message Responses Module", "icon": "fa-reply"}, "counting_channels": {"name": "Counting Channels", "enabled": true, "description": "Toggle Counting Channel Module", "icon": "fa-sort-numeric-up"}, "music": {"name": "Music", "enabled": true, "description": "Toggle Music Module", "icon": "fa-music"}, "lol": {"name": "League of Legends", "enabled": true, "description": "Toggle League of Legends Module", "icon": "fa-gamepad"}, "nsfw": {"name": "NSFW", "enabled": false, "description": "Toggle NSFW Module", "icon": "fa-exclamation-triangle"}, "profanity_filter": {"name": "Profanity Filter", "enabled": true, "description": "Toggle Profanity Filter Module", "icon": "fa-filter"}}, "profanity_words": ["fuck", "shit", "ass", "bitch", "fucker", "nigger", "nigga", "faggot", "queere", "dick", "jacob", "piss", "fag", "cock"]}
+{
+  "admins": [
+    276519987244695552,
+    213247101314924545,
+    399388398990786561
+  ],
+  "modules": {
+    "message_responses": {
+      "name": "Message Responses",
+      "enabled": true,
+      "description": "Toggle Message Responses Module",
+      "icon": "fa-reply"
+    },
+    "counting_channels": {
+      "name": "Counting Channels",
+      "enabled": true,
+      "description": "Toggle Counting Channel Module",
+      "icon": "fa-sort-numeric-up"
+    },
+    "music": {
+      "name": "Music",
+      "enabled": true,
+      "description": "Toggle Music Module",
+      "icon": "fa-music"
+    },
+    "lol": {
+      "name": "League of Legends",
+      "enabled": true,
+      "description": "Toggle League of Legends Module",
+      "icon": "fa-gamepad"
+    },
+    "nsfw": {
+      "name": "NSFW",
+      "enabled": false,
+      "description": "Toggle NSFW Module",
+      "icon": "fa-exclamation-triangle"
+    },
+    "profanity_filter": {
+      "name": "Profanity Filter",
+      "enabled": true,
+      "description": "Toggle Profanity Filter Module",
+      "icon": "fa-filter"
+    }
+  },
+  "events": {
+    "guild_member_join": {
+      "name": "Guild Member Join",
+      "enabled": false,
+      "description": "Event when users join a server",
+      "icon": "fa-music"
+    },
+    "guild_member_leave": {
+      "name": "Guild Member Leave",
+      "enabled": false,
+      "description": "Event when users leave a server",
+      "icon": "fa-music"
+    },
+    "guild_member_update": {
+      "name": "Guild Member Update",
+      "enabled": false,
+      "description": "Event when server members update theirself (nickname, roles, etc)",
+      "icon": "fa-music"
+    },
+    "guild_member_ban": {
+      "name": "Guild Member Ban",
+      "enabled": false,
+      "description": "Event when user is banned from a server",
+      "icon": "fa-music"
+    },
+    "guild_member_unban": {
+      "name": "Guild Member Unban",
+      "enabled": false,
+      "description": "Event when user is unbanned from a server",
+      "icon": "fa-music"
+    },
+    "guild_update": {
+      "name": "Guild Update",
+      "enabled": false,
+      "description": "Event when the server is updated (name, icon, region, etc)",
+      "icon": "fa-music"
+    },
+    "guild_message_delete": {
+      "name": "Guild Message Delete",
+      "enabled": false,
+      "description": "Event when a message is deleted",
+      "icon": "fa-music"
+    },
+    "guild_message_edit": {
+      "name": "Guild Member Edit",
+      "enabled": false,
+      "description": "Event when a message is edited",
+      "icon": "fa-music"
+    },
+    "guild_channel_create": {
+      "name": "Guild Channel Create",
+      "enabled": false,
+      "description": "Event when a channel is created in a server",
+      "icon": "fa-music"
+    },
+    "guild_channel_delete": {
+      "name": "Guild Channel Delete",
+      "enabled": false,
+      "description": "Event when a channel is deleted in a server",
+      "icon": "fa-music"
+    },
+    "guild_channel_update": {
+      "name": "Guild Channel Update",
+      "enabled": false,
+      "description": "Event when a channel is edited in a server (name, permissions, etc)",
+      "icon": "fa-music"
+    },
+    "guild_role_created": {
+      "name": "Guild Role Created",
+      "enabled": false,
+      "description": "Event when a role is created in a server",
+      "icon": "fa-music"
+    },
+    "guild_role_delete": {
+      "name": "Guild Role Delete",
+      "enabled": false,
+      "description": "Event when a role is deleted in a server",
+      "icon": "fa-music"
+    },
+    "guild_role_update": {
+      "name": "Guild Role Update",
+      "enabled": false,
+      "description": "Event when a role is edited in a server (name, color, permissions, etc)",
+      "icon": "fa-music"
+    },
+    "guild_emojis_update": {
+      "name": "Guild Emojis Update",
+      "enabled": false,
+      "description": "Event when an emoji is edited in a server",
+      "icon": "fa-music"
+    }
+  },
+  "profanity_words": [
+    "fuck",
+    "shit",
+    "ass",
+    "bitch",
+    "fucker",
+    "nigger",
+    "nigga",
+    "faggot",
+    "queere",
+    "dick",
+    "jacob",
+    "piss",
+    "fag",
+    "cock"
+  ]
+}
