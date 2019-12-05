@@ -121,6 +121,23 @@ class BotAdminCommandsCog(commands.Cog):
                 await ctx.send("[Eval] Empty result")
         except Exception as e:
             await ctx.send(f"[Eval] Error running code: {type(e).__name__} - {e}")
+            
+    @commands.command(name="exec", hidden=True, help="Executes code")
+    @checks.isBotAdmin()
+    async def exec(self, ctx, *, code: str):
+        code = code.strip('` ')
+
+        try:
+            result = exec(code)
+            if inspect.isawaitable(result):
+                result = await result
+
+            if result is not None:
+                await ctx.send(f"```py\n{result}\n```")
+            else:
+                await ctx.send("[Eval] Empty result")
+        except Exception as e:
+            await ctx.send(f"[Eval] Error running code: {type(e).__name__} - {e}")
 
     @commands.command(name="resetuser", hidden=True, help="Clears a users profile")
     @commands.guild_only()
