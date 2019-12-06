@@ -67,8 +67,12 @@ def worker():
         ServerSettings(guild)
 
 
-def socket_update_worker():
-    emit("test", {"data": "hello world!"})
+# async def socket_update_worker():
+#     getLogger().debug("Started emitters")
+#     while True:
+#         await asyncio.sleep(1)
+#         emit("test", {"data": "hello world!"})
+
 
 
 # Ready event
@@ -99,8 +103,8 @@ async def on_ready():
     thread.start()
 
     # Start socket io emitters
-    thread = Thread(target=socket_update_worker, daemon=True)
-    thread.start()
+    # thread = Thread(target=socket_update_worker, daemon=True)
+    # thread.start()
 
 
 # message event
