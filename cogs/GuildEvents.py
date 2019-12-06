@@ -1,6 +1,7 @@
 import discord
-import re
 from datetime import datetime
+
+import utils
 from utils import utc_to_epoch, ServerSettings
 from discord.ext import commands
 from utils import UserProfiles
@@ -122,6 +123,8 @@ class GuildEventsCog(commands.Cog):
             embed.add_field(name="Channel", value=message.channel.mention)
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             await log_channel.send(content=None, embed=embed)
+        else:
+            print("no log channel or not enabled")
 
     @commands.Cog.listener()
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
@@ -163,8 +166,11 @@ class GuildEventsCog(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_update(self, before: discord.Guild, after: discord.Guild):
         # TODO: Make this an embed
-        log_channel = ServerSettings(before).getLogChannel(self.bot)
-        if log_channel:
+        server_settings = ServerSettings(before).getServerDocument()
+        log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
+            "log_channel"] else None
+        enabled = server_settings["events"]["guild_update"]
+        if log_channel and enabled:
             embed = discord.Embed(title=f"Guild Updated", description=None, color=discord.Color.green(),
                                   timestamp=datetime.utcnow())
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
@@ -172,7 +178,10 @@ class GuildEventsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_role_create(self, role: discord.Role):
-        log_channel = ServerSettings(role.guild).getLogChannel(self.bot)
+        server_settings = ServerSettings(role.guild).getServerDocument()
+        log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
+            "log_channel"] else None
+        enabled = server_settings["events"]["guild_role_create"]
         embed = discord.Embed(title=f"Role Created", description=None, color=discord.Color.green(),
                               timestamp=datetime.utcnow())
         embed.add_field(name="Role Name", value=f"{role.name}")
@@ -180,44 +189,51 @@ class GuildEventsCog(commands.Cog):
         embed.add_field(name="Hoisted", value=f"{role.hoist}")
         embed.add_field(name="Mentionable", value=f"{role.mentionable}")
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-        if log_channel:
+        if log_channel and enabled:
             await log_channel.send(content=None, embed=embed)
 
     @commands.Cog.listener()
     async def on_guild_role_delete(self, role: discord.Role):
-        log_channel = ServerSettings(role.guild).getLogChannel(self.bot)
+        server_settings = ServerSettings(role.guild).getServerDocument()
+        log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
+            "log_channel"] else None
+        enabled = server_settings["events"]["guild_role_delete"]
         embed = discord.Embed(title=f"Role Deleted", description=None, color=discord.Color.green(),
                               timestamp=datetime.utcnow())
         embed.add_field(name="Role Name", value=f"{role.name}")
         embed.add_field(name="Role ID", value=f"{role.id}")
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-        if log_channel:
+        if log_channel and enabled:
             await log_channel.send(content=None, embed=embed)
 
     @commands.Cog.listener()
     async def on_guild_role_update(self, before: discord.Role, after: discord.Role):
         # TODO: Make this an embed
-        log_channel = ServerSettings(before.guild).getLogChannel(self.bot)
-        if log_channel:
+        server_settings = ServerSettings(before.guild).getServerDocument()
+        log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
+            "log_channel"] else None
+        enabled = server_settings["events"]["guild_role_update"]
+        if log_channel and enabled:
             embed = discord.Embed(title=f"Role Updated", description=None, color=discord.Color.green(),
                                   timestamp=datetime.utcnow())
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             await log_channel.send(f"Role updated: {before.name}")
 
-    # @commands.Cog.listener()
-    # async def on_guild_emojis_update(self, guild: discord.Guild, before: discord.Emoji, after: discord.Emoji):
-    #     # TODO: Make this an embed and correctly log this change
-    #     log_channel = ServerSettings(guild).getLogChannel(self.bot)
-    #     if log_channel:
-    #         embed = discord.Embed(title=f"Emoji Updated", description=None, color=discord.Color.green(),
-    #                               timestamp=datetime.utcnow())
-    #         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-    #         await log_channel.send(f"Emoji Updated: {before.name}")
+    @commands.Cog.listener()
+    async def on_guild_emojis_update(self, guild: discord.Guild, before: discord.Emoji, after: discord.Emoji):
+        # TODO: Make this an embed and correctly log this change
+        server_settings = ServerSettings(guild).getServerDocument()
+        log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
+            "log_channel"] else None
+        enabled = server_settings["events"]["guild_role_update"]
+        if log_channel and enabled:
+            # embed = discord.Embed(title=f"Emoji Updated", description=None, color=discord.Color.green(),
+            #                       timestamp=datetime.utcnow())
+            # embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            await log_channel.send(f"Emoji Updated")
+            utils.getLogger().debug(before)
+            utils.getLogger().debug(after)
 
 
 def setup(bot):
     bot.add_cog(GuildEventsCog(bot))
-
-
-def predicate(message):
-    return message.content.startswith("{")

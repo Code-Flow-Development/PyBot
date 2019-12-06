@@ -50,4 +50,3 @@ def isNSFWEnabledCheck(ctx):
 
 def isNSFWEnabled():
     return commands.check(lambda ctx: isNSFWEnabledCheck(ctx))
-
