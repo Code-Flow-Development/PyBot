@@ -93,8 +93,7 @@ async def on_ready():
     loadAllExtensions(bot)
 
     # Start the flask api
-    partial_run = partial(socketio.run(app=app, host=os.getenv("API_HOST"), port=os.getenv("API_PORT"), ), app=app,
-                          host=os.getenv("API_HOST"), port=os.getenv("API_PORT"), debug=True,
+    partial_run = partial(app.run, host=os.getenv("API_HOST"), port=os.getenv("API_PORT"), debug=True,
                           use_reloader=False)
     APIServer(partial_run).start()
 
