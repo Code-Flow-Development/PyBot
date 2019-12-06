@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 from functools import partial
 from threading import Thread
-
+from flask_socketio import SocketIO, emit
 import discord
 from bson.json_util import dumps
 from discord.ext import commands
@@ -35,6 +35,7 @@ app.config['SESSION_TYPE'] = 'redis'
 app.config["SESSION_REDIS"] = RedisClient().getRedisClient()
 app.config['SECRET_KEY'] = OAUTH2_CLIENT_SECRET
 sess = Session()
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 API_VERSION = os.getenv('API_VERSION')
 
@@ -51,9 +52,23 @@ bot.remove_command('help')
 bot.remove_listener(func=bot.on_message)
 
 
+@socketio.on('connect')
+def test_connect():
+    emit('connect', {'data': 'Connected'})
+
+
+@socketio.on('disconnect')
+def test_disconnect():
+    print('Client disconnected')
+
+
 def worker():
     for guild in bot.guilds:
         ServerSettings(guild)
+
+
+def socket_update_worker():
+    emit("test", {"data": "hello world!"})
 
 
 # Ready event
@@ -61,7 +76,9 @@ def worker():
 async def on_ready():
     bot.startedAt = time.time()
     getLogger().info(f'Logged in as {bot.user}')
+
     # await bot.change_presence(activity=discord.Activity(name='in ' + str(len(bot.guilds)) + " servers!", type=discord.ActivityType.playing))
+
     await bot.change_presence(activity=discord.Activity(name="hentai! 😳", type=discord.ActivityType.watching),
                               status=discord.Status.dnd)
 
@@ -72,12 +89,17 @@ async def on_ready():
     loadAllExtensions(bot)
 
     # Start the flask api
-    partial_run = partial(app.run, host=os.getenv("API_HOST"), port=os.getenv("API_PORT"), debug=True,
+    partial_run = partial(socketio.run(app=app, host=os.getenv("API_HOST"), port=os.getenv("API_PORT"), ), app=app,
+                          host=os.getenv("API_HOST"), port=os.getenv("API_PORT"), debug=True,
                           use_reloader=False)
     APIServer(partial_run).start()
 
     # Create server documents for each server
     thread = Thread(target=worker, daemon=True)
+    thread.start()
+
+    # Start socket io emitters
+    thread = Thread(target=socket_update_worker, daemon=True)
     thread.start()
 
 
@@ -207,6 +229,26 @@ def api_servers():
                                     "role_amount": len(x.roles),
                                     "is_banned": server_json["settings"]["is_banned"]})
                 return jsonify(servers)
+            else:
+                return "", 401
+        else:
+            return "", 403
+    else:
+        return "bot is not ready!", 500
+
+
+@app.route("/api/v1/bot", methods=["GET"])
+def api_bot():
+    if bot.is_ready():
+        token = request.headers.get("Token")
+        if token is not None:
+            token = json.loads(token)
+            discord_session = make_session(token=token)
+            if discord_session.authorized:
+                bot_info = {
+
+                }
+                return jsonify(bot_info)
             else:
                 return "", 401
         else:
@@ -751,7 +793,6 @@ def make_session(token=None, state=None, scope=None):
 
 if __name__ == "__main__":
     SetupLogger()  # setup the logger with colored logger and verbose logging
-    # Socket().run()  # create socketio instance
 
 # load the .env file with token
 load_dotenv()

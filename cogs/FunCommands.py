@@ -331,6 +331,18 @@ class FunCommandsCog(commands.Cog):
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         await ctx.send(content=None, embed=embed)
 
+    @commands.command(name="confusion")
+    @commands.guild_only()
+    async def confusion(self, ctx):
+        embed = discord.Embed(title=None,
+                              description=None,
+                              color=discord.Color.green(), timestamp=datetime.utcnow())
+        embed.set_image(
+            url="https://i.imgur.com/i7CecBP.jpg")
+        embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+        await ctx.send(content=None, embed=embed)
+
     @commands.command(name="spam", help="Spams a user with 5 mentions", usage="<@user>", hidden=True, enabled=False)
     @commands.guild_only()
     @commands.has_permissions(administrator=True)

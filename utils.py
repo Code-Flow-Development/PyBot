@@ -6,14 +6,12 @@ import os
 import random
 from datetime import datetime
 from threading import Thread
-from aiohttp import web
 import coloredlogs
 import discord
-import socketio
 import verboselogs
 import youtube_dl
 from bson.json_util import dumps
-import socketio
+from flask_socketio import SocketIO, emit
 from dateutil.relativedelta import relativedelta
 from discord.ext.commands import errors
 from praw import Reddit
@@ -286,14 +284,6 @@ class YTDLSource(discord.PCMVolumeTransformer):
     @classmethod
     def cleanup_file(cls, filename):
         os.remove(filename)
-
-
-class SocketIO:
-    def __init__(self):
-        self.client = socketio.Client()
-
-    def getSocketIOClient(self):
-        return self.client
 
 
 class Mongo:
