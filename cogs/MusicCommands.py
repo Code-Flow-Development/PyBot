@@ -40,6 +40,18 @@ class MusicCog(commands.Cog):
         except Exception as e:
             await ctx.send(f"An error occurred! Error: ```{e}```")
 
+    @commands.command(name="tacticalnuke")
+    @commands.guild_only()
+    @isMusicEnabled()
+    async def tactical_nuke(self, ctx):
+        try:
+            async with ctx.typing():
+                player = await YTDLSource.from_url_stream("https://cdn.discordapp.com/attachments/645773103296675880/652321635512352768/Modern_Warfare_2_-_Tactical_Nuke_Sound.weba", loop=self.bot.loop)
+                ctx.voice_client.play(player, after=lambda e1: print(f"Player error: {e1}") if e1 else None)
+            await ctx.send(f"Now streaming: ``{player.title}``")
+        except Exception as e:
+            await ctx.send(f"An error occurred! Error: ```{e}```")
+
     @commands.command(name="music_stream")
     @commands.guild_only()
     @isMusicEnabled()
