@@ -1,3 +1,5 @@
+import asyncio
+
 import discord
 from discord.ext import commands
 from utils import YTDLSource
@@ -46,9 +48,12 @@ class MusicCog(commands.Cog):
     async def tactical_nuke(self, ctx):
         try:
             async with ctx.typing():
-                player = await YTDLSource.from_url_stream("https://cdn.discordapp.com/attachments/645773103296675880/652321635512352768/Modern_Warfare_2_-_Tactical_Nuke_Sound.weba", loop=self.bot.loop)
-                ctx.voice_client.play(player, after=lambda e1: print(f"Player error: {e1}") if e1 else None)
-            await ctx.send(f"Now streaming: ``{player.title}``")
+                self.player = await YTDLSource.from_url_play("https://cdn.discordapp.com/attachments/645773103296675880/652321635512352768/Modern_Warfare_2_-_Tactical_Nuke_Sound.weba", loop=self.bot.loop)
+                if self.player is not None:
+                    ctx.voice_client.play(self.player, after=lambda e: print(f'Player error: {e}') if e else None)
+                    # await asyncio.sleep(self.player.length)
+                else:
+                    return await ctx.send(f"File is too large to play!")
         except Exception as e:
             await ctx.send(f"An error occurred! Error: ```{e}```")
 
@@ -100,6 +105,7 @@ class MusicCog(commands.Cog):
 
     @play.before_invoke
     @stream.before_invoke
+    @tactical_nuke.before_invoke
     async def ensure_voice(self, ctx):
         if ctx.voice_client is None:
             if ctx.author.voice:
