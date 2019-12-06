@@ -96,10 +96,7 @@ async def on_message(message):
             return await spy_channel.send(content=None, embed=embed)
         elif len(message.attachments) > 0:
             links = "\n".join([x.url for x in message.attachments])
-            embed = discord.Embed(title=f"{message.author.name} sent me a DM with attachments", description=None,
-                                  color=discord.Color.green(), timestamp=datetime.utcnow())
-            embed.set_footer(text=f"Sent by {message.author}", icon_url=message.author.avatar_url)
-            return await spy_channel.send(content=f"{message.author} sent me a DM with attachments:\n{links}", embed=embed)
+            return await spy_channel.send(content=f"``{message.author}`` sent me a DM with attachments:\n{links}")
 
     user_profile = UserProfiles(message.author).getUserProfile()
     server_settings = ServerSettings(message.guild).getServerDocument()
