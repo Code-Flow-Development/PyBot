@@ -10,6 +10,7 @@ from threading import Thread
 
 import coloredlogs
 import discord
+import requests
 import verboselogs
 from async_timeout import timeout
 from bson.json_util import dumps
@@ -207,29 +208,73 @@ def getRandomFact():
     return random.choice(json_data)
 
 
-def getLoLBootsJson():
-    contents = open("LoLData\\LoLBoots.json", 'r', encoding='utf8').read()
-    return json.loads(contents)
+class LeagueofLegends:
+    def __init__(self):
+        self.version_url = "https://ddragon.leagueoflegends.com/api/versions.json"
+        self.champion_url = "http://ddragon.leagueoflegends.com/cdn/%s/data/en_US/champion.json"
+        self.runes_url = "http://ddragon.leagueoflegends.com/cdn/%s/data/en_US/runesReforged.json"
+        self.items_url = "http://ddragon.leagueoflegends.com/cdn/%s/data/en_US/item.json"
+
+    def getCurrentVersion(self):
+        response = requests.get(self.version_url)
+        if response.status_code == 200:
+            return response.json()[0]
+        else:
+            getLogger().debug(
+                f"[League of Legends] Version API call failed! Status Code: {response.status_code}; Response Text: {response.text}")
+            return None
+
+    def getChampions(self):
+        current_version = self.getCurrentVersion()
+        if current_version is not None:
+            response = requests.get(self.champion_url.format(current_version))
+            if response.status_code == 200:
+                return response.json()
+        else:
+            return None
+
+    def getRunes(self):
+        current_version = self.getCurrentVersion()
+        if current_version is not None:
+            response = requests.get(self.runes_url.format(current_version))
+            if response.status_code == 200:
+                return response.json()
+        else:
+            return None
+
+    def getItems(self):
+        current_version = self.getCurrentVersion()
+        if current_version is not None:
+            response = requests.get(self.items_url.format(current_version))
+            if response.status_code == 200:
+                return response.json()
+        else:
+            return None
 
 
-def getLoLChampsJson():
-    contents = open("LoLData\\LoLChamps.json", 'r', encoding='utf8').read()
-    return json.loads(contents)
-
-
-def getLoLItemsJson():
-    contents = open("LoLData\\LoLItems.json", 'r', encoding='utf8').read()
-    return json.loads(contents)
-
-
-def getLoLjgItemsJson():
-    contents = open("LoLData\\LoLjgItems.json", 'r', encoding='utf8').read()
-    return json.loads(contents)
-
-
-def getLoLRunesJson():
-    contents = open("LoLData\\LoLRunes.json", 'r', encoding='utf8').read()
-    return json.loads(contents)
+# def getLoLBootsJson():
+#     contents = open("LoLData\\LoLBoots.json", 'r', encoding='utf8').read()
+#     return json.loads(contents)
+#
+#
+# def getLoLChampsJson():
+#     contents = open("LoLData\\LoLChamps.json", 'r', encoding='utf8').read()
+#     return json.loads(contents)
+#
+#
+# def getLoLItemsJson():
+#     contents = open("LoLData\\LoLItems.json", 'r', encoding='utf8').read()
+#     return json.loads(contents)
+#
+#
+# def getLoLjgItemsJson():
+#     contents = open("LoLData\\LoLjgItems.json", 'r', encoding='utf8').read()
+#     return json.loads(contents)
+#
+#
+# def getLoLRunesJson():
+#     contents = open("LoLData\\LoLRunes.json", 'r', encoding='utf8').read()
+#     return json.loads(contents)
 
 
 def getLoLSuppItemsJson():
@@ -244,6 +289,7 @@ def getLoLChampsKeyList():
         for key in x:
             keys.append(key)
     return keys
+
 
 class Mongo:
     def __init__(self):

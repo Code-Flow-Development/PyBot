@@ -4,7 +4,7 @@ from datetime import datetime
 
 import discord
 from discord.ext import commands
-
+import utils
 from utils import UserProfiles, getLogger, getSystemLogChannel, BotAdmins
 from .utils import checks
 
@@ -126,7 +126,8 @@ class BotAdminCommandsCog(commands.Cog):
             'discord': discord,
             'commands': commands,
             'ctx': ctx,
-            '__import__': __import__
+            '__import__': __import__,
+            'utils': utils
         }
 
         try:

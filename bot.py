@@ -5,13 +5,14 @@ import time
 from datetime import datetime
 from functools import partial
 from threading import Thread
-from flask_socketio import SocketIO, emit
+
 import discord
 from bson.json_util import dumps
 from discord.ext import commands
 from dotenv import load_dotenv
 from flask import Flask, jsonify, session, request
 from flask_session import Session
+from flask_socketio import SocketIO, emit
 from requests_oauthlib import OAuth2Session
 
 from utils import ServerSettings, loadAllCogs, loadAllExtensions, UserProfiles, SetupLogger, APIServer, getLogger, \
@@ -72,7 +73,6 @@ def worker():
 #     while True:
 #         await asyncio.sleep(1)
 #         emit("test", {"data": "hello world!"})
-
 
 
 # Ready event
@@ -240,7 +240,7 @@ def api_servers():
         return "bot is not ready!", 500
 
 
-@app.route("/api/v1/bot", methods=["GET"])
+@app.route("/api/v1/admin/bot", methods=["GET"])
 def api_bot():
     if bot.is_ready():
         token = request.headers.get("Token")
@@ -248,8 +248,23 @@ def api_bot():
             token = json.loads(token)
             discord_session = make_session(token=token)
             if discord_session.authorized:
+                member = bot.get_guild(644927766197698590).get_member(bot.user.id)
                 bot_info = {
-
+                    "latency": bot.latency,
+                    "user": {
+                        "id": bot.user.id,
+                        "name": str(bot.user),
+                        "avatar_url": str(bot.user.avatar_url)
+                    },
+                    "activity": {
+                        "name": str(member.activity.name),
+                        "type": str(member.activity.type)
+                    },
+                    "status": str(member.status),
+                    "servers": len(bot.guilds),
+                    "users": len(bot.users),
+                    "voice_clients": len(bot.voice_clients),
+                    "shards": bot.shard_count
                 }
                 return jsonify(bot_info)
             else:

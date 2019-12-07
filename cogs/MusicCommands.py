@@ -83,7 +83,7 @@ class MusicCog(commands.Cog):
 
         # If download is False, source will be a dict which will be used later to regather the stream.
         # If download is True, source will be a discord.FFmpegPCMAudio with a VolumeTransformer.
-        async with ctx.trigger_typing():
+        async with ctx.typing():
             source = await YTDLSource.create_source(ctx, search, loop=self.bot.loop, download=False)
 
         if isinstance(source, list):
