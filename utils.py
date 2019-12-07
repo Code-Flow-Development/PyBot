@@ -211,29 +211,47 @@ def getRandomFact():
 class LeagueofLegends:
     def __init__(self):
         self.version_url = "https://ddragon.leagueoflegends.com/api/versions.json"
-        self.champion_url = "http://ddragon.leagueoflegends.com/cdn/%s/data/en_US/champion.json"
-        self.runes_url = "http://ddragon.leagueoflegends.com/cdn/%s/data/en_US/runesReforged.json"
-        self.items_url = "http://ddragon.leagueoflegends.com/cdn/%s/data/en_US/item.json"
+        self.champion_url = "http://ddragon.leagueoflegends.com/cdn/{}/data/en_US/champion.json"
+        self.runes_url = "http://ddragon.leagueoflegends.com/cdn/{}/data/en_US/runesReforged.json"
+        self.items_url = "http://ddragon.leagueoflegends.com/cdn/{}/data/en_US/item.json"
 
     def getCurrentVersion(self):
         response = requests.get(self.version_url)
         if response.status_code == 200:
             return response.json()[0]
         else:
-            getLogger().debug(
+            getLogger().error(
                 f"[League of Legends] Version API call failed! Status Code: {response.status_code}; Response Text: {response.text}")
             return None
 
     def getChampions(self):
+        '''
+        JSON values:
+        version, id, name, title, blurb, info, image, tags, partype, stats
+        :return: JSON objector none if error
+        '''
         current_version = self.getCurrentVersion()
         if current_version is not None:
             response = requests.get(self.champion_url.format(current_version))
             if response.status_code == 200:
-                return response.json()
+                return response.json()["data"]
         else:
+            getLogger().error(f"[League of Legends] Champion API call failed! current version is none! {current_version}")
             return None
 
     def getRunes(self):
+        """
+        JSON values:
+        key, icon, name, slots
+
+        slot values:
+        runes: list
+
+        slot -> runes values:
+        id, key, icon, name, shotDesc, longDesc
+
+        :return: list if json objects or None if error
+        """
         current_version = self.getCurrentVersion()
         if current_version is not None:
             response = requests.get(self.runes_url.format(current_version))
@@ -243,11 +261,16 @@ class LeagueofLegends:
             return None
 
     def getItems(self):
+        """
+        JSON Values:
+        name, description, plaintext, image, gold, tags, stats
+        :return: JSON object of items or None if error
+        """
         current_version = self.getCurrentVersion()
         if current_version is not None:
             response = requests.get(self.items_url.format(current_version))
             if response.status_code == 200:
-                return response.json()
+                return response.json()["data"]
         else:
             return None
 
