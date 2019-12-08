@@ -1,10 +1,11 @@
 import asyncio
+import random
 from datetime import datetime
 
 import discord
 from discord.ext import commands
 
-from utils import LeagueofLegends
+from utils import LeagueofLegends, getLogger
 from .utils.checks import isLoLEnabled
 
 
@@ -64,7 +65,7 @@ class LeagueCommandsCog(commands.Cog):
         # Displays all the champions in the bot currently.
         if decider.lower() == "champs":
             champions = LeagueofLegends().getChampions()
-            champion_names = [key for key in champions]
+            champion_names = [champions["keys"][key] for key in champions["keys"]]
             pagination = [champion_names[i:i + 15] for i in range(0, len(champion_names), 15)]
             page = 0
 
@@ -121,164 +122,170 @@ class LeagueCommandsCog(commands.Cog):
             await rune_list_message.add_reaction("❌")
 
             await self.process_reactions(ctx, rune_list_message, page, pagination, list_type="Rune")
-        #
+
         # # Displays a random set of 6 items.
-        # elif decider2 is not None:
-        #     if decider.lower() == "random" and decider2.lower() == "champs":
-        #         champs_list = getLoLChampsJson()
-        #         randchamp = random.choice(champs_list)
-        #         displayname = randchamp[list(randchamp.keys())[0]]["display_name"]
-        #         titlename = randchamp[list(randchamp.keys())[0]]['title']
-        #         loresnippet = randchamp[list(randchamp.keys())[0]]['lore_snippet']
-        #         embed = discord.Embed(title=f"{displayname} {titlename}",
-        #                               description=f"{loresnippet} \n **Goodluck with the random champion!**",
-        #                               color=discord.Color.orange(),
-        #                               timestamp=datetime.utcnow())
-        #         embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
-        #         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-        #         await ctx.send(content=None, embed=embed)
-        #     elif decider.lower() == "random" and decider2.lower() == "items":
-        #         try:
-        #             await ctx.send("What lane are you playing?")
-        #             response = await self.bot.wait_for('message', timeout=20)
-        #             if response.content.lower() == "top" or response.content.lower() == "mid" or response.content.lower() == "bot":
-        #                 items_list = getLoLItemsJson()
-        #                 randitemone = random.choice(items_list)
-        #                 randitemtwo = None
-        #                 randitemthree = None
-        #                 randitemfour = None
-        #                 randitemfive = None
-        #                 while True:
-        #                     desireditem = random.choice(items_list)
-        #                     if randitemtwo is None:
-        #                         if not desireditem == randitemone:
-        #                             randitemtwo = desireditem
-        #                     elif randitemthree is None:
-        #                         if not desireditem == randitemone or randitemtwo:
-        #                             randitemthree = desireditem
-        #                     elif randitemfour is None:
-        #                         if not desireditem == randitemone or randitemtwo or randitemthree:
-        #                             randitemfour = desireditem
-        #                     elif randitemfive is None:
-        #                         if not desireditem == randitemone or randitemtwo or randitemthree or randitemfour:
-        #                             randitemfive = desireditem
-        #                             break
-        #
-        #                 items_list = getLoLBootsJson()
-        #                 randboots = random.choice(items_list)
-        #
-        #                 embed = discord.Embed(title=f"You have selected top mid or bot!",
-        #                                       description=None,
-        #                                       color=discord.Color.orange(),
-        #                                       timestamp=datetime.utcnow())
-        #                 embed.add_field(name="First Item", value=f"{randitemone}", inline=False)
-        #                 embed.add_field(name="Second Item", value=f"{randitemtwo}", inline=False)
-        #                 embed.add_field(name="Third Item", value=f"{randitemthree}", inline=False)
-        #                 embed.add_field(name="Fourth Item", value=f"{randitemfour}", inline=False)
-        #                 embed.add_field(name="Fifth Item", value=f"{randitemfive}", inline=False)
-        #                 embed.add_field(name="Boots", value=f"{randboots}", inline=False)
-        #                 embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
-        #                 embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-        #                 await ctx.send(content=None, embed=embed)
-        #             elif response.content.lower() == "jungle":
-        #                 jgitems_list = getLoLjgItemsJson()
-        #                 randitemone = random.choice(jgitems_list)
-        #                 items_list = getLoLItemsJson()
-        #                 randitemtwo = None
-        #                 randitemthree = None
-        #                 randitemfour = None
-        #                 randitemfive = None
-        #                 while True:
-        #                     desireditem = random.choice(items_list)
-        #                     if randitemtwo is None:
-        #                         if not desireditem == randitemone:
-        #                             randitemtwo = desireditem
-        #                     elif randitemthree is None:
-        #                         if not desireditem == randitemone or randitemtwo:
-        #                             randitemthree = desireditem
-        #                     elif randitemfour is None:
-        #                         if not desireditem == randitemone or randitemtwo or randitemthree:
-        #                             randitemfour = desireditem
-        #                     elif randitemfive is None:
-        #                         if not desireditem == randitemone or randitemtwo or randitemthree or randitemfour:
-        #                             randitemfive = desireditem
-        #                             break
-        #
-        #                 boots_list = getLoLBootsJson()
-        #                 randboots = random.choice(boots_list)
-        #
-        #                 embed = discord.Embed(title=f"You have selected jungle!",
-        #                                       description=None,
-        #                                       color=discord.Color.orange(),
-        #                                       timestamp=datetime.utcnow())
-        #                 embed.add_field(name="Jungle Item", value=f"{randitemone}", inline=False)
-        #                 embed.add_field(name="Second Item", value=f"{randitemtwo}", inline=False)
-        #                 embed.add_field(name="Third Item", value=f"{randitemthree}", inline=False)
-        #                 embed.add_field(name="Fourth Item", value=f"{randitemfour}", inline=False)
-        #                 embed.add_field(name="Fifth Item", value=f"{randitemfive}", inline=False)
-        #                 embed.add_field(name="Boots", value=f"{randboots}", inline=False)
-        #                 embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
-        #                 embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-        #                 await ctx.send(content=None, embed=embed)
-        #             elif response.content.lower() == "support":
-        #                 suppitems_list = getLoLSuppItemsJson()
-        #                 randitemone = random.choice(suppitems_list)
-        #                 items_list = getLoLItemsJson()
-        #                 randitemtwo = None
-        #                 randitemthree = None
-        #                 randitemfour = None
-        #                 randitemfive = None
-        #                 while True:
-        #                     desireditem = random.choice(items_list)
-        #                     if randitemtwo is None:
-        #                         if not desireditem == randitemone:
-        #                             randitemtwo = desireditem
-        #                     elif randitemthree is None:
-        #                         if not desireditem == randitemone or randitemtwo:
-        #                             randitemthree = desireditem
-        #                     elif randitemfour is None:
-        #                         if not desireditem == randitemone or randitemtwo or randitemthree:
-        #                             randitemfour = desireditem
-        #                     elif randitemfive is None:
-        #                         if not desireditem == randitemone or randitemtwo or randitemthree or randitemfour:
-        #                             randitemfive = desireditem
-        #                             break
-        #
-        #                 boots_list = getLoLBootsJson()
-        #                 randboots = random.choice(boots_list)
-        #
-        #                 embed = discord.Embed(title="You have selected support!",
-        #                                       description=None,
-        #                                       color=discord.Color.orange(),
-        #                                       timestamp=datetime.utcnow())
-        #                 embed.add_field(name="Support Item", value=f"{randitemone}", inline=False)
-        #                 embed.add_field(name="Second Item", value=f"{randitemtwo}", inline=False)
-        #                 embed.add_field(name="Third Item", value=f"{randitemthree}", inline=False)
-        #                 embed.add_field(name="Fourth Item", value=f"{randitemfour}", inline=False)
-        #                 embed.add_field(name="Fifth Item", value=f"{randitemfive}", inline=False)
-        #                 embed.add_field(name="Boots", value=f"{randboots}", inline=False)
-        #                 embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
-        #                 embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-        #                 await ctx.send(content=None, embed=embed)
-        #             else:
-        #                 await ctx.send("[LeagueCommands] Lane was not recognized, please re-run the command.")
-        #         except asyncio.TimeoutError:
-        #             await ctx.send("[LeagueCommands] Bot has timed out, please re-run the command.")
-        #     elif decider.lower() == "random" and decider2.lower() == "runes":
-        #         runes_list = getLoLRunesJson()
-        #         randruneprimary = random.choice(runes_list)
-        #         randrunesecondary = random.choice(runes_list)
-        #         while randrunesecondary == randruneprimary:
-        #             randrunesecondary = random.choice(runes_list)
-        #         embed = discord.Embed(title=None,
-        #                               description=None,
-        #                               color=discord.Color.orange(),
-        #                               timestamp=datetime.utcnow())
-        #         embed.add_field(name="Primary Runes", value=f"{randruneprimary}", inline=False)
-        #         embed.add_field(name="Secondary Runes", value=f"{randrunesecondary}", inline=False)
-        #         embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
-        #         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-        #         await ctx.send(content=None, embed=embed)
+        elif decider2 is not None:
+            if decider.lower() == "random" and decider2.lower() == "champs":
+                champions = LeagueofLegends().getChampions()
+                champion_names = [champions["keys"][key] for key in champions["keys"]]
+                random_champion = champions["data"][random.choice(champion_names)]
+                name = random_champion["name"]
+                title = random_champion["title"]
+                lore = random_champion["lore"]
+                embed = discord.Embed(title=f"{name} - {title}",
+                                      description=f"{lore}\n**Good Luck with the champion!**",
+                                      color=discord.Color.orange(),
+                                      timestamp=datetime.utcnow())
+                embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+                embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                await ctx.send(content=None, embed=embed)
+
+            elif decider.lower() == "random" and decider2.lower() == "items":
+                await ctx.send("What lane are you playing?")
+                try:
+                    response = await self.bot.wait_for('message', timeout=20)
+                except asyncio.TimeoutError:
+                    await ctx.send("[LeagueCommands] Timed out, please re-run the command.")
+                else:
+                    content = response.content.lower()
+                    if content == "top" or content == "mid" or content == "bot":
+                        items = LeagueofLegends().getItems()["data"]
+                        item_names = [items[key]["name"] for key in items]
+                        random_items = [random.choice(item_names)]
+
+                        # there are only five random items so we loop 5 times
+                        for x in range(0, 5):
+                            getLogger().debug(
+                                f"Length of random_items is: {len(random_items)}; We are on iteration number: {x}")
+                            desired_item = random.choice(item_names)
+                            if not len(random_items) == x and desired_item not in random_items:
+                                random_items.append(desired_item)
+                                getLogger().debug(
+                                    f"Set {x}; Length of random_items is: {len(random_items)}; We are on iteration number: {x}")
+
+                        boots = [
+                            "Boots of Swiftness",
+                            "Boots of Mobility",
+                            "Ionian Boots of Lucidity",
+                            "Berserker's Greaves",
+                            "Sorcerer's Shoes",
+                            "Ninja Tabi",
+                            "Mercury's Treads"
+                        ]
+                        random_boots = random.choice(boots)
+                        embed = discord.Embed(title=f"You have selected top, mid, or bot!",
+                                              description=None,
+                                              color=discord.Color.orange(),
+                                              timestamp=datetime.utcnow())
+                        embed.add_field(name="First Item", value=f"{random_items[0]}", inline=False)
+                        embed.add_field(name="Second Item", value=f"{random_items[1]}", inline=False)
+                        embed.add_field(name="Third Item", value=f"{random_items[2]}", inline=False)
+                        embed.add_field(name="Fourth Item", value=f"{random_items[3]}", inline=False)
+                        embed.add_field(name="Fifth Item", value=f"{random_items[4]}", inline=False)
+                        embed.add_field(name="Boots", value=f"{random_boots}", inline=False)
+                        embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+                        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                        await ctx.send(content=None, embed=embed)
+
+            #             elif response.content.lower() == "jungle":
+            #                 jgitems_list = getLoLjgItemsJson()
+            #                 randitemone = random.choice(jgitems_list)
+            #                 items_list = getLoLItemsJson()
+            #                 randitemtwo = None
+            #                 randitemthree = None
+            #                 randitemfour = None
+            #                 randitemfive = None
+            #                 while True:
+            #                     desireditem = random.choice(items_list)
+            #                     if randitemtwo is None:
+            #                         if not desireditem == randitemone:
+            #                             randitemtwo = desireditem
+            #                     elif randitemthree is None:
+            #                         if not desireditem == randitemone or randitemtwo:
+            #                             randitemthree = desireditem
+            #                     elif randitemfour is None:
+            #                         if not desireditem == randitemone or randitemtwo or randitemthree:
+            #                             randitemfour = desireditem
+            #                     elif randitemfive is None:
+            #                         if not desireditem == randitemone or randitemtwo or randitemthree or randitemfour:
+            #                             randitemfive = desireditem
+            #                             break
+            #
+            #                 boots_list = getLoLBootsJson()
+            #                 randboots = random.choice(boots_list)
+            #
+            #                 embed = discord.Embed(title=f"You have selected jungle!",
+            #                                       description=None,
+            #                                       color=discord.Color.orange(),
+            #                                       timestamp=datetime.utcnow())
+            #                 embed.add_field(name="Jungle Item", value=f"{randitemone}", inline=False)
+            #                 embed.add_field(name="Second Item", value=f"{randitemtwo}", inline=False)
+            #                 embed.add_field(name="Third Item", value=f"{randitemthree}", inline=False)
+            #                 embed.add_field(name="Fourth Item", value=f"{randitemfour}", inline=False)
+            #                 embed.add_field(name="Fifth Item", value=f"{randitemfive}", inline=False)
+            #                 embed.add_field(name="Boots", value=f"{randboots}", inline=False)
+            #                 embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            #                 embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            #                 await ctx.send(content=None, embed=embed)
+            #             elif response.content.lower() == "support":
+            #                 suppitems_list = getLoLSuppItemsJson()
+            #                 randitemone = random.choice(suppitems_list)
+            #                 items_list = getLoLItemsJson()
+            #                 randitemtwo = None
+            #                 randitemthree = None
+            #                 randitemfour = None
+            #                 randitemfive = None
+            #                 while True:
+            #                     desireditem = random.choice(items_list)
+            #                     if randitemtwo is None:
+            #                         if not desireditem == randitemone:
+            #                             randitemtwo = desireditem
+            #                     elif randitemthree is None:
+            #                         if not desireditem == randitemone or randitemtwo:
+            #                             randitemthree = desireditem
+            #                     elif randitemfour is None:
+            #                         if not desireditem == randitemone or randitemtwo or randitemthree:
+            #                             randitemfour = desireditem
+            #                     elif randitemfive is None:
+            #                         if not desireditem == randitemone or randitemtwo or randitemthree or randitemfour:
+            #                             randitemfive = desireditem
+            #                             break
+            #
+            #                 boots_list = getLoLBootsJson()
+            #                 randboots = random.choice(boots_list)
+            #
+            #                 embed = discord.Embed(title="You have selected support!",
+            #                                       description=None,
+            #                                       color=discord.Color.orange(),
+            #                                       timestamp=datetime.utcnow())
+            #                 embed.add_field(name="Support Item", value=f"{randitemone}", inline=False)
+            #                 embed.add_field(name="Second Item", value=f"{randitemtwo}", inline=False)
+            #                 embed.add_field(name="Third Item", value=f"{randitemthree}", inline=False)
+            #                 embed.add_field(name="Fourth Item", value=f"{randitemfour}", inline=False)
+            #                 embed.add_field(name="Fifth Item", value=f"{randitemfive}", inline=False)
+            #                 embed.add_field(name="Boots", value=f"{randboots}", inline=False)
+            #                 embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            #                 embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            #                 await ctx.send(content=None, embed=embed)
+            #             else:
+            #                 await ctx.send("[LeagueCommands] Lane was not recognized, please re-run the command.")
+            #         except asyncio.TimeoutError:
+            #             await ctx.send("[LeagueCommands] Bot has timed out, please re-run the command.")
+            #     elif decider.lower() == "random" and decider2.lower() == "runes":
+            #         runes_list = getLoLRunesJson()
+            #         randruneprimary = random.choice(runes_list)
+            #         randrunesecondary = random.choice(runes_list)
+            #         while randrunesecondary == randruneprimary:
+            #             randrunesecondary = random.choice(runes_list)
+            #         embed = discord.Embed(title=None,
+            #                               description=None,
+            #                               color=discord.Color.orange(),
+            #                               timestamp=datetime.utcnow())
+            #         embed.add_field(name="Primary Runes", value=f"{randruneprimary}", inline=False)
+            #         embed.add_field(name="Secondary Runes", value=f"{randrunesecondary}", inline=False)
+            #         embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            #         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            #         await ctx.send(content=None, embed=embed)
 
         # Tells them how to use the command properly, because they didn't use arguments.
         elif decider.lower() == "help":

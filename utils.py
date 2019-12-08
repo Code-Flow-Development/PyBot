@@ -25,7 +25,6 @@ from youtube_dl import YoutubeDL
 
 load_dotenv()
 
-
 def loadAllCogs(bot):
     # loads cogs
     for cog in os.listdir("cogs"):
@@ -154,7 +153,7 @@ class ServerSettings:
                         "guild_channel_delete": True,
                         "guild_channel_create": True,
                         "guild_channel_update": False,
-                        "guild_role_created": True,
+                        "guild_role_create": True,
                         "guild_role_delete": True,
                         "guild_role_update": False,
                         "guild_emojis_update": False
@@ -211,7 +210,7 @@ def getRandomFact():
 class LeagueofLegends:
     def __init__(self):
         self.version_url = "https://ddragon.leagueoflegends.com/api/versions.json"
-        self.champion_url = "http://ddragon.leagueoflegends.com/cdn/{}/data/en_US/champion.json"
+        self.champion_url = "http://ddragon.leagueoflegends.com/cdn/{}/data/en_US/championFull.json"
         self.runes_url = "http://ddragon.leagueoflegends.com/cdn/{}/data/en_US/runesReforged.json"
         self.items_url = "http://ddragon.leagueoflegends.com/cdn/{}/data/en_US/item.json"
 
@@ -234,9 +233,10 @@ class LeagueofLegends:
         if current_version is not None:
             response = requests.get(self.champion_url.format(current_version))
             if response.status_code == 200:
-                return response.json()["data"]
+                return response.json()
         else:
-            getLogger().error(f"[League of Legends] Champion API call failed! current version is none! {current_version}")
+            getLogger().error(
+                f"[League of Legends] Champion API call failed! current version is none! {current_version}")
             return None
 
     def getRunes(self):
@@ -270,48 +270,9 @@ class LeagueofLegends:
         if current_version is not None:
             response = requests.get(self.items_url.format(current_version))
             if response.status_code == 200:
-                return response.json()["data"]
+                return response.json()
         else:
             return None
-
-
-# def getLoLBootsJson():
-#     contents = open("LoLData\\LoLBoots.json", 'r', encoding='utf8').read()
-#     return json.loads(contents)
-#
-#
-# def getLoLChampsJson():
-#     contents = open("LoLData\\LoLChamps.json", 'r', encoding='utf8').read()
-#     return json.loads(contents)
-#
-#
-# def getLoLItemsJson():
-#     contents = open("LoLData\\LoLItems.json", 'r', encoding='utf8').read()
-#     return json.loads(contents)
-#
-#
-# def getLoLjgItemsJson():
-#     contents = open("LoLData\\LoLjgItems.json", 'r', encoding='utf8').read()
-#     return json.loads(contents)
-#
-#
-# def getLoLRunesJson():
-#     contents = open("LoLData\\LoLRunes.json", 'r', encoding='utf8').read()
-#     return json.loads(contents)
-
-
-def getLoLSuppItemsJson():
-    contents = open("LoLData\\LoLsuppItems.json", 'r', encoding='utf8').read()
-    return json.loads(contents)
-
-
-def getLoLChampsKeyList():
-    champs_json = getLoLChampsJson()
-    keys = []
-    for x in champs_json:
-        for key in x:
-            keys.append(key)
-    return keys
 
 
 class Mongo:
@@ -348,10 +309,11 @@ class APIServer:
 
 
 class SetupLogger:
-    def __init__(self):
+    def __init__(self, full_debug=False):
         verboselogs.install()
         self.logger = logging.getLogger(__name__)
-        coloredlogs.install(level="DEBUG", logger=self.logger, fmt="[%(levelname)s] %(asctime)s: %(message)s",
+        coloredlogs.install(level="DEBUG", logger=self.logger if not full_debug else None,
+                            fmt="[%(levelname)s] %(asctime)s: %(message)s",
                             datefmt="[%m-%d-%Y %I:%M:%S]")
 
 

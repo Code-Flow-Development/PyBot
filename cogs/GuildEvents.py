@@ -13,7 +13,11 @@ class GuildEventsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        UserProfiles(member)
+        self.bot.socketio.emit("user count", {"users": len(self.bot.users)})
+
+        if not member.bot:
+            UserProfiles(member)
+
         server_settings = ServerSettings(member.guild).getServerDocument()
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings["log_channel"] else None
         enabled = server_settings["events"]["guild_member_join"]
@@ -32,9 +36,10 @@ class GuildEventsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        if member == self.bot.user:
-            return
-        UserProfiles(member).reset()
+        self.bot.socketio.emit("user count", {"users": len(self.bot.users)})
+
+        if not member.bot:
+            UserProfiles(member).reset()
         banned_users = await member.guild.bans()
         is_banned = [x for x in banned_users if x.user.id == member.id]
         if is_banned:

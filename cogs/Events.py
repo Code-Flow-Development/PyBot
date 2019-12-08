@@ -72,6 +72,7 @@ class EventsCog(commands.Cog):
     # on guild join listener
     @commands.Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
+        # socketio.emit("server count", {"servers": len(self.bot.guilds)})
         ServerSettings(guild)
         embed = discord.Embed(title=f"New Guild", description=None, color=discord.Color.green(),
                               timestamp=datetime.utcnow())
@@ -85,6 +86,7 @@ class EventsCog(commands.Cog):
     # on guild leave event
     @commands.Cog.listener()
     async def on_guild_remove(self, guild: discord.Guild):
+        # socketio.emit("server count", {"servers": len(self.bot.guilds)})
         ServerSettings(guild).reset()
         embed = discord.Embed(title=f"Guild Left", description=None, color=discord.Color.red(),
                               timestamp=datetime.utcnow())
