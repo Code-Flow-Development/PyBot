@@ -5,15 +5,12 @@ import time
 from datetime import datetime
 from functools import partial
 from threading import Thread
-
 import discord
-import eventlet
 from bson.json_util import dumps
 from discord.ext import commands
 from dotenv import load_dotenv
 from flask import Flask, jsonify, session, request
 from flask_session import Session
-from flask_socketio import SocketIO
 from requests_oauthlib import OAuth2Session
 
 from utils import loadAllCogs, loadAllExtensions, SetupLogger, RedisClient, Mongo, APIServer, ServerSettings, getLogger, \
@@ -21,7 +18,6 @@ from utils import loadAllCogs, loadAllExtensions, SetupLogger, RedisClient, Mong
 
 # get asyncio loop
 loop = asyncio.get_event_loop()
-eventlet.monkey_patch(thread=False)
 
 # create flask app
 app = Flask(__name__)
@@ -38,8 +34,6 @@ app.config['SESSION_TYPE'] = 'redis'
 app.config["SESSION_REDIS"] = RedisClient().getRedisClient()
 app.config['SECRET_KEY'] = OAUTH2_CLIENT_SECRET
 sess = Session()
-socketio = SocketIO(app, cors_allowed_origins="*",
-                    engineio_logger=True)  # message_queue=f"redis://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}/1")
 
 API_VERSION = os.getenv('API_VERSION')
 
@@ -52,7 +46,6 @@ PREFIX = os.getenv("BOT_PREFIX")
 
 # Create a new 'bot' with prefix
 bot = commands.Bot(command_prefix=PREFIX, description="PyBot", case_insensitive=True, owner_id=213247101314924545)
-bot.socketio = socketio
 bot.remove_command('help')
 bot.remove_listener(func=bot.on_message)
 
@@ -80,10 +73,7 @@ async def on_ready():
     loadAllExtensions(bot)
 
     # Start the flask api
-    # partial_run = partial(app.run, debug=True, host=os.getenv("API_HOST"), port=os.getenv("API_PORT"), use_reloader=False)
-    # APIServer(partial_run).start()
-
-    partial_run = partial(socketio.run, app=app, debug=True, host=os.getenv("API_HOST"), port=os.getenv("API_PORT"),
+    partial_run = partial(app.run, debug=True, host=os.getenv("API_HOST"), port=os.getenv("API_PORT"),
                           use_reloader=False)
     APIServer(partial_run).start()
 
@@ -798,38 +788,9 @@ def make_session(token=None, state=None, scope=None):
         token_updater=token_updater)
 
 
-# def socket_worker():
-#     if bot.is_ready():
-#         payload = {
-#             "users": len(bot.users),
-#             "servers": len(bot.guilds)
-#         }
-#         socketio.emit("data", payload)
-#     socketio.sleep(5)
-#     socket_worker()
-
-bot.update_user_count = lambda: socketio.emit("user count", {"users": len(bot.users)})
-
-
-@socketio.on('connect')
-def connected():
-    getLogger().debug("[SocketIO] Client Connected")
-    socketio.emit("user count", {"users": len(bot.users)})
-    socketio.emit("server count", {"servers": len(bot.guilds)})
-
-
-# @socketio.on("start")
-# def start_worker():
-#     getLogger().debug("[SocketIO] Started Worker")
-#     socketio.start_background_task(target=socket_worker)
-
-
 if __name__ == "__main__":
     # setup the logger with colored logger and verbose logging
     SetupLogger(full_debug=False)
-
-# load the .env file with token
-load_dotenv()
 
 # login to discord
 bot.run(os.getenv("TOKEN"))

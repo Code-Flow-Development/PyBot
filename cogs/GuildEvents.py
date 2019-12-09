@@ -1,6 +1,5 @@
 import discord
 from datetime import datetime
-
 import utils
 from utils import utc_to_epoch, ServerSettings
 from discord.ext import commands
@@ -13,15 +12,13 @@ class GuildEventsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        self.bot.socketio.emit("user count", {"users": len(self.bot.users)})
-
         if not member.bot:
             UserProfiles(member)
 
         server_settings = ServerSettings(member.guild).getServerDocument()
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings["log_channel"] else None
         enabled = server_settings["events"]["guild_member_join"]
-        if log_channel and enabled:
+        if log_channel is not None and enabled:
             created_at_unix = utc_to_epoch(member.created_at)
             created_date = datetime.fromtimestamp(created_at_unix)
             embed = discord.Embed(title="User joined the server!", description=None, color=discord.Color.green(),
@@ -36,11 +33,15 @@ class GuildEventsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        self.bot.socketio.emit("user count", {"users": len(self.bot.users)})
 
         if not member.bot:
             UserProfiles(member).reset()
-        banned_users = await member.guild.bans()
+        try:
+            banned_users = await member.guild.bans()
+        except:
+            # TODO: add exceptions here and handle them
+            return
+
         is_banned = [x for x in banned_users if x.user.id == member.id]
         if is_banned:
             return
@@ -49,7 +50,7 @@ class GuildEventsCog(commands.Cog):
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_member_leave"]
-        if log_channel and enabled:
+        if log_channel is not None and enabled:
             created_at_unix = utc_to_epoch(member.created_at)
             created_date = datetime.fromtimestamp(created_at_unix)
             joined_at_unix = utc_to_epoch(member.joined_at)
@@ -73,7 +74,7 @@ class GuildEventsCog(commands.Cog):
     #     log_channel = self.bot.get_channel(server_settings["settings"]["log_channel"]) if server_settings["settings"][
     #         "log_channel"] else None
     #     enabled = server_settings["settings"]["events"]["guild_member_ban"]
-    #     if log_channel and enabled:
+    #     if log_channel is not None and enabled:
     #         ban_reason = await guild.fetch_ban(user=member)
     #         embed = discord.Embed(title="User was banned from the server!", description=None, color=discord.Color.red(), timestamp=datetime.utcnow())
     #         embed.add_field(name=f"Username", value=f"{member.mention} ({member.id})", inline=False)
@@ -92,7 +93,7 @@ class GuildEventsCog(commands.Cog):
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_member_unban"]
-        if log_channel and enabled:
+        if log_channel is not None and enabled:
             embed = discord.Embed(title="User was unbanned from the server!", description=None,
                                   color=discord.Color.green(),
                                   timestamp=datetime.utcnow())
@@ -108,7 +109,7 @@ class GuildEventsCog(commands.Cog):
     #     server_settings = ServerSettings(before.guild).getServerDocument()
     #     log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings["log_channel"] else None
     #     enabled = server_settings["events"]["guild_member_update"]
-    #     if log_channel and enabled:
+    #     if log_channel is not None and enabled:
     #         pass
 
     @commands.Cog.listener()
@@ -119,7 +120,7 @@ class GuildEventsCog(commands.Cog):
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_message_delete"]
-        if log_channel and enabled:
+        if log_channel is not None and enabled:
             embed = discord.Embed(title=f"Message deleted", description=None,
                                   color=discord.Color.red(),
                                   timestamp=datetime.utcnow())
@@ -139,7 +140,7 @@ class GuildEventsCog(commands.Cog):
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_message_edit"]
-        if log_channel and enabled:
+        if log_channel is not None and enabled:
             embed = discord.Embed(title=f"Message edited", description=None,
                                   color=discord.Color.green(),
                                   timestamp=datetime.utcnow())
@@ -156,7 +157,7 @@ class GuildEventsCog(commands.Cog):
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_channel_create"]
-        if log_channel and enabled:
+        if log_channel is not None and enabled:
             await log_channel.send(f"Channel created: {channel.mention} [{channel.name}] ({channel.id})")
 
     @commands.Cog.listener()
@@ -165,7 +166,7 @@ class GuildEventsCog(commands.Cog):
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_channel_delete"]
-        if log_channel and enabled:
+        if log_channel is not None and enabled:
             await log_channel.send(f"Channel deleted: {channel.name} ({channel.id})")
 
     @commands.Cog.listener()
@@ -175,7 +176,7 @@ class GuildEventsCog(commands.Cog):
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_update"]
-        if log_channel and enabled:
+        if log_channel is not None and enabled:
             embed = discord.Embed(title=f"Guild Updated", description=None, color=discord.Color.green(),
                                   timestamp=datetime.utcnow())
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
@@ -194,7 +195,7 @@ class GuildEventsCog(commands.Cog):
         embed.add_field(name="Hoisted", value=f"{role.hoist}")
         embed.add_field(name="Mentionable", value=f"{role.mentionable}")
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-        if log_channel and enabled:
+        if log_channel is not None and enabled:
             await log_channel.send(content=None, embed=embed)
 
     @commands.Cog.listener()
@@ -208,7 +209,7 @@ class GuildEventsCog(commands.Cog):
         embed.add_field(name="Role Name", value=f"{role.name}")
         embed.add_field(name="Role ID", value=f"{role.id}")
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-        if log_channel and enabled:
+        if log_channel is not None and enabled:
             await log_channel.send(content=None, embed=embed)
 
     @commands.Cog.listener()
@@ -218,7 +219,7 @@ class GuildEventsCog(commands.Cog):
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_role_update"]
-        if log_channel and enabled:
+        if log_channel is not None and enabled:
             embed = discord.Embed(title=f"Role Updated", description=None, color=discord.Color.green(),
                                   timestamp=datetime.utcnow())
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
@@ -231,7 +232,7 @@ class GuildEventsCog(commands.Cog):
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_role_update"]
-        if log_channel and enabled:
+        if log_channel is not None and enabled:
             # embed = discord.Embed(title=f"Emoji Updated", description=None, color=discord.Color.green(),
             #                       timestamp=datetime.utcnow())
             # embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
