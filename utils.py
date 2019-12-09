@@ -19,6 +19,7 @@ from discord.ext import commands
 from discord.ext.commands import errors
 from dotenv import load_dotenv
 from praw import Reddit
+from profanityfilter import ProfanityFilter
 from pymongo import MongoClient
 from redis import Redis
 from youtube_dl import YoutubeDL
@@ -176,7 +177,8 @@ class ServerSettings:
                             "trigger": "meme",
                             "response": "shit meme"
                         }
-                    ]
+                    ],
+                    "profanity_filter_words": []
                 }
             }
             self.server_collection.insert_one(guild_payload)
@@ -198,6 +200,9 @@ class ServerSettings:
     def getLogChannel(self, bot: discord.ext.commands.Bot):
         return bot.get_channel(self.server_settings["log_channel"]) if self.server_settings[
             "log_channel"] else None
+
+    def profanity_filter(self):
+        return ProfanityFilter(extra_censor_list=self.server_settings["profanity_filter_words"])
 
 
 def getRandomFact():

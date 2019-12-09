@@ -2,10 +2,11 @@ import asyncio
 import json
 import os
 import time
+import discord
 from datetime import datetime
 from functools import partial
 from threading import Thread
-import discord
+from profanityfilter import ProfanityFilter
 from bson.json_util import dumps
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -103,15 +104,16 @@ async def on_message(message):
             return await spy_channel.send(content=f"``{message.author}`` sent me a DM with attachments:\n{links}")
 
     user_profile = UserProfiles(message.author).getUserProfile()
-    server_settings = ServerSettings(message.guild).getServerDocument()
+    server_settings = ServerSettings(message.guild)
+    server_document = server_settings.getServerDocument()
     if message.content.startswith(PREFIX):
-        if not server_settings["is_banned"] and not user_profile["MiscData"]["is_banned"]:
+        if not server_document["is_banned"] and not user_profile["MiscData"]["is_banned"]:
             await bot.process_commands(message)
     else:
 
         if message.channel.type == discord.ChannelType.text and message.channel.name.lower().startswith(
                 "count-to-"):
-            if server_settings["modules"]["counting_channels"]:
+            if server_document["modules"]["counting_channels"]:
                 try:
                     # try to convert the string to a number
                     number = int(message.content)
@@ -128,8 +130,8 @@ async def on_message(message):
                     # not a valid number so delete the message
                     await message.delete()
 
-        if server_settings["modules"]["message_responses"]:
-            custom_message_responses = server_settings["custom_message_responses"]
+        if server_document["modules"]["message_responses"]:
+            custom_message_responses = server_document["custom_message_responses"]
             for custom_response in custom_message_responses:
                 trigger = custom_response["trigger"]
                 response = custom_response["response"]
@@ -138,14 +140,10 @@ async def on_message(message):
                     return
 
         # profanity filter
-        if server_settings["modules"]["profanity_filter"]:
-            words = json.loads(open("settings.json", 'r').read())["profanity_words"]
-            if any(substring in message.content.lower() for substring in words):
+        if server_document["modules"]["profanity_filter"]:
+            if server_settings.profanity_filter().is_profane(message.content):
                 await message.delete()
-                await asyncio.sleep(1)
-                message = await message.channel.send("A word you said is not allowed in this server! :rage:")
-                await asyncio.sleep(5)
-                await message.delete()
+                await message.channel.send("Watch your language! :rage:", delete_after=10)
 
 
 @app.route("/api/v1/userCount", methods=["GET"])
@@ -178,10 +176,14 @@ def api_users():
                 for user in user_collection.find():
                     user_json = json.loads(dumps(user))
                     x = bot.get_user(user_json["id"])
-                    users.append({"username": x.name, "id": x.id, "discriminator": x.discriminator,
-                                  "avatar_url": str(x.avatar_url),
-                                  "is_banned": user_json["MiscData"]["is_banned"],
-                                  "is_admin": user["id"] in BotAdmins().get()})
+                    try:
+                        users.append({"username": x.name, "id": x.id, "discriminator": x.discriminator,
+                                      "avatar_url": str(x.avatar_url),
+                                      "is_banned": user_json["MiscData"]["is_banned"],
+                                      "is_admin": user["id"] in BotAdmins().get()})
+                    except AttributeError as e:
+                        getLogger().critical(f"[Users API]: User Error - ID: {user['id']}")
+                        user_collection.find_one_and_delete({"id": user['id']})
                 return jsonify(users)
             else:
                 return "", 401

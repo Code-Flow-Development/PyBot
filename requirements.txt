@@ -1,9 +1,3 @@
-eventlet
-aiohttp
-socketio
-quart
-bson
-redis
 flask
 pynacl
 youtube_dl
