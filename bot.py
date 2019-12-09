@@ -2,11 +2,11 @@ import asyncio
 import json
 import os
 import time
-import discord
 from datetime import datetime
 from functools import partial
 from threading import Thread
-from profanityfilter import ProfanityFilter
+
+import discord
 from bson.json_util import dumps
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -761,6 +761,44 @@ def admin_demote_user():
                             return "invalid argument, we shouldnt be here?!", 500
                     else:
                         return "user is none", 400
+                else:
+                    return "", 401
+            else:
+                return "", 403
+        else:
+            return "bot is not ready!", 500
+    else:
+        return "", 400
+
+
+@app.route("/api/v1/admin/bot/changeAvatar", methods=["POST"])
+def admin_bot_change_avatar():
+    if request.is_json:
+        if bot.is_ready():
+            token = request.headers.get("Token")
+            if token is not None:
+                token = json.loads(token)
+                discord_session = make_session(token=token)
+                if discord_session.authorized:
+                    path = request.json.get("path")
+                    if path and path is not None and path != "":
+                        with open(path, 'rb') as image:
+                            try:
+                                leave_fut = asyncio.run_coroutine_threadsafe(
+                                    bot.user.edit(avatar=image.read()),
+                                    loop
+                                )
+                                leave_fut.result()
+                                image.close()
+                                return "Avatar was changed", 200
+                            except discord.HTTPException:
+                                return "Failed to edit profile", 500
+                            except discord.InvalidArgument:
+                                return "Wront image format passed for avatar", 400
+                            except discord.ClientException:
+                                return "Password is required for non-bot accounts or house field was not a valid HypeSquad house", 400
+                    else:
+                        return "", 400
                 else:
                     return "", 401
             else:
