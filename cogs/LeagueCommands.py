@@ -37,6 +37,13 @@ class LeagueCommandsCog(commands.Cog):
             "Red Smite: Runic Echoes",
             "Red Smite: Bloodrazor"
         ]
+        self.lanes = [
+            "Top",
+            "Jungle",
+            "Mid",
+            "ADC",
+            "Support"
+        ]
 
     async def process_reactions(self, ctx, message, page, pagination, list_type):
         try:
@@ -85,7 +92,6 @@ class LeagueCommandsCog(commands.Cog):
 
     # Main command for the league cog, might be the only one.
     @commands.command(name="league", usage="<decider> [decider2]")
-    @isLoLEnabled()
     async def league(self, ctx, decider: str, decider2: str = None):
         # Displays all the champions in the bot currently.
         if decider.lower() == "champs":
@@ -157,6 +163,15 @@ class LeagueCommandsCog(commands.Cog):
                 name = random_champion["name"]
                 title = random_champion["title"]
                 lore = random_champion["lore"]
+                hp = random_champion["stats"]["hp"]
+                hplvl = random_champion["stats"]["hpperlevel"]
+                mp = random_champion["stats"]["mp"]
+                mplvl = random_champion["stats"]["mpperlevel"]
+                armor = random_champion["stats"]["armor"]
+                armorlvl = random_champion["stats"]["armorperlevel"]
+                mr = random_champion["stats"]["spellblock"]
+                mrlvl = random_champion["stats"]["spellblockperlevel"]
+                ms = random_champion["stats"]["movespeed"]
 
                 embed = discord.Embed(title=f"{name} - {title}",
                                       description=f"{lore}",
@@ -165,6 +180,29 @@ class LeagueCommandsCog(commands.Cog):
                 embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
                 embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
                 embed.set_thumbnail(url=LeagueAPI().getChampionAvatarURL(name))
+                embed.add_field(name="HP", value=f"{hp} + {hplvl} per level")
+                embed.add_field(name="Mana", value=f"{mp} + {mplvl} per level")
+                embed.add_field(name="Armor", value=f"{armor} + {armorlvl} per level")
+                embed.add_field(name="Magic Resist", value=f"{mr} + {mrlvl} per level")
+                embed.add_field(name="Movement Speed", value=ms)
+
+                spells = []
+                for x in range(0, 4):
+                    a = "Q, " if x == 0 else "W, " if x == 1 else "E, " if x == 2 else "R, "
+                    spells.append(f"{a} {random_champion['spells'][x]['name']}")
+
+                embed.add_field(name=f"Skills", value="\n".join(spells), inline=False)
+
+                await ctx.send(content=None, embed=embed)
+
+            elif decider.lower() == "random" and decider2.lower() == "lane":
+                lane = random.choice(self.lanes)
+
+                embed = discord.Embed(title="Lane Selector")
+                embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+                embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                embed.add_field(name="Your random lane is...", value=f"{lane}")
+
                 await ctx.send(content=None, embed=embed)
 
             elif decider.lower() == "random" and decider2.lower() == "items":

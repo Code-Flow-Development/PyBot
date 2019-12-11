@@ -15,7 +15,7 @@ from flask_session import Session
 from requests_oauthlib import OAuth2Session
 
 from utils import loadAllCogs, loadAllExtensions, SetupLogger, RedisClient, Mongo, APIServer, ServerSettings, getLogger, \
-    UserProfiles, BotAdmins, getSystemLogChannel
+    UserProfiles, BotAdmins, getSystemLogChannel, Converter
 
 # get asyncio loop
 loop = asyncio.get_event_loop()
@@ -571,7 +571,8 @@ def api_get_server(server_id):
                          "text_channels": [{"name": y.name, "id": y.id} for y in server.text_channels],
                          "roles": [{"name": z.name, "id": z.id} for z in server.roles if z.name != "@everyone"],
                          "log_channel": server_settings["log_channel"], "is_banned": server_settings["is_banned"],
-                         "events": server_settings["events"], "modules": server_settings["modules"], "counting_channel": server_settings["counting_channel"]})
+                         "events": server_settings["events"], "modules": server_settings["modules"],
+                         "counting_channel": server_settings["counting_channel"]})
                 else:
                     return "", 400
             else:
@@ -839,7 +840,8 @@ def server_toggle_module(server_id):
                                     if counting_channel is None:
                                         try:
                                             create_fut = asyncio.run_coroutine_threadsafe(
-                                                server.create_text_channel(name="count-to-1", reason=f"Module enabled via dashboard by {user['username']}"),
+                                                server.create_text_channel(name="count-to-1",
+                                                                           reason=f"Module enabled via dashboard by {user['username']}"),
                                                 loop
                                             )
                                             channel = create_fut.result()
@@ -856,7 +858,8 @@ def server_toggle_module(server_id):
                                     try:
                                         channel = server.get_channel(server_settings["counting_channel"])
                                         delete_fut = asyncio.run_coroutine_threadsafe(
-                                            channel.delete(reason=f"Module disabled via dashboard by {user['username']}"),
+                                            channel.delete(
+                                                reason=f"Module disabled via dashboard by {user['username']}"),
                                             loop
                                         )
                                         delete_fut.result()
@@ -879,6 +882,114 @@ def server_toggle_module(server_id):
                 return "bot is not ready!", 500
         else:
             return "", 400
+    else:
+        return "", 400
+
+
+@app.route("/api/v1/admin/bot/setActivityName", methods=["POST"])
+def admin_bot_set_activity_name():
+    if request.is_json:
+        if bot.is_ready():
+            token = request.headers.get("Token")
+            if token is not None:
+                token = json.loads(token)
+                discord_session = make_session(token=token)
+                if discord_session.authorized:
+                    new_activity_name = request.get_json()["new_activity_name"]
+                    try:
+                        member = bot.get_guild(644927766197698590).get_member(bot.user.id)
+                        leave_fut = asyncio.run_coroutine_threadsafe(
+                            bot.change_presence(activity=discord.Activity(name=new_activity_name,
+                                                                          type=discord.ActivityType.watching if str(
+                                                                              member.activity.type) == "ActivityType.watching" else discord.ActivityType.listening if str(
+                                                                              member.activity.type) == "ActivityType.listening" else discord.ActivityType.playing),
+                                                status=member.status),
+                            loop
+                        )
+                        leave_fut.result()
+                        return "Activity Name was changed", 200
+                    except discord.HTTPException:
+                        return "Failed to edit profile", 500
+                    except discord.InvalidArgument:
+                        return "Wrong image format passed for avatar", 400
+                    except discord.ClientException:
+                        return "Password is required for non-bot accounts or house field was not a valid HypeSquad " \
+                               "house", 400
+                else:
+                    return "", 401
+            else:
+                return "", 403
+        else:
+            return "bot is not ready!", 500
+    else:
+        return "", 400
+
+
+@app.route("/api/v1/admin/bot/setActivityType", methods=["POST"])
+def admin_bot_set_activity_type():
+    if request.is_json:
+        if bot.is_ready():
+            token = request.headers.get("Token")
+            if token is not None:
+                token = json.loads(token)
+                discord_session = make_session(token=token)
+                if discord_session.authorized:
+                    new_activity_type = request.get_json()["new_activity_type"]
+                    try:
+                        member = bot.get_guild(644927766197698590).get_member(bot.user.id)
+                        leave_fut = asyncio.run_coroutine_threadsafe(
+                            bot.change_presence(activity=discord.Activity(name=member.activity.name,
+                                                                          type=discord.ActivityType.watching if new_activity_type == "watching" else discord.ActivityType.listening if new_activity_type == "listening" else discord.ActivityType.playing),
+                                                status=member.status),
+                            loop
+                        )
+                        leave_fut.result()
+                        return "Activity Type was changed", 200
+                    except discord.HTTPException:
+                        return "Failed to edit profile", 500
+                    except discord.InvalidArgument:
+                        return "Wrong image format passed for avatar", 400
+                    except discord.ClientException:
+                        return "Password is required for non-bot accounts or house field was not a valid HypeSquad " \
+                               "house", 400
+                else:
+                    return "", 401
+            else:
+                return "", 403
+        else:
+            return "bot is not ready!", 500
+    else:
+        return "", 400
+
+
+@app.route("/api/v1/admin/bot/setStatus", methods=["POST"])
+def admin_bot_set_status():
+    if request.is_json:
+        if bot.is_ready():
+            token = request.headers.get("Token")
+            if token is not None:
+                token = json.loads(token)
+                discord_session = make_session(token=token)
+                if discord_session.authorized:
+                    new_status = request.get_json()["new_status"]
+                    try:
+                        member = bot.get_guild(644927766197698590).get_member(bot.user.id)
+                        leave_fut = asyncio.run_coroutine_threadsafe(bot.change_presence(activity=discord.Activity(name=member.activity.name, type=Converter.activity_type_full(member)), status=Converter.status(new_status)), loop)
+                        leave_fut.result()
+                        return "Status was changed", 200
+                    except discord.HTTPException:
+                        return "Failed to edit profile", 500
+                    except discord.InvalidArgument:
+                        return "Wrong image format passed for avatar", 400
+                    except discord.ClientException:
+                        return "Password is required for non-bot accounts or house field was not a valid HypeSquad " \
+                               "house", 400
+                else:
+                    return "", 401
+            else:
+                return "", 403
+        else:
+            return "bot is not ready!", 500
     else:
         return "", 400
 

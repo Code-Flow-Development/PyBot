@@ -26,6 +26,7 @@ from youtube_dl import YoutubeDL
 
 load_dotenv()
 
+
 def loadAllCogs(bot):
     # loads cogs
     for cog in os.listdir("cogs"):
@@ -299,7 +300,9 @@ class LeagueAPI:
             response = requests.get(self.champion_url.format(current_version, champion))
             if response.status_code == 200:
                 image_name = response.json()["data"][champion]["image"]["full"]
-                return self.champion_avatar_url.format(current_version, image_name)
+                url = self.champion_avatar_url.format(current_version, image_name)
+                getLogger().debug(url)
+                return url
         else:
             return None
 
@@ -578,3 +581,18 @@ class MusicPlayer:
     def destroy(self, guild):
         """Disconnect and cleanup the player."""
         return self.bot.loop.create_task(self._cog.cleanup(guild))
+
+
+class Converter:
+    @classmethod
+    def activity_type(cls, activity_type: str):
+        return discord.ActivityType.watching if activity_type == "watching" else discord.ActivityType.listening if activity_type == "listening" else discord.ActivityType.playing if activity_type == "playing" else None
+
+    @classmethod
+    def activity_type_full(cls, member: discord.Member):
+        current_activity_type = str(member.activity.type)
+        return discord.ActivityType.watching if current_activity_type == "ActivityType.watching" else discord.ActivityType.listening if current_activity_type == "ActivityType.listening" else discord.ActivityType.playing if current_activity_type == "ActivityType.playing" else None
+
+    @classmethod
+    def status(cls, status: str):
+        return discord.Status.dnd if status == "dnd" or status == "do_not_disturb" else discord.Status.idle if status == "idle" else discord.Status.online if status == "online" else discord.Status.offline if status == "offline" or status == "invisible" else None
