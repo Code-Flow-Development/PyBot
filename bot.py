@@ -423,7 +423,7 @@ def admin_ban_user_notify():
 
                             send_fut2 = asyncio.run_coroutine_threadsafe(
                                 getSystemLogChannel(bot).send(
-                                    f"[{user.mention}] {user} ({user.id}) was banned by ``{banner_user['username']}``."),
+                                    f"[{user.mention}] {user} ({user.id}) was banned by ``{banner_user['username']}`` with reason: ``{reason}``."),
                                 loop
                             )
                             send_fut2.result()
