@@ -1,7 +1,7 @@
 import asyncio
 import random
 from datetime import datetime
-
+from exchanges import *
 import discord
 import requests
 from discord import Forbidden, HTTPException, InvalidArgument, NotFound
@@ -519,6 +519,108 @@ class FunCommandsCog(commands.Cog):
         except Exception as e:
             print(f"[FunCommands] Cought error in meme command! Error: {e}")
             return await ctx.send(f"An error occured!")
+
+    @commands.command(name="bitcoin", help="List exchanges, get current price for an exchange", description="Get current bitcoin price for an exchange")
+    @commands.guild_only()
+    async def bitcoin(self, ctx, arg=None):
+        if arg is not None:
+            arg = arg.lower()
+
+        if arg is None or arg == "help":
+            # no command arg specified
+            # show help menu
+            help_lines = [
+                "bitcoin - Shows this help menu",
+                "bitcoin help - Shows this help menu",
+                "bitcoin list - List all available exchanges",
+                "bitcoin <exchange> - List current price for an exchange"
+            ]
+            embed = discord.Embed(title="Bitcoin Module Help",
+                                  description="\n".join(help_lines),
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            return await ctx.send(content=None, embed=embed)
+        elif arg == "list":
+            # list available exchanges
+            exchanges_list = [
+                "Bitfinex",
+                "Bitstamp",
+                "Brave New Coin",
+                # "Coinapult",
+                "Coindesk",
+                "Kraken",
+                "Poloniex"
+            ]
+            embed = discord.Embed(title="Available Exchanges",
+                                  description="\n".join(exchanges_list),
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            return await ctx.send(content=None, embed=embed)
+
+        elif arg == "bitfinex":
+            embed = discord.Embed(title=f"Current Price for Bitfinex",
+                                  description=f"{Bitfinex().get_current_price()}",
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_thumbnail(url="https://www.bitfinex.com/assets/bfx-stacked.png")
+            return await ctx.send(content=None, embed=embed)
+
+        elif arg == "bitstamp":
+            embed = discord.Embed(title=f"Current Price for Bitstamp",
+                                  description=f"{Bitstamp().get_current_price()}",
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_thumbnail(url="https://pbs.twimg.com/profile_images/866625488059600896/cuNpnAQe.jpg")
+            return await ctx.send(content=None, embed=embed)
+
+        elif arg == "bravenewcoin":
+            embed = discord.Embed(title=f"Current Price for Brave New Coin",
+                                  description=f"{BraveNewCoin().get_current_price()}",
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_thumbnail(url="https://pbs.twimg.com/profile_images/997244483786887168/bJv4gCRL_400x400.jpg")
+            return await ctx.send(content=None, embed=embed)
+
+        elif arg == "coinapult":
+            embed = discord.Embed(title=f"Current Price for Coinapult",
+                                  description=f"{Coinapult().get_current_price()}",
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_thumbnail(url="https://pbs.twimg.com/profile_images/519510833336832000/n3yCvbAR_400x400.jpeg")
+            return await ctx.send(content=None, embed=embed)
+
+        elif arg == "coindesk":
+            embed = discord.Embed(title=f"Current Price for Coindesk",
+                                  description=f"{CoinDesk().get_current_price()}",
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_thumbnail(url="https://pbs.twimg.com/profile_images/875399204218126339/W3zmmuWz.jpg")
+            return await ctx.send(content=None, embed=embed)
+
+        elif arg == "kraken":
+            embed = discord.Embed(title=f"Current Price for Kraken",
+                                  description=f"{Kraken().get_current_price()}",
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_thumbnail(url="https://i.imgur.com/7o0ykp4.jpg")
+            return await ctx.send(content=None, embed=embed)
+
+        elif arg == "poloniex":
+            embed = discord.Embed(title=f"Current Price for Poloniex",
+                                  description=f"{Poloniex().get_current_price()}",
+                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+            embed.set_thumbnail(url="https://miro.medium.com/max/3150/2*O3o3Gdam4S5MSXfUg_UxGg.png")
+            return await ctx.send(content=None, embed=embed)
 
 
 def getPostsByListingType(subreddit: str, type: str):

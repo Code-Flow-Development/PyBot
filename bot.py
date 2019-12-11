@@ -105,7 +105,7 @@ async def on_message(message):
 
     user_profile = UserProfiles(message.author).getUserProfile()
     server_settings = ServerSettings(message.guild)
-    server_document = server_settings.getServerDocument()
+    server_document = server_settings.getServerSettings()
     if message.content.startswith(PREFIX):
         if not server_document["is_banned"] and not user_profile["MiscData"]["is_banned"]:
             await bot.process_commands(message)
@@ -550,7 +550,7 @@ def admin_modules():
         return "bot is not ready!", 500
 
 
-@app.route("/api/v1/server/<int:server_id>")
+@app.route("/api/v1/server/<int:server_id>", methods=["GET"])
 def api_get_server(server_id):
     if bot.is_ready():
         token = request.headers.get("Token")
@@ -559,7 +559,7 @@ def api_get_server(server_id):
             discord_session = make_session(token=token)
             if discord_session.authorized:
                 server = bot.get_guild(server_id)
-                server_settings = ServerSettings(server).getServerDocument()
+                server_settings = ServerSettings(server).getServerSettings()
                 if server is not None:
                     return jsonify(
                         {"name": server.name, "id": server.id, "region": server.region.name,
@@ -571,7 +571,7 @@ def api_get_server(server_id):
                          "text_channels": [{"name": y.name, "id": y.id} for y in server.text_channels],
                          "roles": [{"name": z.name, "id": z.id} for z in server.roles if z.name != "@everyone"],
                          "log_channel": server_settings["log_channel"], "is_banned": server_settings["is_banned"],
-                         "events": server_settings["events"], "modules": server_settings["modules"]})
+                         "events": server_settings["events"], "modules": server_settings["modules"], "counting_channel": server_settings["counting_channel"]})
                 else:
                     return "", 400
             else:
@@ -582,7 +582,7 @@ def api_get_server(server_id):
         return "bot is not ready!", 500
 
 
-@app.route("/api/v1/modules")
+@app.route("/api/v1/modules", methods=["GET"])
 def api_get_modules():
     if bot.is_ready():
         token = request.headers.get("Token")
@@ -599,7 +599,7 @@ def api_get_modules():
         return "bot is not ready!", 500
 
 
-@app.route("/api/v1/events")
+@app.route("/api/v1/events", methods=["GET"])
 def api_get_events():
     if bot.is_ready():
         token = request.headers.get("Token")
@@ -616,7 +616,7 @@ def api_get_events():
         return "bot is not ready!", 500
 
 
-@app.route("/api/v1/user/<int:user_id>")
+@app.route("/api/v1/user/<int:user_id>", methods=["GET"])
 def api_get_user(user_id):
     if bot.is_ready():
         token = request.headers.get("Token")
@@ -794,7 +794,7 @@ def admin_bot_change_avatar():
                             except discord.HTTPException:
                                 return "Failed to edit profile", 500
                             except discord.InvalidArgument:
-                                return "Wront image format passed for avatar", 400
+                                return "Wrong image format passed for avatar", 400
                             except discord.ClientException:
                                 return "Password is required for non-bot accounts or house field was not a valid HypeSquad house", 400
                     else:
@@ -805,6 +805,80 @@ def admin_bot_change_avatar():
                 return "", 403
         else:
             return "bot is not ready!", 500
+    else:
+        return "", 400
+
+
+@app.route("/api/v1/<int:server_id>/toggleModule", methods=["POST"])
+def server_toggle_module(server_id):
+    if request.is_json:
+        if server_id is not None and server_id != "":
+            if bot.is_ready():
+                token = request.headers.get("Token")
+                if token is not None:
+                    token = json.loads(token)
+                    discord_session = make_session(token=token)
+                    if discord_session.authorized:
+                        server = bot.get_guild(server_id)
+                        if server is not None:
+                            user = discord_session.get("https://discordapp.com/api/users/@me").json()
+                            module = request.get_json()["module"]
+                            enabled = bool(request.get_json()["enabled"])
+                            smart_action = bool(request.get_json()["smart_action"])
+
+                            server_document = ServerSettings(server)
+                            server_settings = server_document.getServerSettings()
+                            server_settings["modules"][module] = enabled
+                            server_document.update("settings", server_settings)
+
+                            if module.lower() == "counting_channels":
+                                # use this to delete current counting channel if exists or create a new one
+                                if enabled and smart_action is not None and smart_action:
+                                    # create
+                                    counting_channel = server_settings["counting_channel"]
+                                    if counting_channel is None:
+                                        try:
+                                            create_fut = asyncio.run_coroutine_threadsafe(
+                                                server.create_text_channel(name="count-to-1", reason=f"Module enabled via dashboard by {user['username']}"),
+                                                loop
+                                            )
+                                            channel = create_fut.result()
+                                            server_settings["counting_channel"] = channel.id
+                                            server_document.update("settings", server_settings)
+                                        except discord.Forbidden as e:
+                                            pass
+                                        except discord.HTTPException as e:
+                                            pass
+                                        except discord.InvalidArgument as e:
+                                            pass
+                                elif not enabled and smart_action is not None and smart_action:
+                                    # delete
+                                    try:
+                                        channel = server.get_channel(server_settings["counting_channel"])
+                                        delete_fut = asyncio.run_coroutine_threadsafe(
+                                            channel.delete(reason=f"Module disabled via dashboard by {user['username']}"),
+                                            loop
+                                        )
+                                        delete_fut.result()
+                                        server_settings["counting_channel"] = None
+                                        server_document.update("settings", server_settings)
+                                    except discord.Forbidden:
+                                        pass
+                                    except discord.NotFound:
+                                        pass
+                                    except discord.HTTPException:
+                                        pass
+                            return "Settings Updated", 200
+                        else:
+                            return "", 400
+                    else:
+                        return "", 401
+                else:
+                    return "", 403
+            else:
+                return "bot is not ready!", 500
+        else:
+            return "", 400
     else:
         return "", 400
 

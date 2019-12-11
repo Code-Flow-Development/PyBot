@@ -15,7 +15,7 @@ class GuildEventsCog(commands.Cog):
         if not member.bot:
             UserProfiles(member)
 
-        server_settings = ServerSettings(member.guild).getServerDocument()
+        server_settings = ServerSettings(member.guild).getServerSettings()
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings["log_channel"] else None
         enabled = server_settings["events"]["guild_member_join"]
         if log_channel is not None and enabled:
@@ -46,7 +46,7 @@ class GuildEventsCog(commands.Cog):
         if is_banned:
             return
 
-        server_settings = ServerSettings(member.guild).getServerDocument()
+        server_settings = ServerSettings(member.guild).getServerSettings()
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_member_leave"]
@@ -89,7 +89,7 @@ class GuildEventsCog(commands.Cog):
     async def on_member_unban(self, guild: discord.Guild, member: discord.Member):
         if member == self.bot.user:
             return
-        server_settings = ServerSettings(guild).getServerDocument()
+        server_settings = ServerSettings(guild).getServerSettings()
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_member_unban"]
@@ -116,7 +116,7 @@ class GuildEventsCog(commands.Cog):
     async def on_message_delete(self, message: discord.Message):
         if message.author.bot:
             return
-        server_settings = ServerSettings(message.guild).getServerDocument()
+        server_settings = ServerSettings(message.guild).getServerSettings()
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_message_delete"]
@@ -136,7 +136,7 @@ class GuildEventsCog(commands.Cog):
     async def on_message_edit(self, before: discord.Message, after: discord.Message):
         if before.author.bot:
             return
-        server_settings = ServerSettings(before.guild).getServerDocument()
+        server_settings = ServerSettings(before.guild).getServerSettings()
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_message_edit"]
@@ -153,7 +153,7 @@ class GuildEventsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_channel_create(self, channel: discord.abc.GuildChannel):
-        server_settings = ServerSettings(channel.guild).getServerDocument()
+        server_settings = ServerSettings(channel.guild).getServerSettings()
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_channel_create"]
@@ -162,7 +162,7 @@ class GuildEventsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_channel_delete(self, channel: discord.abc.GuildChannel):
-        server_settings = ServerSettings(channel.guild).getServerDocument()
+        server_settings = ServerSettings(channel.guild).getServerSettings()
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_channel_delete"]
@@ -172,7 +172,7 @@ class GuildEventsCog(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_update(self, before: discord.Guild, after: discord.Guild):
         # TODO: Make this an embed
-        server_settings = ServerSettings(before).getServerDocument()
+        server_settings = ServerSettings(before).getServerSettings()
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_update"]
@@ -184,7 +184,7 @@ class GuildEventsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_role_create(self, role: discord.Role):
-        server_settings = ServerSettings(role.guild).getServerDocument()
+        server_settings = ServerSettings(role.guild).getServerSettings()
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_role_create"]
@@ -200,7 +200,7 @@ class GuildEventsCog(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_role_delete(self, role: discord.Role):
-        server_settings = ServerSettings(role.guild).getServerDocument()
+        server_settings = ServerSettings(role.guild).getServerSettings()
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_role_delete"]
@@ -215,7 +215,7 @@ class GuildEventsCog(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_role_update(self, before: discord.Role, after: discord.Role):
         # TODO: Make this an embed
-        server_settings = ServerSettings(before.guild).getServerDocument()
+        server_settings = ServerSettings(before.guild).getServerSettings()
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_role_update"]
@@ -228,7 +228,7 @@ class GuildEventsCog(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_emojis_update(self, guild: discord.Guild, before: discord.Emoji, after: discord.Emoji):
         # TODO: Make this an embed and correctly log this change
-        server_settings = ServerSettings(guild).getServerDocument()
+        server_settings = ServerSettings(guild).getServerSettings()
         log_channel = self.bot.get_channel(server_settings["log_channel"]) if server_settings[
             "log_channel"] else None
         enabled = server_settings["events"]["guild_role_update"]

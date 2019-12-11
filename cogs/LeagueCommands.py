@@ -5,13 +5,38 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
-from utils import LeagueofLegends, getLogger
+from utils import LeagueAPI, getLogger
 from .utils.checks import isLoLEnabled
 
 
 class LeagueCommandsCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.boots_list = [
+            "Boots of Swiftness",
+            "Boots of Mobility",
+            "Ionian Boots of Lucidity",
+            "Berserker's Greaves",
+            "Sorcerer's Shoes",
+            "Ninja Tabi",
+            "Mercury's Treads"
+        ]
+        self.supp_items = [
+            "Spelltheif's Edge",
+            "Steel Shoulderguards",
+            "Relic Shield",
+            "Spectral Sickle"
+        ]
+        self.jungle_items = [
+            "Blue Smite: Warrior",
+            "Blue Smite: Cinderhulk",
+            "Blue Smite: Runic Echoes",
+            "Blue Smite: Bloodrazor",
+            "Red Smite: Warrior",
+            "Red Smite: Cinderhulk",
+            "Red Smite: Runic Echoes",
+            "Red Smite: Bloodrazor"
+        ]
 
     async def process_reactions(self, ctx, message, page, pagination, list_type):
         try:
@@ -64,7 +89,7 @@ class LeagueCommandsCog(commands.Cog):
     async def league(self, ctx, decider: str, decider2: str = None):
         # Displays all the champions in the bot currently.
         if decider.lower() == "champs":
-            champions = LeagueofLegends().getChampions()
+            champions = LeagueAPI().getChampions()
             champion_names = [champions["keys"][key] for key in champions["keys"]]
             pagination = [champion_names[i:i + 15] for i in range(0, len(champion_names), 15)]
             page = 0
@@ -75,6 +100,7 @@ class LeagueCommandsCog(commands.Cog):
                                   timestamp=datetime.utcnow())
             embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+
             champion_list_message = await ctx.send(content=None, embed=embed)
             if page + 2 <= 1 or page + 2 < len(pagination):
                 await champion_list_message.add_reaction("➡")
@@ -82,10 +108,9 @@ class LeagueCommandsCog(commands.Cog):
 
             await self.process_reactions(ctx, champion_list_message, page, pagination, list_type="Champion")
 
-
         # Displays all the items in the bot currently.
         elif decider.lower() == "items":
-            items = LeagueofLegends().getItems()
+            items = LeagueAPI().getItems()
             item_names = [items[key]["name"] for key in items]
             pagination = [item_names[i:i + 15] for i in range(0, len(item_names), 15)]
             page = 0
@@ -105,7 +130,7 @@ class LeagueCommandsCog(commands.Cog):
         #
         # # Displays all the runes in the bot currently.
         elif decider.lower() == "runes":
-            runes = LeagueofLegends().getRunes()
+            runes = LeagueAPI().getRunes()
             rune_tier_names = [rune_tier["name"] for rune_tier in runes]
             pagination = [rune_tier_names[i:i + 15] for i in range(0, len(rune_tier_names), 15)]
             page = 0
@@ -126,18 +151,20 @@ class LeagueCommandsCog(commands.Cog):
         # # Displays a random set of 6 items.
         elif decider2 is not None:
             if decider.lower() == "random" and decider2.lower() == "champs":
-                champions = LeagueofLegends().getChampions()
+                champions = LeagueAPI().getChampions()
                 champion_names = [champions["keys"][key] for key in champions["keys"]]
                 random_champion = champions["data"][random.choice(champion_names)]
                 name = random_champion["name"]
                 title = random_champion["title"]
                 lore = random_champion["lore"]
+
                 embed = discord.Embed(title=f"{name} - {title}",
-                                      description=f"{lore}\n**Good Luck with the champion!**",
+                                      description=f"{lore}",
                                       color=discord.Color.orange(),
                                       timestamp=datetime.utcnow())
                 embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
                 embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                embed.set_thumbnail(url=LeagueAPI().getChampionAvatarURL(name))
                 await ctx.send(content=None, embed=embed)
 
             elif decider.lower() == "random" and decider2.lower() == "items":
@@ -149,7 +176,7 @@ class LeagueCommandsCog(commands.Cog):
                 else:
                     content = response.content.lower()
                     if content == "top" or content == "mid" or content == "bot":
-                        items = LeagueofLegends().getItems()["data"]
+                        items = LeagueAPI().getItems()["data"]
                         item_names = [items[key]["name"] for key in items]
                         random_items = [random.choice(item_names)]
 
@@ -158,21 +185,12 @@ class LeagueCommandsCog(commands.Cog):
                             getLogger().debug(
                                 f"Length of random_items is: {len(random_items)}; We are on iteration number: {x}")
                             desired_item = random.choice(item_names)
-                            if not len(random_items) == x and desired_item not in random_items:
+                            if not len(random_items) == 5 and desired_item not in random_items:
                                 random_items.append(desired_item)
-                                getLogger().debug(
-                                    f"Set {x}; Length of random_items is: {len(random_items)}; We are on iteration number: {x}")
+                                print(random_items)
 
-                        boots = [
-                            "Boots of Swiftness",
-                            "Boots of Mobility",
-                            "Ionian Boots of Lucidity",
-                            "Berserker's Greaves",
-                            "Sorcerer's Shoes",
-                            "Ninja Tabi",
-                            "Mercury's Treads"
-                        ]
-                        random_boots = random.choice(boots)
+                        random_boots = random.choice(self.boots_list)
+
                         embed = discord.Embed(title=f"You have selected top, mid, or bot!",
                                               description=None,
                                               color=discord.Color.orange(),
@@ -187,133 +205,107 @@ class LeagueCommandsCog(commands.Cog):
                         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
                         await ctx.send(content=None, embed=embed)
 
-            #             elif response.content.lower() == "jungle":
-            #                 jgitems_list = getLoLjgItemsJson()
-            #                 randitemone = random.choice(jgitems_list)
-            #                 items_list = getLoLItemsJson()
-            #                 randitemtwo = None
-            #                 randitemthree = None
-            #                 randitemfour = None
-            #                 randitemfive = None
-            #                 while True:
-            #                     desireditem = random.choice(items_list)
-            #                     if randitemtwo is None:
-            #                         if not desireditem == randitemone:
-            #                             randitemtwo = desireditem
-            #                     elif randitemthree is None:
-            #                         if not desireditem == randitemone or randitemtwo:
-            #                             randitemthree = desireditem
-            #                     elif randitemfour is None:
-            #                         if not desireditem == randitemone or randitemtwo or randitemthree:
-            #                             randitemfour = desireditem
-            #                     elif randitemfive is None:
-            #                         if not desireditem == randitemone or randitemtwo or randitemthree or randitemfour:
-            #                             randitemfive = desireditem
-            #                             break
-            #
-            #                 boots_list = getLoLBootsJson()
-            #                 randboots = random.choice(boots_list)
-            #
-            #                 embed = discord.Embed(title=f"You have selected jungle!",
-            #                                       description=None,
-            #                                       color=discord.Color.orange(),
-            #                                       timestamp=datetime.utcnow())
-            #                 embed.add_field(name="Jungle Item", value=f"{randitemone}", inline=False)
-            #                 embed.add_field(name="Second Item", value=f"{randitemtwo}", inline=False)
-            #                 embed.add_field(name="Third Item", value=f"{randitemthree}", inline=False)
-            #                 embed.add_field(name="Fourth Item", value=f"{randitemfour}", inline=False)
-            #                 embed.add_field(name="Fifth Item", value=f"{randitemfive}", inline=False)
-            #                 embed.add_field(name="Boots", value=f"{randboots}", inline=False)
-            #                 embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
-            #                 embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-            #                 await ctx.send(content=None, embed=embed)
-            #             elif response.content.lower() == "support":
-            #                 suppitems_list = getLoLSuppItemsJson()
-            #                 randitemone = random.choice(suppitems_list)
-            #                 items_list = getLoLItemsJson()
-            #                 randitemtwo = None
-            #                 randitemthree = None
-            #                 randitemfour = None
-            #                 randitemfive = None
-            #                 while True:
-            #                     desireditem = random.choice(items_list)
-            #                     if randitemtwo is None:
-            #                         if not desireditem == randitemone:
-            #                             randitemtwo = desireditem
-            #                     elif randitemthree is None:
-            #                         if not desireditem == randitemone or randitemtwo:
-            #                             randitemthree = desireditem
-            #                     elif randitemfour is None:
-            #                         if not desireditem == randitemone or randitemtwo or randitemthree:
-            #                             randitemfour = desireditem
-            #                     elif randitemfive is None:
-            #                         if not desireditem == randitemone or randitemtwo or randitemthree or randitemfour:
-            #                             randitemfive = desireditem
-            #                             break
-            #
-            #                 boots_list = getLoLBootsJson()
-            #                 randboots = random.choice(boots_list)
-            #
-            #                 embed = discord.Embed(title="You have selected support!",
-            #                                       description=None,
-            #                                       color=discord.Color.orange(),
-            #                                       timestamp=datetime.utcnow())
-            #                 embed.add_field(name="Support Item", value=f"{randitemone}", inline=False)
-            #                 embed.add_field(name="Second Item", value=f"{randitemtwo}", inline=False)
-            #                 embed.add_field(name="Third Item", value=f"{randitemthree}", inline=False)
-            #                 embed.add_field(name="Fourth Item", value=f"{randitemfour}", inline=False)
-            #                 embed.add_field(name="Fifth Item", value=f"{randitemfive}", inline=False)
-            #                 embed.add_field(name="Boots", value=f"{randboots}", inline=False)
-            #                 embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
-            #                 embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-            #                 await ctx.send(content=None, embed=embed)
-            #             else:
-            #                 await ctx.send("[LeagueCommands] Lane was not recognized, please re-run the command.")
-            #         except asyncio.TimeoutError:
-            #             await ctx.send("[LeagueCommands] Bot has timed out, please re-run the command.")
-            #     elif decider.lower() == "random" and decider2.lower() == "runes":
-            #         runes_list = getLoLRunesJson()
-            #         randruneprimary = random.choice(runes_list)
-            #         randrunesecondary = random.choice(runes_list)
-            #         while randrunesecondary == randruneprimary:
-            #             randrunesecondary = random.choice(runes_list)
-            #         embed = discord.Embed(title=None,
-            #                               description=None,
-            #                               color=discord.Color.orange(),
-            #                               timestamp=datetime.utcnow())
-            #         embed.add_field(name="Primary Runes", value=f"{randruneprimary}", inline=False)
-            #         embed.add_field(name="Secondary Runes", value=f"{randrunesecondary}", inline=False)
-            #         embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
-            #         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-            #         await ctx.send(content=None, embed=embed)
+                    elif content == "jungle":
+                        items = LeagueAPI().getItems()["data"]
+                        item_names = [items[key]["name"] for key in items]
 
-        # Tells them how to use the command properly, because they didn't use arguments.
-        elif decider.lower() == "help":
-            embed = discord.Embed(title="League Command Help",
-                                  description="This command needs parameters to run properly!",
-                                  color=discord.Color.orange(),
-                                  timestamp=datetime.utcnow())
-            embed.add_field(name="{league champs",
-                            value="Displays a list of all the champs in the bot.",
-                            inline=True)
-            embed.add_field(name="{league items",
-                            value="Displays a list of all the items in the bot.",
-                            inline=True)
-            embed.add_field(name="{league runes",
-                            value="Displays a list of all the runes in the bot.",
-                            inline=True)
-            embed.add_field(name="{league random items",
-                            value="Displays a random sets of items for you to use!",
-                            inline=True)
-            embed.add_field(name="{league random champs",
-                            value="Displays a random champion for you to use!",
-                            inline=True)
-            embed.add_field(name="{league random runes",
-                            value="Displays a random set of runes for you to use!",
-                            inline=True)
-            embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
-            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-            await ctx.send(content=None, embed=embed)
+                        random_items = [random.choice(self.jungle_items)]
+
+                        # there are only five random items so we loop 5 times
+                        for x in range(0, 5):
+                            desired_item = random.choice(item_names)
+                            if not len(random_items) == x and desired_item not in random_items:
+                                random_items.append(desired_item)
+
+                        random_boots = random.choice(self.boots_list)
+
+                        embed = discord.Embed(title=f"You have selected jungle!",
+                                              description=None,
+                                              color=discord.Color.orange(),
+                                              timestamp=datetime.utcnow())
+                        embed.add_field(name="Jungle Item", value=f"{random_items[0]}", inline=False)
+                        embed.add_field(name="Second Item", value=f"{random_items[1]}", inline=False)
+                        embed.add_field(name="Third Item", value=f"{random_items[2]}", inline=False)
+                        embed.add_field(name="Fourth Item", value=f"{random_items[3]}", inline=False)
+                        embed.add_field(name="Fifth Item", value=f"{random_items[4]}", inline=False)
+                        embed.add_field(name="Boots", value=f"{random_boots}", inline=False)
+                        embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+                        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                        await ctx.send(content=None, embed=embed)
+                    elif response.content.lower() == "support":
+                        items = LeagueAPI().getItems()["data"]
+                        item_names = [items[key]["name"] for key in items]
+
+                        random_items = [random.choice(self.supp_items)]
+
+                        # there are only five random items so we loop 5 times
+                        for x in range(0, 5):
+                            desired_item = random.choice(item_names)
+                            if not len(random_items) == x and desired_item not in random_items:
+                                random_items.append(desired_item)
+
+                        random_boots = random.choice(self.boots_list)
+
+                        embed = discord.Embed(title="You have selected support!",
+                                              description=None,
+                                              color=discord.Color.orange(),
+                                              timestamp=datetime.utcnow())
+                        embed.add_field(name="Support Item", value=f"{random_items[0]}", inline=False)
+                        embed.add_field(name="Second Item", value=f"{random_items[1]}", inline=False)
+                        embed.add_field(name="Third Item", value=f"{random_items[2]}", inline=False)
+                        embed.add_field(name="Fourth Item", value=f"{random_items[3]}", inline=False)
+                        embed.add_field(name="Fifth Item", value=f"{random_items[4]}", inline=False)
+                        embed.add_field(name="Boots", value=f"{random_boots}", inline=False)
+                        embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+                        embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                        await ctx.send(content=None, embed=embed)
+                    else:
+                        await ctx.send("[LeagueCommands] Lane was not recognized, please re-run the command.")
+
+            elif decider.lower() == "random" and decider2.lower() == "runes":
+                runes = LeagueAPI().getRunes()
+                rune_tier_names = [rune_tier["name"] for rune_tier in runes]
+                random_runes = [random.choice(rune_tier_names), random.choice(rune_tier_names)]
+                while random_runes[0] == random_runes[1]:
+                    random_runes[1] = random.choice(rune_tier_names)
+
+                embed = discord.Embed(title=None,
+                                      description=None,
+                                      color=discord.Color.orange(),
+                                      timestamp=datetime.utcnow())
+                embed.add_field(name="Primary Runes", value=f"{random_runes[0]}", inline=False)
+                embed.add_field(name="Secondary Runes", value=f"{random_runes[1]}", inline=False)
+                embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+                embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                await ctx.send(content=None, embed=embed)
+
+            # Tells them how to use the command properly, because they didn't use arguments.
+            elif decider.lower() == "help":
+                embed = discord.Embed(title="League Command Help",
+                                      description="This command needs parameters to run properly!",
+                                      color=discord.Color.orange(),
+                                      timestamp=datetime.utcnow())
+                embed.add_field(name="{league champs",
+                                value="Displays a list of all the champs in the bot.",
+                                inline=True)
+                embed.add_field(name="{league items",
+                                value="Displays a list of all the items in the bot.",
+                                inline=True)
+                embed.add_field(name="{league runes",
+                                value="Displays a list of all the runes in the bot.",
+                                inline=True)
+                embed.add_field(name="{league random items",
+                                value="Displays a random sets of items for you to use!",
+                                inline=True)
+                embed.add_field(name="{league random champs",
+                                value="Displays a random champion for you to use!",
+                                inline=True)
+                embed.add_field(name="{league random runes",
+                                value="Displays a random set of runes for you to use!",
+                                inline=True)
+                embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+                embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                await ctx.send(content=None, embed=embed)
 
 
 def setup(bot):

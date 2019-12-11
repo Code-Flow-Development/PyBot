@@ -163,7 +163,7 @@ class UtilityCommandsCog(commands.Cog):
             pass
 
     @commands.command(name="userinfo", help="Shows detailed information on a user", usage="[@user or user id]")
-    async def userinfo(self, ctx, member: discord.Member = None):
+    async def user_info(self, ctx, member: discord.Member = None):
         status_icons = {"online": 646827558771359755, "idle": 646827558591135794, "dnd": 646826726428639232,
                         "offline": 646827559035600926}
         if not member:
@@ -202,12 +202,12 @@ class UtilityCommandsCog(commands.Cog):
         embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
         await ctx.send(content=None, embed=embed)
 
-    @commands.command(name="addmessageresponse", help="Add a custom message response", usage="<trigger> <response>")
+    @commands.command(name="addmessageresponse", help="Add a custom message response", usage="<trigger> <response>", aliases=["amr"])
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
-    async def addmessageresponse(self, ctx, trigger: str, response: str):
+    async def add_message_response(self, ctx, trigger: str, response: str):
         server_settings = ServerSettings(ctx.guild)
-        server_document = server_settings.getServerDocument()
+        server_document = server_settings.getServerSettings()
         custom_message_responses = server_document["custom_message_responses"]
         current_triggers = [x["trigger"] for x in custom_message_responses]
         if trigger not in current_triggers:
@@ -217,25 +217,49 @@ class UtilityCommandsCog(commands.Cog):
             }
             server_document["custom_message_responses"].append(new_trigger)
             server_settings.update("settings", server_document)
-            await ctx.send(f"Message response added!")
+            embed = discord.Embed(title=f"Message Response has been added!", description=None,
+                                  color=discord.Color.green(),
+                                  timestamp=datetime.utcnow())
+            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+            await ctx.send(content=None, embed=embed)
         else:
             await ctx.send(f"{trigger} is already added!")
 
     @commands.command(name="listmessageresponses", help="List custom message responses for the server", aliases=["lmr"])
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
-    async def listresponses(self, ctx):
+    async def list_responses(self, ctx):
         server_document = ServerSettings(ctx.guild)
-        server_settings = server_document.getServerDocument()
+        server_settings = server_document.getServerSettings()
         responses_list = server_settings["custom_message_responses"]
         new_list = []
         for response in responses_list:
             response_dict = dict(response)
-            new_list.append(f"Trigger: {response_dict['trigger']}; Response: {response_dict['response']}")
+            new_list.append(f"{len(new_list) + 1}. Trigger: {response_dict['trigger']}; Response: {response_dict['response']}")
         embed = discord.Embed(title=f"Active Message Responses", description='\n'.join(new_list), color=discord.Color.green(),
                               timestamp=datetime.utcnow())
         embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
         await ctx.send(content=None, embed=embed)
+
+    @commands.command(name="deletemessageresponse", help="Delete a custom message response from the server", aliases=["dmr", "rmr", "removemessageresponse"])
+    @commands.guild_only()
+    @commands.has_permissions(administrator=True)
+    async def delete_response(self, ctx, index):
+        server_document = ServerSettings(ctx.guild)
+        server_settings = server_document.getServerSettings()
+        responses_list: list = server_settings["custom_message_responses"]
+        try:
+            responses_list.remove(responses_list[int(index) - 1])
+            server_document.update("settings", server_settings)
+            embed = discord.Embed(title=f"Message Response has been deleted!", description=None,
+                                  color=discord.Color.green(),
+                                  timestamp=datetime.utcnow())
+            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+            return await ctx.send(content=None, embed=embed)
+        except IndexError:
+            await ctx.send(f"[Message Responses] Invalid Index", delete_after=10)
+        except ValueError:
+            await ctx.send(f"[Message Responses] Invalid Index", delete_after=10)
 
 
 def setup(bot):

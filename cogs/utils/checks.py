@@ -14,7 +14,7 @@ def isBotAdmin():
 
 
 def isMusicEnabledCheck(ctx):
-    server_document = ServerSettings(ctx.guild).getServerDocument()
+    server_document = ServerSettings(ctx.guild).getServerSettings()
 
     if server_document["modules"]["music"]:
         return True
@@ -27,7 +27,7 @@ def isMusicEnabled():
 
 
 def isLoLEnabledCheck(ctx):
-    server_document = ServerSettings(ctx.guild).getServerDocument()
+    server_document = ServerSettings(ctx.guild).getServerSettings()
 
     if server_document["modules"]["lol"]:
         return True
@@ -40,7 +40,7 @@ def isLoLEnabled():
 
 
 def isNSFWEnabledCheck(ctx):
-    server_document = ServerSettings(ctx.guild).getServerDocument()
+    server_document = ServerSettings(ctx.guild).getServerSettings()
 
     if server_document["modules"]["nsfw_commands"]:
         return True

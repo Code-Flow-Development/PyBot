@@ -122,7 +122,7 @@ class UserProfiles:
 
     def reset(self):
         result = self.user_collection.delete_one({"id": self.user.id})
-        getLogger().debug(f"[MongoDB] Created user document for '{self.user.name}' ({self.user.id})")
+        getLogger().debug(f"[MongoDB] Deleted user document for '{self.user.name}' ({self.user.id})")
         return result
 
 
@@ -141,7 +141,7 @@ class ServerSettings:
                 "settings": {
                     "is_banned": False,
                     "log_channel": None,
-                    "starboard_channel": None,
+                    "counting_channel": None,
                     "events": {
                         "guild_member_join": True,
                         "guild_member_leave": True,
@@ -183,9 +183,9 @@ class ServerSettings:
             }
             self.server_collection.insert_one(guild_payload)
             getLogger().debug(f"[MongoDB] Created server document for '{guild.name}' ({guild.id})")
-        self.server_settings = self.getServerDocument()
+        self.server_settings = self.getServerSettings()
 
-    def getServerDocument(self):
+    def getServerSettings(self):
         document = self.server_collection.find_one({"id": self.guild.id})
         return json.loads(dumps(document))["settings"]
 
@@ -206,18 +206,23 @@ class ServerSettings:
 
 
 def getRandomFact():
-    file = open("didyouknow.json", 'r')
-    file_content = file.read()
-    json_data = json.loads(file_content)
-    return random.choice(json_data)
+    facts_json_url = "https://gist.githubusercontent.com/Puyodead1/480702b0c64ea0bd6391a3ecc7cf9d79/raw/2a7010310f82fbc82edaf55134c57ccbdb7cead8/facts.json"
+    res = requests.get(facts_json_url)
+    if res.status_code == 200:
+        return random.choice(res.json())
+    else:
+        return None
 
 
-class LeagueofLegends:
+class LeagueAPI:
     def __init__(self):
         self.version_url = "https://ddragon.leagueoflegends.com/api/versions.json"
-        self.champion_url = "http://ddragon.leagueoflegends.com/cdn/{}/data/en_US/championFull.json"
+        self.champions_url = "http://ddragon.leagueoflegends.com/cdn/{}/data/en_US/championFull.json"
         self.runes_url = "http://ddragon.leagueoflegends.com/cdn/{}/data/en_US/runesReforged.json"
         self.items_url = "http://ddragon.leagueoflegends.com/cdn/{}/data/en_US/item.json"
+        self.champion_url = "http://ddragon.leagueoflegends.com/cdn/{}/data/en_US/champion/{}.json"
+        self.champion_avatar_url = "http://ddragon.leagueoflegends.com/cdn/{}/img/champion/{}"
+        self.item_image_url = "http://ddragon.leagueoflegends.com/cdn/{}/img/item/{}"
 
     def getCurrentVersion(self):
         response = requests.get(self.version_url)
@@ -236,7 +241,7 @@ class LeagueofLegends:
         '''
         current_version = self.getCurrentVersion()
         if current_version is not None:
-            response = requests.get(self.champion_url.format(current_version))
+            response = requests.get(self.champions_url.format(current_version))
             if response.status_code == 200:
                 return response.json()
         else:
@@ -276,6 +281,44 @@ class LeagueofLegends:
             response = requests.get(self.items_url.format(current_version))
             if response.status_code == 200:
                 return response.json()
+        else:
+            return None
+
+    def getChampion(self, champion):
+        current_version = self.getCurrentVersion()
+        if current_version is not None:
+            response = requests.get(self.champion_url.format(current_version, champion))
+            if response.status_code == 200:
+                return response.json()
+        else:
+            return None
+
+    def getChampionAvatarURL(self, champion):
+        current_version = self.getCurrentVersion()
+        if current_version is not None:
+            response = requests.get(self.champion_url.format(current_version, champion))
+            if response.status_code == 200:
+                image_name = response.json()["data"][champion]["image"]["full"]
+                return self.champion_avatar_url.format(current_version, image_name)
+        else:
+            return None
+
+    def getItem(self, item_id):
+        current_version = self.getCurrentVersion()
+        if current_version is not None:
+            response = requests.get(self.items_url.format(current_version))
+            if response.status_code == 200:
+                return response.json()["data"][item_id]
+        else:
+            return None
+
+    def getItemImage(self, item_id):
+        current_version = self.getCurrentVersion()
+        if current_version is not None:
+            response = requests.get(self.items_url.format(current_version))
+            if response.status_code == 200:
+                image_name = response.json()["data"][item_id]["image"]["full"]
+                return self.item_image_url.format(current_version, image_name)
         else:
             return None
 

@@ -360,7 +360,7 @@ class ModerationCommandsCog(commands.Cog):
     # TODO: use role based permissions
     @commands.has_permissions(administrator=True)
     @commands.bot_has_permissions(manage_roles=True)
-    async def removestrike(self, ctx, member: discord.Member, strike_id: str):
+    async def remove_strike(self, ctx, member: discord.Member, strike_id: str):
         profile = UserProfiles(member)
         profile_content = profile.getUserProfile()
         old_strikes = profile_content["MiscData"]["strikes"]
@@ -396,47 +396,149 @@ class ModerationCommandsCog(commands.Cog):
             embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
         await ctx.send(content=None, embed=embed)
 
-    @commands.command(name="createcountingchannel", help="Creates a new counting channel", aliases=["createcc", "newcountingchannel", "createcounting"])
+    @commands.command(name="countingchannel", help="Manage Counting Channel", aliases=["cc"])
     @commands.guild_only()
-    async def newcountingchannel(self, ctx):
-        try:
-            channel = await ctx.guild.create_text_channel(name="count-to-1")
-            await ctx.send(f"Channel created! {channel.mention}")
-        except Forbidden as e:
-            return await ctx.send(f"[ModerationCommands] Missing permission to create channel! Error: {e.text}")
-        except HTTPException as e:
-            return await ctx.send(f"[ModerationCommands] Failed to create channel! Error: {e.text}")
-        except InvalidArgument as e:
-            return await ctx.send(f"[ModerationCommands] Permission override information is invalid! Error: {e} ")
+    async def counting_channel(self, ctx, arg=None):
+        if arg is not None:
+            arg = arg.lower()
+
+        if arg is None:
+            # show help
+            pass
+
+        elif arg == "new":
+            server_document = ServerSettings(ctx.guild)
+            server_settings = server_document.getServerSettings()
+
+            # ensure there is only one counting channel
+            if server_settings["counting_channel"] is None:
+                try:
+                    channel = await ctx.guild.create_text_channel(name="count-to-1", reason=f"Issued by {ctx.author}")
+                    embed = discord.Embed(title=f"Counting Channel Created!", description=channel.mention,
+                                          color=discord.Color.green(), timestamp=datetime.utcnow())
+                    embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                    embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+
+                    server_settings["counting_channel"] = channel.id
+                    server_document.update("settings", server_settings)
+
+                    await ctx.send(content=None, embed=embed)
+                except Forbidden as e:
+                    return await ctx.send(f"[ModerationCommands] Missing permission to create channel! Error: {e.text}")
+                except HTTPException as e:
+                    return await ctx.send(f"[ModerationCommands] Failed to create channel! Error: {e.text}")
+                except InvalidArgument as e:
+                    return await ctx.send(
+                        f"[ModerationCommands] Permission override information is invalid! Error: {e} ")
+            else:
+                # server has a counting channel
+                embed = discord.Embed(title=f"This server already has a counting channel!",
+                                      description=f"To delete it, use `countingchannel new`.",
+                                      color=discord.Color.red(), timestamp=datetime.utcnow())
+                embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+
+                await ctx.send(content=None, embed=embed)
+
+        elif arg == "delete":
+            server_document = ServerSettings(ctx.guild)
+            server_settings = server_document.getServerSettings()
+            counting_channel = server_settings["counting_channel"]
+
+            if counting_channel is not None:
+                try:
+                    channel = ctx.guild.get_channel(counting_channel)
+                    await channel.delete(f"Issued by {ctx.author}")
+                    server_settings["counting_channel"] = None
+                    server_document.update("settings", server_settings)
+                    embed = discord.Embed(title=f"Counting Channel has been deleted!",
+                                          description=None,
+                                          color=discord.Color.red(), timestamp=datetime.utcnow())
+                    embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                    embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+
+                    await ctx.send(content=None, embed=embed)
+                except discord.Forbidden:
+                    return await ctx.send(f"Missing permission to delete channel! Channel ID: {counting_channel}; Channel: {channel.mention}")
+                except discord.NotFound:
+                    embed = discord.Embed(title=f"The counting channel doesn't seem to exist anymore!",
+                                          description=f"You can create a new one with `countingchannel new`!",
+                                          color=discord.Color.red(), timestamp=datetime.utcnow())
+                    embed.add_field(name="Channel ID", value=f"{channel.id} (DB ID: {counting_channel})")
+                    embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                    embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+
+                    server_settings["counting_channel"] = None
+                    server_document.update("settings", server_settings)
+
+                    return await ctx.send(content=None, embed=embed)
+
+                except discord.HTTPException:
+                    getLogger().error(f"Failed to delete counting channel! Channel ID: {channel.id} (DB: {counting_channel}) in server: {ctx.guild}.")
+                    return await ctx.send(f"Failed to delete counting channel! Channel ID: {channel.id} (DB: {counting_channel}) in server: {ctx.guild}.")
+            else:
+                embed = discord.Embed(title=f"This server does not have a counting channel!", description=f"You can create one with `countingchannel new`!",
+                                      color=discord.Color.red(), timestamp=datetime.utcnow())
+                embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+
+                await ctx.send(content=None, embed=embed)
+
+        elif arg == "reset":
+            server_document = ServerSettings(ctx.guild)
+            server_settings = server_document.getServerSettings()
+            counting_channel = server_settings["counting_channel"]
+
+            if counting_channel is not None:
+                try:
+                    channel = ctx.guild.get_channel(counting_channel)
+                    await channel.edit(name=f"count-to-1", reason=f"Issued by {ctx.author}", nsfw=False, topic=None)
+
+                    embed = discord.Embed(title=f"Counting Channel has been reset!",
+                                          description=None,
+                                          color=discord.Color.green(), timestamp=datetime.utcnow())
+                    embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                    embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+
+                    await ctx.send(content=None, embed=embed)
+                except discord.Forbidden:
+                    return await ctx.send(
+                        f"Missing permission to edit channel! Channel ID: {counting_channel}; Channel: {channel.mention}")
+                except discord.InvalidArgument:
+                    return await ctx.send(f"We shouldn't be here!")
+                except discord.HTTPException:
+                    getLogger().error(
+                        f"Failed to edit counting channel! Channel ID: {channel.id} (DB: {counting_channel}) in server: {ctx.guild}.")
+                    return await ctx.send(
+                        f"Failed to edit counting channel! Channel ID: {channel.id} (DB: {counting_channel}) in server: {ctx.guild}.")
+            else:
+                embed = discord.Embed(title=f"This server does not have a counting channel!",
+                                      description=f"You can create one with `countingchannel new`!",
+                                      color=discord.Color.red(), timestamp=datetime.utcnow())
+                embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
+
+                await ctx.send(content=None, embed=embed)
 
     @commands.command(name="setlogchannel", help="Set the log channel for the server", aliases=["slc"])
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
     async def set_log_channel(self, ctx, log_channel: discord.TextChannel):
         server_settings = ServerSettings(ctx.guild)
-        server_document = server_settings.getServerDocument()
+        server_document = server_settings.getServerSettings()
         server_document["log_channel"] = log_channel.id
         server_settings.update("settings", server_document)
         await ctx.send(f"Updated log channel to {log_channel.mention}")
 
-    # @commands.command(name="setstarboardchannel", help="Set the starboard channel for the server", aliases=["ssc"])
-    # @commands.guild_only()
-    # @commands.has_permissions(administrator=True)
-    # async def set_starboard_channel(self, ctx, starboard_channel: discord.TextChannel):
-    #     server_settings = ServerSettings(ctx.guild)
-    #     server_document = server_settings.getServerDocument()
-    #     server_document["starboard_channel"] = starboard_channel.id
-    #     server_settings.update("settings", server_document)
-    #     await ctx.send(f"Updated starboard channel to {starboard_channel.mention}")
-
     @commands.command(name="eventsettings", help="Enable/Disable event logging")
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
-    async def eventsettings(self, ctx, event: str, setting: bool):
+    async def event_settings(self, ctx, event: str, setting: bool):
         server_settings = ServerSettings(ctx.guild)
-        server_document = server_settings.getServerDocument()
+        server_document = server_settings.getServerSettings()
         current_event_settings = server_document["events"]
         try:
+            # dummy variable to ensure valid event, this will cause index error if invalid
             theSetting = current_event_settings[event]
             current_event_settings[event] = setting
             server_settings.update("settings", server_document)
@@ -449,7 +551,7 @@ class ModerationCommandsCog(commands.Cog):
     @commands.has_permissions(administrator=True)
     async def config(self, ctx, setting: str = None, value: bool = None):
         server_settings = ServerSettings(ctx.guild)
-        server_document = server_settings.getServerDocument()
+        server_document = server_settings.getServerSettings()
         if not setting:
             settings = server_document
             log_channel = self.bot.get_channel(settings["log_channel"])

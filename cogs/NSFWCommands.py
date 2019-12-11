@@ -24,7 +24,7 @@ class NSFWCommands(commands.Cog):
     @commands.guild_only()
     @isNSFWEnabled()
     async def boobs(self, ctx):
-        server_document = ServerSettings(ctx.guild).getServerDocument()
+        server_document = ServerSettings(ctx.guild).getServerSettings()
         if server_document["modules"]["nsfw_commands"]:
             boob_subreddits = ["boobs", "Boobies", "Bigtitssmalltits", "naturaltitties", "BustyPetite"]
             subreddit = random.choice(boob_subreddits)
@@ -57,7 +57,7 @@ class NSFWCommands(commands.Cog):
     @commands.guild_only()
     @isNSFWEnabled()
     async def boobdrop(self, ctx):
-        server_document = ServerSettings(ctx.guild).getServerDocument()
+        server_document = ServerSettings(ctx.guild).getServerSettings()
         if server_document["modules"]["nsfw_commands"]:
             async with ctx.typing():
                 posts = RedditClient().getRedditClient().subreddit("TittyDrop").new(limit=1000)
@@ -86,7 +86,7 @@ class NSFWCommands(commands.Cog):
     @commands.guild_only()
     @isNSFWEnabled()
     async def pussy(self, ctx):
-        server_document = ServerSettings(ctx.guild).getServerDocument()
+        server_document = ServerSettings(ctx.guild).getServerSettings()
         if server_document["modules"]["nsfw_commands"]:
             pussy_subreddits = ["pussy", "LipsThatGrip"]
             posts = RedditClient().getRedditClient().subreddit(random.choice(pussy_subreddits)).new(limit=100)
@@ -117,7 +117,7 @@ class NSFWCommands(commands.Cog):
     @commands.guild_only()
     @isNSFWEnabled()
     async def ass(self, ctx):
-        server_document = ServerSettings(ctx.guild).getServerDocument()
+        server_document = ServerSettings(ctx.guild).getServerSettings()
         if server_document["modules"]["nsfw_commands"]:
             ass_subreddits = ["asshole", "AssOnTheGlass", "SpreadEm", "booty_gifs"]
             posts = RedditClient().getRedditClient().subreddit(random.choice(ass_subreddits)).new(limit=100)
@@ -148,7 +148,7 @@ class NSFWCommands(commands.Cog):
     @commands.guild_only()
     @isNSFWEnabled()
     async def nsfw(self, ctx):
-        server_document = ServerSettings(ctx.guild).getServerDocument()
+        server_document = ServerSettings(ctx.guild).getServerSettings()
         if server_document["modules"]["nsfw_commands"]:
             nsfw_subreddits = ["nsfw", "NSFW_GIFS", "squirting", "pussy", "whenitgoesin", "scissoring", "boobs", "gonewild",
                                "RealGirls", "OnOff", "bdsm", "Bondage", "pawg", "PetiteGoneWild", "GirlsWithToys",
