@@ -171,6 +171,8 @@ class LeagueCommandsCog(commands.Cog):
                 armorlvl = random_champion["stats"]["armorperlevel"]
                 mr = random_champion["stats"]["spellblock"]
                 mrlvl = random_champion["stats"]["spellblockperlevel"]
+                ad = random_champion["stats"]["attackdamage"]
+                adlvl = random_champion["stats"]["attackdamageperlevel"]
                 ms = random_champion["stats"]["movespeed"]
 
                 embed = discord.Embed(title=f"{name} - {title}",
@@ -184,6 +186,7 @@ class LeagueCommandsCog(commands.Cog):
                 embed.add_field(name="Mana", value=f"{mp} + {mplvl} per level")
                 embed.add_field(name="Armor", value=f"{armor} + {armorlvl} per level")
                 embed.add_field(name="Magic Resist", value=f"{mr} + {mrlvl} per level")
+                embed.add_field(name="Attack Damage", value=f"{ad} + {adlvl} per level")
                 embed.add_field(name="Movement Speed", value=ms)
 
                 spells = []
