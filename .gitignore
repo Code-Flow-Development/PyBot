@@ -67,3 +67,5 @@ venv/**
 *.webm
 .env
 .settings
+.floo
+.flooignore
