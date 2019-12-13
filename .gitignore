@@ -65,3 +65,5 @@ data/**
 # Venv
 venv/**
 *.webm
+.env
+.settings
