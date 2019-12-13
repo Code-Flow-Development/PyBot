@@ -6,7 +6,7 @@ Python Discord bot for Special Interest Project
 ![GitHub](https://img.shields.io/github/license/Puyodead1/PyBot?style=plastic)
 
 PyBot was developed by Loco, Unity, and Puyodead1 for a school project.<br>
-PyBot Dashboard (https://github.com/Puyodead1/PyBot-Dashboard) was developed by Puyodead1
+[PyBot Dashboard](https://github.com/Puyodead1/PyBot-Dashboard) was developed by Puyodead1
 
 
 ## Dependencies
