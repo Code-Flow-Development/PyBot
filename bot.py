@@ -62,10 +62,10 @@ async def on_ready():
     bot.startedAt = time.time()
     getLogger().info(f'Logged in as {bot.user}')
 
-    # await bot.change_presence(activity=discord.Activity(name='in ' + str(len(bot.guilds)) + " servers!", type=discord.ActivityType.playing))
+    await bot.change_presence(activity=discord.Activity(name=str(len(bot.users)) + " users!", type=discord.ActivityType.watching))
 
-    await bot.change_presence(activity=discord.Activity(name="hentai! 😳", type=discord.ActivityType.watching),
-                              status=discord.Status.dnd)
+    # await bot.change_presence(activity=discord.Activity(name="hentai! 😳", type=discord.ActivityType.watching),
+    #                           status=discord.Status.dnd)
 
     # Load cogs
     loadAllCogs(bot)
