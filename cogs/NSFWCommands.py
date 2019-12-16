@@ -11,10 +11,11 @@ gfycat_regex = re.compile(r'(https://gfycat.com/(.*))(\?.*)?')
 imgur_regex = re.compile(r'(https://i.imgur.com/(.*))(\?.*)?')
 reddit_regex = re.compile(r'(https://i.redd.it/(.*))(\?.*)?')
 
-ENABLED = True
+ENABLED = False
 
 
 class NSFWCommands(commands.Cog):
+    """NSFW Related Commands"""
     def __init__(self, bot):
         self.bot = bot
 

@@ -1,16 +1,19 @@
-import discord
 import random
 import time
-import timeago
-from discord.ext import commands
 from datetime import datetime
+
+import discord
+import timeago
 from discord.errors import HTTPException, Forbidden, InvalidArgument
-from discord.ext.commands.errors import BadArgument
 from discord.errors import NotFound
+from discord.ext import commands
+from discord.ext.commands.errors import BadArgument
+
 from utils import UserProfiles, ServerSettings, getLogger
 
 
 class ModerationCommandsCog(commands.Cog):
+    """Commands for Guild Staff and Guild Moderation"""
     def __init__(self, bot):
         self.bot = bot
 
@@ -40,7 +43,8 @@ class ModerationCommandsCog(commands.Cog):
             await member.ban(reason=reason, delete_message_days=dmd)
             await ctx.send(content=None, embed=embed)
             log_channel = ServerSettings(ctx.guild).getLogChannel(self.bot)
-            embed2 = discord.Embed(title=None, description=f"**{member}** was banned!", color=discord.Color.red(), timestamp=datetime.utcnow())
+            embed2 = discord.Embed(title=None, description=f"**{member}** was banned!", color=discord.Color.red(),
+                                   timestamp=datetime.utcnow())
             embed2.add_field(name="Banned by", value=f"{ctx.author.mention} ({ctx.author.id})")
             embed2.add_field(name="Banned for", value=f"{reason}")
             embed2.add_field(name="User ID", value=member.id)
@@ -283,7 +287,7 @@ class ModerationCommandsCog(commands.Cog):
                       description="Requires manage_roles permission")
     @commands.guild_only()
     @commands.bot_has_permissions(manage_roles=True)
-    async def createrole(self, ctx, rolename: str, hoist: bool = False, mentionable: bool = False):
+    async def create_role(self, ctx, rolename: str, hoist: bool = False, mentionable: bool = False):
         try:
             await ctx.guild.create_role(name=rolename, hoist=hoist, mentionable=mentionable,
                                         reason=f"Requested by {ctx.author.name}")
@@ -300,7 +304,7 @@ class ModerationCommandsCog(commands.Cog):
                       description="Requires manage_roles permission")
     @commands.guild_only()
     @commands.bot_has_permissions(manage_roles=True)
-    async def deleterole(self, ctx, role: discord.Role):
+    async def delete_role(self, ctx, role: discord.Role):
         try:
             await role.delete(reason=f"Requested by f{ctx.author.name}")
             await ctx.send(f"Role deleted!")
@@ -313,7 +317,7 @@ class ModerationCommandsCog(commands.Cog):
                       description="Requires manage_members permission")
     @commands.guild_only()
     @commands.bot_has_permissions(manage_roles=True)
-    async def addrole(self, ctx, role: discord.Role, member: discord.Member):
+    async def add_role(self, ctx, role: discord.Role, member: discord.Member):
         try:
             await member.add_roles(role, reason=f"Requested by {ctx.message.author.name}")
             await ctx.send(f"Added role {role.name} to {member}")
@@ -326,7 +330,7 @@ class ModerationCommandsCog(commands.Cog):
                       usage="<@role or role id> <@user or user id>", description="Requires manage_members permission")
     @commands.guild_only()
     @commands.bot_has_permissions(manage_members=True)
-    async def removerole(self, ctx, role: discord.Role, member: discord.Member):
+    async def remove_role(self, ctx, role: discord.Role, member: discord.Member):
         try:
             await member.remove_roles(role, reason=f"Requested by {ctx.message.author.name}")
             await ctx.send(f"Removed role {role.name} from {member}")
@@ -344,7 +348,7 @@ class ModerationCommandsCog(commands.Cog):
         strike_payload = {
             "strike_id": (len(strikes) + 1),
             "reason": reason,
-            "striked_by": ctx.author.name,
+            "striked_by": ctx.author.id,
             "timestamp": time.time()
         }
         strikes.append(strike_payload)
@@ -352,7 +356,7 @@ class ModerationCommandsCog(commands.Cog):
         embed = discord.Embed(title=None, description=f"**{member}** now has {len(strikes)} strikes 🚦",
                               color=discord.Color.green(), timestamp=datetime.utcnow())
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-        embed.set_footer(text=f"Kicked by {ctx.author.name}", icon_url=ctx.author.avatar_url)
+        embed.set_footer(text=f"Striked by {ctx.author.name}", icon_url=ctx.author.avatar_url)
         await ctx.send(content=None, embed=embed)
 
     @commands.command(name="removestrike", help="Removes a strike from a user", usage="<strike id>")
@@ -383,11 +387,11 @@ class ModerationCommandsCog(commands.Cog):
             for strike in strikes:
                 strike_id = str(strike["strike_id"])
                 reason = strike["reason"]
-                striked_by = strike["striked_by"]
+                striked_by = self.bot.get_user(strike["striked_by"])
                 strike_timestamp = strike["timestamp"]
                 striked_date = datetime.fromtimestamp(strike_timestamp)
                 now = datetime.now()
-                embed.add_field(name=f"[{strike_id}] Warning from @{striked_by}",
+                embed.add_field(name=f"[{strike_id}] Warning from {striked_by.name}",
                                 value=f"{reason} - {timeago.format(striked_date, now)}", inline=True)
         else:
             embed = discord.Embed(title=f"{member} does not have any strikes!", description=None,
@@ -459,7 +463,8 @@ class ModerationCommandsCog(commands.Cog):
 
                     await ctx.send(content=None, embed=embed)
                 except discord.Forbidden:
-                    return await ctx.send(f"Missing permission to delete channel! Channel ID: {counting_channel}; Channel: {channel.mention}")
+                    return await ctx.send(
+                        f"Missing permission to delete channel! Channel ID: {counting_channel}; Channel: {channel.mention}")
                 except discord.NotFound:
                     embed = discord.Embed(title=f"The counting channel doesn't seem to exist anymore!",
                                           description=f"You can create a new one with `countingchannel new`!",
@@ -474,10 +479,13 @@ class ModerationCommandsCog(commands.Cog):
                     return await ctx.send(content=None, embed=embed)
 
                 except discord.HTTPException:
-                    getLogger().error(f"Failed to delete counting channel! Channel ID: {channel.id} (DB: {counting_channel}) in server: {ctx.guild}.")
-                    return await ctx.send(f"Failed to delete counting channel! Channel ID: {channel.id} (DB: {counting_channel}) in server: {ctx.guild}.")
+                    getLogger().error(
+                        f"Failed to delete counting channel! Channel ID: {channel.id} (DB: {counting_channel}) in server: {ctx.guild}.")
+                    return await ctx.send(
+                        f"Failed to delete counting channel! Channel ID: {channel.id} (DB: {counting_channel}) in server: {ctx.guild}.")
             else:
-                embed = discord.Embed(title=f"This server does not have a counting channel!", description=f"You can create one with `countingchannel new`!",
+                embed = discord.Embed(title=f"This server does not have a counting channel!",
+                                      description=f"You can create one with `countingchannel new`!",
                                       color=discord.Color.red(), timestamp=datetime.utcnow())
                 embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
                 embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
@@ -520,61 +528,41 @@ class ModerationCommandsCog(commands.Cog):
 
                 await ctx.send(content=None, embed=embed)
 
-    @commands.command(name="setlogchannel", help="Set the log channel for the server", aliases=["slc"])
+    @commands.command(name="prune", help="Prune messages from a channel", usage="<amount> [user]")
     @commands.guild_only()
-    @commands.has_permissions(administrator=True)
-    async def set_log_channel(self, ctx, log_channel: discord.TextChannel):
-        server_settings = ServerSettings(ctx.guild)
-        server_document = server_settings.getServerSettings()
-        server_document["log_channel"] = log_channel.id
-        server_settings.update("settings", server_document)
-        await ctx.send(f"Updated log channel to {log_channel.mention}")
+    @commands.has_permissions(manage_messages=True)
+    async def prune(self, ctx, amount: int, member: discord.Member = None):
+        channel = ctx.channel
+        if channel.type == discord.ChannelType.text:
+            messages = 0
 
-    @commands.command(name="eventsettings", help="Enable/Disable event logging")
-    @commands.guild_only()
-    @commands.has_permissions(administrator=True)
-    async def event_settings(self, ctx, event: str, setting: bool):
-        server_settings = ServerSettings(ctx.guild)
-        server_document = server_settings.getServerSettings()
-        current_event_settings = server_document["events"]
-        try:
-            # dummy variable to ensure valid event, this will cause index error if invalid
-            theSetting = current_event_settings[event]
-            current_event_settings[event] = setting
-            server_settings.update("settings", server_document)
-            await ctx.send(f"Setting updated!")
-        except KeyError:
-            await ctx.send(f"{event} is not a valid event!")
+            if member is not None:
+                async for message in channel.history(limit=100):
+                    if message.author.id == member.id and messages < amount:
+                        await message.delete()
+                        messages += 1
+                    elif messages == amount:
+                        break
 
-    @commands.command(name="config", help="Shows the current config for the server")
-    @commands.guild_only()
-    @commands.has_permissions(administrator=True)
-    async def config(self, ctx, setting: str = None, value: bool = None):
-        server_settings = ServerSettings(ctx.guild)
-        server_document = server_settings.getServerSettings()
-        if not setting:
-            settings = server_document
-            log_channel = self.bot.get_channel(settings["log_channel"])
+            else:
+                async for message in channel.history(limit=amount):
+                    if (member is not None and message.author.id == member.id) or (member is None):
+                        # message author matches
+                        try:
+                            await message.delete()
+                            messages += 1
+                        except Forbidden:
+                            # missing permission to delete message
+                            getLogger().debug(f"[Prune] Missing permission to delete message")
+                            pass
+                        except HTTPException:
+                            # failed to delete message
+                            getLogger().debug(f"[Prune] Failed to delete message")
+                            pass
 
-            embed = discord.Embed(title=f"Current settings for '{ctx.guild.name}'", description=None,
-                                  color=discord.Color.green(), timestamp=datetime.utcnow())
-            embed.add_field(name="Log Channel",
-                            value=log_channel.mention if log_channel is not None else "No log channel set")
-            embed.add_field(name="Events", value='\n'.join(
-                ['**' + x + ':** ' + str(y) for x, y in server_document['events'].items()]))
-            embed.add_field(name="Modules", value='\n'.join(
-                ['**' + x + ':** ' + str(y) for x, y in server_document['modules'].items()]))
-            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
-            await ctx.send(content=None, embed=embed)
-        else:
-            try:
-                theSetting = server_document[setting]
-                server_document[setting] = value
-                server_settings.update("settings", server_document)
-                await ctx.send(f"Setting updated!")
-            except KeyError:
-                await ctx.send(f"{setting} is not a valid setting!")
+            embed_title = f"Deleted {messages} message{'s' if messages > 1 else ''} by {member.name}" if member is not None else f"Deleted {messages} message{'s' if messages > 1 else ''}"
+            embed = discord.Embed(title=embed_title, description=None, color=discord.Color.green(), timestamp=datetime.utcnow())
+            await channel.send(content=None, embed=embed)
 
 
 def setup(bot):

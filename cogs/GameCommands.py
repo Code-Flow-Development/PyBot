@@ -6,12 +6,13 @@ from discord.errors import HTTPException, Forbidden
 
 
 class GameCommandsCog(commands.Cog):
+    """Commands for Games"""
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command(name="rpgstart")
     @commands.guild_only()
-    async def rpgstart(self, ctx):
+    async def rpg_start(self, ctx):
         profile = UserProfiles(ctx.author)
         profile_data = profile.getUserProfile()
         isCreated = profile_data["RPGData"]["CreatedCharacter"]
@@ -109,7 +110,7 @@ class GameCommandsCog(commands.Cog):
 
     @commands.command(name="rpgprofile")
     @commands.guild_only()
-    async def rpgprofile(self, ctx, member=discord.Member):
+    async def rpg_profile(self, ctx, member=discord.Member):
         profile = UserProfiles(ctx.author)
         profile_data = profile.getUserProfile()
         a = profile_data['RPGData']['Name']

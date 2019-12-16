@@ -1,17 +1,19 @@
 import asyncio
 import random
 from datetime import datetime
-from exchanges import *
+
 import discord
 import requests
 from discord import Forbidden, HTTPException, InvalidArgument, NotFound
 from discord.ext import commands
+from exchanges import *
 from prawcore import exceptions
 
-from utils import getRandomFact, RedditClient
+from utils import getRandomFact, RedditClient, getLogger
 
 
 class FunCommandsCog(commands.Cog):
+    """Misc commands for fun with not specific usage"""
     def __init__(self, bot):
         self.bot = bot
 
@@ -119,7 +121,7 @@ class FunCommandsCog(commands.Cog):
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             await ctx.send(content=None, embed=embed)
 
-    @commands.command(name="dallas", help="Dallas is a fucking furry")
+    @commands.command(name="dallas", help="Dallas is a fucking furry", hidden=True)
     @commands.guild_only()
     async def dallas(self, ctx):
         embed = discord.Embed(title=None,
@@ -290,7 +292,8 @@ class FunCommandsCog(commands.Cog):
         embed = discord.Embed(title=None,
                               description=None,
                               color=discord.Color.green(), timestamp=datetime.utcnow())
-        embed.set_image(url="https://media.discordapp.net/attachments/644927766197698593/647167462315393053/ezgif.com-video-to-gif.gif")
+        embed.set_image(
+            url="https://media.discordapp.net/attachments/644927766197698593/647167462315393053/ezgif.com-video-to-gif.gif")
         embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         await ctx.send(content=None, embed=embed)
@@ -532,7 +535,8 @@ class FunCommandsCog(commands.Cog):
             print(f"[FunCommands] Cought error in meme command! Error: {e}")
             return await ctx.send(f"An error occured!")
 
-    @commands.command(name="bitcoin", help="List exchanges, get current price for an exchange", description="Get current bitcoin price for an exchange")
+    @commands.command(name="bitcoin", help="List exchanges, get current price for an exchange",
+                      description="Get current bitcoin price for an exchange")
     @commands.guild_only()
     async def bitcoin(self, ctx, arg=None):
         if arg is not None:
@@ -633,6 +637,31 @@ class FunCommandsCog(commands.Cog):
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             embed.set_thumbnail(url="https://miro.medium.com/max/3150/2*O3o3Gdam4S5MSXfUg_UxGg.png")
             return await ctx.send(content=None, embed=embed)
+
+    @commands.command(name="nick", help="Change nickname of a user", usage="<nickname> [user]")
+    @commands.guild_only()
+    @commands.bot_has_permissions(manage_nicknames=True)
+    async def nick(self, ctx, nick: str, member: discord.Member = None):
+        user = ctx.author if member is None else member
+        try:
+            await user.edit(nick=nick)
+            embed = discord.Embed(title=f"Nickname updated for {user}!", description=None,
+                                  color=discord.Color.green(),
+                                  timestamp=datetime.utcnow())
+            await ctx.send(content=None, embed=embed, delete_after=10)
+        except Forbidden:
+            # missing permission
+            getLogger().debug(f"[Nick] Missing permissions to change nickname for {user}!")
+            embed = discord.Embed(title=f"Missing permissions to change nickname for {user}!", description=None, color=discord.Color.red(),
+                                  timestamp=datetime.utcnow())
+            await ctx.send(content=None, embed=embed, delete_after=10)
+        except HTTPException:
+            # Failed to edit user
+            getLogger().debug(f"[Nick] failed to set nickname!")
+            embed = discord.Embed(title=f"failed to set nickname for {user}!", description=None,
+                                  color=discord.Color.red(),
+                                  timestamp=datetime.utcnow())
+            await ctx.send(content=None, embed=embed, delete_after=10)
 
 
 def getPostsByListingType(subreddit: str, type: str):

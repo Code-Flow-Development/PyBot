@@ -10,6 +10,7 @@ from .utils.checks import isLoLEnabled
 
 
 class LeagueCommandsCog(commands.Cog):
+    """Commands for League of Legends module"""
     def __init__(self, bot):
         self.bot = bot
         self.boots_list = [
@@ -62,9 +63,9 @@ class LeagueCommandsCog(commands.Cog):
                 new_embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
                 new_embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
                 await message.clear_reactions()
-                if page + 2 >= 1 or page + 2 == len(pagination):
+                if page + 1 >= 1 or page + 1 == len(pagination):
                     await message.add_reaction("⬅")
-                if page + 2 <= 1 or page + 2 < len(pagination):
+                if page + 1 <= 1 or page + 1 < len(pagination):
                     await message.add_reaction("➡")
                 await message.add_reaction("❌")
 
@@ -72,7 +73,7 @@ class LeagueCommandsCog(commands.Cog):
                 await self.process_reactions(ctx, message, page, pagination, list_type)
             elif reaction.emoji == "⬅":
                 page -= 1
-                new_embed = discord.Embed(title=f"Page {page + 1} of {len(pagination)} - Champions List",
+                new_embed = discord.Embed(title=f"Page {page + 1} of {len(pagination)} - {list_type} List",
                                           description="\n".join(pagination[page]),
                                           color=discord.Color.orange(),
                                           timestamp=datetime.utcnow())
@@ -108,7 +109,7 @@ class LeagueCommandsCog(commands.Cog):
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
 
             champion_list_message = await ctx.send(content=None, embed=embed)
-            if page + 2 <= 1 or page + 2 < len(pagination):
+            if page + 1 <= 1 or page + 1 < len(pagination):
                 await champion_list_message.add_reaction("➡")
             await champion_list_message.add_reaction("❌")
 
@@ -128,7 +129,7 @@ class LeagueCommandsCog(commands.Cog):
             embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             item_list_message = await ctx.send(content=None, embed=embed)
-            if page + 2 <= 1 or page + 2 < len(pagination):
+            if page + 1 <= 1 or page + 1 < len(pagination):
                 await item_list_message.add_reaction("➡")
             await item_list_message.add_reaction("❌")
 
@@ -148,7 +149,7 @@ class LeagueCommandsCog(commands.Cog):
             embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             rune_list_message = await ctx.send(content=None, embed=embed)
-            if page + 2 <= 1 or page + 2 < len(pagination):
+            if page + 1 <= 1 or page + 1 < len(pagination):
                 await rune_list_message.add_reaction("➡")
             await rune_list_message.add_reaction("❌")
 

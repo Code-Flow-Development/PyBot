@@ -40,6 +40,12 @@
       "enabled": true,
       "description": "Toggle Profanity Filter Module",
       "icon": "fa-filter"
+    },
+    "server_stats": {
+      "name": "Server Statistics",
+      "enabled": true,
+      "description": "Toggle server statistic channels",
+      "icon": "fa-chart-scatter"
     }
   },
   "events": {

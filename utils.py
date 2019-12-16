@@ -143,6 +143,7 @@ class ServerSettings:
                     "is_banned": False,
                     "log_channel": None,
                     "counting_channel": None,
+                    "server_stats_category_id": None,
                     "events": {
                         "guild_member_join": True,
                         "guild_member_leave": True,
@@ -168,6 +169,7 @@ class ServerSettings:
                         "nsfw": False,
                         "starboard": False,
                         "profanity_filter": False,
+                        "server_stats": False
                     },
                     "custom_message_responses": [
                         {
@@ -596,3 +598,56 @@ class Converter:
     @classmethod
     def status(cls, status: str):
         return discord.Status.dnd if status == "dnd" or status == "do_not_disturb" else discord.Status.idle if status == "idle" else discord.Status.online if status == "online" else discord.Status.offline if status == "offline" or status == "invisible" else None
+
+
+class ServerStats:
+    def __init__(self, bot, guild):
+        self.bot = bot
+        self.guild = guild
+        self.server_document = ServerSettings(guild)
+        self.server_settings = self.server_document.getServerSettings()
+        self.server_stats_enabled = self.server_settings["modules"]["server_stats"]
+
+    def isEnabled(self):
+        return self.server_stats_enabled
+
+    async def enable(self):
+        self.server_stats_enabled = True
+        category = await self.guild.create_category("📊 Server Stats")
+        await category.edit(position=0)
+        await category.create_voice_channel(f"All Members {len(self.guild.members)}", overwrites={self.guild.default_role: discord.PermissionOverwrite(connect=False)})
+        await category.create_voice_channel(f"Humans: {len([x for x in self.guild.members if not x.bot])}", overwrites={self.guild.default_role: discord.PermissionOverwrite(connect=False)})
+        await category.create_voice_channel(f"Bots: {len([x for x in self.guild.members if x.bot])}", overwrites={self.guild.default_role: discord.PermissionOverwrite(connect=False)})
+        await category.create_voice_channel(f"Channels: {len(self.guild.channels)}", overwrites={self.guild.default_role: discord.PermissionOverwrite(connect=False)})
+        await category.create_voice_channel(f"Roles: {len(self.guild.roles)}", overwrites={self.guild.default_role: discord.PermissionOverwrite(connect=False)})
+
+        self.server_settings["server_stats_category_id"] = category.id
+
+        self.server_document.update("settings", self.server_settings)
+
+    async def disable(self):
+        self.server_stats_enabled = False
+        category = self.guild.get_channel(self.server_settings["server_stats_category_id"])
+
+        for channel in category.channels:
+            await channel.delete()
+
+        await category.delete()
+
+        self.server_settings["server_stats_category_id"] = None
+
+        self.server_document.update("settings", self.server_settings)
+
+    async def update(self):
+        category = self.guild.get_channel(self.server_settings["server_stats_category_id"])
+        for channel in category.channels:
+            if channel.name.startswith("All Members"):
+                await channel.edit(name=f"All Members {len(self.guild.members)}")
+            elif channel.name.startswith("Humans"):
+                await channel.edit(name=f"Humans: {len([x for x in self.guild.members if not x.bot])}")
+            elif channel.name.startswith("Bots"):
+                await channel.edit(name=f"Bots: {len([x for x in self.guild.members if x.bot])}")
+            elif channel.name.startswith("Channels"):
+                await channel.edit(name=f"Channels: {len(self.guild.channels)}")
+            elif channel.name.startswith("Roles"):
+                await channel.edit(name=f"Roles: {len(self.guild.roles)}")

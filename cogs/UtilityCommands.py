@@ -1,15 +1,20 @@
-import discord
-import time
-import sys
-import platform
+import asyncio
 import os
-import requests
-from utils import ServerSettings
+import platform
+import sys
+import time
 from datetime import datetime
+
+import discord
+import requests
 from discord.ext import commands
+
+from utils import ServerSettings
 
 
 class UtilityCommandsCog(commands.Cog):
+    """Utility and Commands with no specific category"""
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -54,11 +59,10 @@ class UtilityCommandsCog(commands.Cog):
         member_count = len(self.bot.users)
         print(member_count)
         uptime_format = f"{hours} hours, {mins} minutes, and {secs} seconds" if secs > 0 and mins > 0 and hours > 0 else f"{mins} minutes, and {secs} seconds" if secs > 0 and mins > 0 and hours == 0 else f"{secs} seconds" if secs > 0 and mins == 0 and hours == 0 else "Error"
-        embed.add_field(name="\> Bot", value=f"**Servers:** {len(self.bot.guilds)}\n**Users:**: {member_count}\n**Uptime:** {uptime_format}")
-        embed.add_field(name="\> System", value=f"**Library:** Discord.py {discord.__version__}\n**Python Version:** {sys.version.split(' ')[0]}\n**OS:** {platform.system()} {platform.release()} ({os.name})")
-        # embed.add_field(name="Python Version:", value=f"{sys.version.split(' ')[0]}", inline=False)
-        # embed.add_field(name="OS:", value=f"{platform.system()} {platform.release()} ({os.name})", inline=False)
-        # embed.add_field(name="Discord.py Version:", value=f"{discord.__version__}", inline=False)
+        embed.add_field(name="\> Bot",
+                        value=f"**Servers:** {len(self.bot.guilds)}\n**Users:**: {member_count}\n**Uptime:** {uptime_format}")
+        embed.add_field(name="\> System",
+                        value=f"**Library:** Discord.py {discord.__version__}\n**Python Version:** {sys.version.split(' ')[0]}\n**OS:** {platform.system()} {platform.release()} ({os.name})")
         embed.add_field(name="\> Created by", value="- Puyodead1\n- Loco\n- Unity", inline=False)
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
@@ -66,101 +70,53 @@ class UtilityCommandsCog(commands.Cog):
 
     @commands.command(name="help")
     async def help(self, ctx, category: str = None):
-        if not category:
+        ignored = ("Events", "GuildEvents", "Example")
+        cogs = [y for y in [{'name': name.split("Cog")[0], 'description': cog.description, 'cog': cog} for name, cog in
+                            self.bot.cogs.items()] if not y["name"] in ignored]
+
+        if category is None:
             # show the main help menu
-            embed = discord.Embed(title=f"**Help Dictionary**",
-                                  description="We have a lot of commands, so there is multiple help commands! \n - - -",
-                                  color=discord.Color.green(),
-                                  timestamp=datetime.utcnow())
-            embed.add_field(name="Bot Admin Commands", value="{help botadmin", inline=False)
-            embed.add_field(name="Fun Commands", value="{help fun", inline=False)
-            embed.add_field(name="Game Commands", value="{help game", inline=False)
-            embed.add_field(name="Moderation Commands", value="{help moderation", inline=False)
-            embed.add_field(name="Utility Commands", value="{help utility", inline=False)
-            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
-            await ctx.send(content=None, embed=embed)
-        elif category.lower() == "botadmin":
-            command_list = [x for x in self.bot.commands if x.cog_name == "BotAdminCommandsCog"]
-            embed = discord.Embed(title=f"**Bot Developer Commands**",
-                                  description="Commands for the developer of the bot to use. \n - - -",
-                                  color=discord.Color.green(),
-                                  timestamp=datetime.utcnow())
 
-            for command in command_list:
-                embed.add_field(name=command.name, value=command.help, inline=False)
+            embed = discord.Embed(title=f"**Command Categories**",
+                                  description="To view help for a category, use ``help <category name> (ex ``help funcommands``) \n - - -",
+                                  color=discord.Color.green(),
+                                  timestamp=datetime.utcnow())
+            for cog in cogs:
+                embed.add_field(name=cog['name'], value=cog['description'], inline=False)
 
             embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
-            await ctx.send(content=None, embed=embed)
-        elif category.lower() == "fun":
-            command_list = [x for x in self.bot.commands if x.cog_name == "FunCommandsCog"]
-            new_list = command_list[0:8]
-            embed = discord.Embed(title=f"**Fun Commands**",
-                                  description="Just have some fun, you nerd. \n Do 'fun2' for more commands!\n - - - ",
-                                  color=discord.Color.green(),
-                                  timestamp=datetime.utcnow())
-            for command in new_list:
-                embed.add_field(name=command.name, value=command.help, inline=False)
 
-            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
             await ctx.send(content=None, embed=embed)
-        elif category.lower() == "fun2":
-            command_list = [x for x in self.bot.commands if x.cog_name == "FunCommandsCog"]
-            new_list = command_list[8:16]
-            embed = discord.Embed(title=f"**Fun Commands 2**",
-                                  description="Just have some fun, you nerd. \n  Do 'fun3' for more commands!\n - - - ",
-                                  color=discord.Color.green(),
-                                  timestamp=datetime.utcnow())
+        else:
+            category = category.lower()
+            categories = [x["name"].lower() for x in cogs]
+            if category in categories:
+                # valid category
+                try:
+                    cog = [x["cog"] for x in cogs if x["name"].lower() == category][0]
+                    command_list = cog.get_commands()
+                    pagination = [command_list[i:i + 5] for i in range(0, len(command_list), 5)]
+                    page = 0
+                    embed = discord.Embed(title=f"Page {page + 1} of {len(pagination)} - **{category}**",
+                                          description=f"{cog.description} \n - - -",
+                                          color=discord.Color.green(),
+                                          timestamp=datetime.utcnow())
 
-            for command in new_list:
-                embed.add_field(name=command.name, value=command.help, inline=False)
+                    for command in pagination[page]:
+                        embed.add_field(name=command.name, value=command.help, inline=False)
 
-            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
-            await ctx.send(content=None, embed=embed)
-        elif category.lower() == "fun3":
-            command_list = [x for x in self.bot.commands if x.cog_name == "FunCommandsCog"]
-            new_list = command_list[16:32]
-            embed = discord.Embed(title=f"**Fun Commands 3**",
-                                  description="Just have some fun, you nerd.\n Do 'fun4' for more commands! \n - - - ",
-                                  color=discord.Color.green(), timestamp=datetime.utcnow())
+                    embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                    embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
 
-            for x in range(16, 32):
-                embed.add_field(name=command_list[x].name, value=command_list[x].help, inline=False)
-            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
-            await ctx.send(content=None, embed=embed)
-        elif category.lower() == "fun4":
-            command_list = [x for x in self.bot.commands if x.cog_name == "FunCommandsCog"]
-            embed = discord.Embed(title=f"**Fun Commands 4**",
-                                  description="Just have some fun, you nerd.\n YOU MADE IT! THE LAST PAGEEEE!\n - - - ",
-                                  color=discord.Color.green(),
-                                  timestamp=datetime.utcnow())
-            embed.add_field(name="{meme",
-                            value="Reddit memes.",
-                            inline=False)
-            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
-            await ctx.send(content=None, embed=embed)
-        elif category.lower() == "game":
-            command_list = [x for x in self.bot.commands if x.cog_name == "GameCommandsCog"]
-            embed = discord.Embed(title=f"**Game Commands**",
-                                  description="This section of the bot is currently unfinished "
-                                              "\nand being worked on! \n - - -",
-                                  color=discord.Color.green(),
-                                  timestamp=datetime.utcnow())
-            for command in command_list:
-                embed.add_field(name=command.name, value=command.help, inline=False)
-            # embed.add_field(name="{rpgstart", value="Start your new adventure in our text RPG!", inline=False)
-            # embed.add_field(name="{rpgprofile", value="See your profile in the text RPG!", inline=False)
-            embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
-            embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
-            await ctx.send(content=None, embed=embed)
-        elif category.lower() == "moderation":
-            command_list = [x for x in self.bot.commands if x.cog_name == "ModerationCommandsCog"]
-            pass
+                    command_list_message = await ctx.send(content=None, embed=embed)
+                    if page + 2 <= 1 or page + 2 < len(pagination):
+                        await command_list_message.add_reaction("➡")
+                    await command_list_message.add_reaction("❌")
+
+                    await self.process_reactions(ctx, command_list_message, page, pagination, cog, category)
+                except IndexError:
+                    return await ctx.send(f"Invalid category")
 
     @commands.command(name="userinfo", help="Shows detailed information on a user", usage="[@user or user id]")
     async def user_info(self, ctx, member: discord.Member = None):
@@ -202,7 +158,8 @@ class UtilityCommandsCog(commands.Cog):
         embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
         await ctx.send(content=None, embed=embed)
 
-    @commands.command(name="addmessageresponse", help="Add a custom message response", usage="<trigger> <response>", aliases=["amr"])
+    @commands.command(name="addmessageresponse", help="Add a custom message response", usage="<trigger> <response>",
+                      aliases=["amr"])
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
     async def add_message_response(self, ctx, trigger: str, response: str):
@@ -235,13 +192,16 @@ class UtilityCommandsCog(commands.Cog):
         new_list = []
         for response in responses_list:
             response_dict = dict(response)
-            new_list.append(f"{len(new_list) + 1}. Trigger: {response_dict['trigger']}; Response: {response_dict['response']}")
-        embed = discord.Embed(title=f"Active Message Responses", description='\n'.join(new_list), color=discord.Color.green(),
+            new_list.append(
+                f"{len(new_list) + 1}. Trigger: {response_dict['trigger']}; Response: {response_dict['response']}")
+        embed = discord.Embed(title=f"Active Message Responses", description='\n'.join(new_list),
+                              color=discord.Color.green(),
                               timestamp=datetime.utcnow())
         embed.set_footer(text=ctx.author.name, icon_url=ctx.author.avatar_url)
         await ctx.send(content=None, embed=embed)
 
-    @commands.command(name="deletemessageresponse", help="Delete a custom message response from the server", aliases=["dmr", "rmr", "removemessageresponse"])
+    @commands.command(name="deletemessageresponse", help="Delete a custom message response from the server",
+                      aliases=["dmr", "rmr", "removemessageresponse"])
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
     async def delete_response(self, ctx, index):
@@ -260,6 +220,60 @@ class UtilityCommandsCog(commands.Cog):
             await ctx.send(f"[Message Responses] Invalid Index", delete_after=10)
         except ValueError:
             await ctx.send(f"[Message Responses] Invalid Index", delete_after=10)
+
+    async def process_reactions(self, ctx, message, page, pagination, cog, category):
+        try:
+            reaction, user = await self.bot.wait_for('reaction_add', timeout=90.0,
+                                                     check=lambda r, u: u == ctx.message.author)
+        except asyncio.TimeoutError:
+            await message.clear_reactions()
+            return await ctx.send(f"Timed out", delete_after=10)
+        else:
+            if reaction.emoji == "➡":
+                page += 1
+                new_embed = discord.Embed(title=f"Page {page + 1} of {len(pagination)} - **{category}**",
+                                          description=f"{cog.description}\n - - -",
+                                          color=discord.Color.green(),
+                                          timestamp=datetime.utcnow())
+
+                for command in pagination[page]:
+                    new_embed.add_field(name=command.name, value=command.help, inline=False)
+
+                new_embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+                new_embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                await message.clear_reactions()
+
+                if page + 1 >= 1 or page + 1 == len(pagination):
+                    await message.add_reaction("⬅")
+                if page + 1 <= 1 or page + 1 < len(pagination):
+                    await message.add_reaction("➡")
+                await message.add_reaction("❌")
+
+                await message.edit(content=None, embed=new_embed)
+                await self.process_reactions(ctx, message, page, pagination, cog, category)
+            elif reaction.emoji == "⬅":
+                page -= 1
+                new_embed = discord.Embed(title=f"Page {page + 1} of {len(pagination)} - **{category}**",
+                                          description=f"{cog.description}\n - - -",
+                                          color=discord.Color.green(),
+                                          timestamp=datetime.utcnow())
+
+                for command in pagination[page]:
+                    new_embed.add_field(name=command.name, value=command.help, inline=False)
+
+                new_embed.set_footer(text=ctx.message.author.name, icon_url=ctx.message.author.avatar_url)
+                new_embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
+                await message.clear_reactions()
+                if page - 1 >= 1 or page - 1 == len(pagination):
+                    await message.add_reaction("⬅")
+                if page - 1 <= 1 or page + 1 < len(pagination):
+                    await message.add_reaction("➡")
+                await message.add_reaction("❌")
+
+                await message.edit(content=None, embed=new_embed)
+                await self.process_reactions(ctx, message, page, pagination, cog, category)
+            elif reaction.emoji == "❌":
+                await message.delete()
 
 
 def setup(bot):

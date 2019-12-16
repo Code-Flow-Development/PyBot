@@ -1,21 +1,22 @@
 import ast
-import inspect
 from datetime import datetime
 
 import discord
 from discord.ext import commands
+
 import utils
 from utils import UserProfiles, getLogger, getSystemLogChannel, BotAdmins
 from .utils import checks
 
 
 class BotAdminCommandsCog(commands.Cog):
+    """Commands for Bot Admins"""
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command(name="reloadcog", hidden=True, help="Reloads a cog")
     @checks.isBotAdmin()
-    async def reloadcog(self, ctx, *, cog: str):
+    async def reload_cog(self, ctx, *, cog: str):
         # to reload we need to unload it first
         try:
             self.bot.unload_extension(f"cogs.{cog}")
@@ -29,7 +30,7 @@ class BotAdminCommandsCog(commands.Cog):
 
     @commands.command(name="loadcog", hidden=True, help="Loads a cog")
     @checks.isBotAdmin()
-    async def loadcog(self, ctx, *, cog: str):
+    async def load_cog(self, ctx, *, cog: str):
         # try to load cog
         try:
             self.bot.load_extension(f"cogs.{cog}")
@@ -42,7 +43,7 @@ class BotAdminCommandsCog(commands.Cog):
 
     @commands.command(name="unloadcog", hidden=True, help="Unloads a cog")
     @checks.isBotAdmin()
-    async def unloadcog(self, ctx, *, cog: str):
+    async def unload_cog(self, ctx, *, cog: str):
         try:
             self.bot.unload_extension(f"cogs.{cog}")
         except Exception as e:
@@ -54,7 +55,7 @@ class BotAdminCommandsCog(commands.Cog):
 
     @commands.command(name="reloadext", hidden=True, help="Reloads an extension")
     @checks.isBotAdmin()
-    async def reloadext(self, ctx, *, ext: str):
+    async def reload_ext(self, ctx, *, ext: str):
         # to reload we need to unload it first
         try:
             self.bot.unload_extension(f"extensions.{ext}")
@@ -68,7 +69,7 @@ class BotAdminCommandsCog(commands.Cog):
 
     @commands.command(name="loadext", hidden=True, help="Loads an extension")
     @checks.isBotAdmin()
-    async def loadext(self, ctx, *, ext: str):
+    async def load_ext(self, ctx, *, ext: str):
         # try to load cog
         try:
             self.bot.load_extension(f"extensions.{ext}")
@@ -81,7 +82,7 @@ class BotAdminCommandsCog(commands.Cog):
 
     @commands.command(name="unloadext", hidden=True, help="Unloads an extension")
     @checks.isBotAdmin()
-    async def unloadext(self, ctx, *, ext: str):
+    async def unload_ext(self, ctx, *, ext: str):
         try:
             self.bot.unload_extension(f"extensions.{ext}")
         except Exception as e:

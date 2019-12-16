@@ -15,7 +15,7 @@ from flask_session import Session
 from requests_oauthlib import OAuth2Session
 
 from utils import loadAllCogs, loadAllExtensions, SetupLogger, RedisClient, Mongo, APIServer, ServerSettings, getLogger, \
-    UserProfiles, BotAdmins, getSystemLogChannel, Converter
+    UserProfiles, BotAdmins, getSystemLogChannel, Converter, ServerStats
 
 # get asyncio loop
 loop = asyncio.get_event_loop()
@@ -871,6 +871,19 @@ def server_toggle_module(server_id):
                                         pass
                                     except discord.HTTPException:
                                         pass
+                            elif module.lower() == "server_stats":
+                                if enabled:
+                                    enable_fut = asyncio.run_coroutine_threadsafe(
+                                        ServerStats(bot, server).enable(),
+                                        loop
+                                    )
+                                    enable_fut.result()
+                                else:
+                                    disable_fut = asyncio.run_coroutine_threadsafe(
+                                        ServerStats(bot, server).disable(),
+                                        loop
+                                    )
+                                    disable_fut.result()
                             return "Settings Updated", 200
                         else:
                             return "", 400

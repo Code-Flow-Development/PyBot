@@ -9,6 +9,7 @@ from .utils.checks import isMusicEnabled
 
 
 class MusicCog(commands.Cog):
+    """Commands for Music Module"""
     __slots__ = ('bot', 'players')
 
     def __init__(self, bot):

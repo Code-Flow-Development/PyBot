@@ -1,7 +1,7 @@
 import discord
 from datetime import datetime
 import utils
-from utils import utc_to_epoch, ServerSettings
+from utils import utc_to_epoch, ServerSettings, ServerStats
 from discord.ext import commands
 from utils import UserProfiles
 
@@ -30,6 +30,10 @@ class GuildEventsCog(commands.Cog):
             embed.set_thumbnail(url=member.avatar_url)
             embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             await log_channel.send(content=None, embed=embed)
+
+        stats = ServerStats(self.bot, member.guild)
+        if stats.isEnabled():
+            await stats.update()
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
@@ -64,6 +68,10 @@ class GuildEventsCog(commands.Cog):
             embed.set_thumbnail(url=member.avatar_url)
             embed.set_footer(text=self.bot.user.name, icon_url=self.bot.user.avatar_url)
             await log_channel.send(content=None, embed=embed)
+
+        stats = ServerStats(self.bot, member.guild)
+        if stats.isEnabled():
+            await stats.update()
 
     # commented out in favor of the message sent from the ban command
     # @commands.Cog.listener()
@@ -160,6 +168,10 @@ class GuildEventsCog(commands.Cog):
         if log_channel is not None and enabled:
             await log_channel.send(f"Channel created: {channel.mention} [{channel.name}] ({channel.id})")
 
+        stats = ServerStats(self.bot, channel.guild)
+        if stats.isEnabled():
+            await stats.update()
+
     @commands.Cog.listener()
     async def on_guild_channel_delete(self, channel: discord.abc.GuildChannel):
         server_settings = ServerSettings(channel.guild).getServerSettings()
@@ -168,6 +180,10 @@ class GuildEventsCog(commands.Cog):
         enabled = server_settings["events"]["guild_channel_delete"]
         if log_channel is not None and enabled:
             await log_channel.send(f"Channel deleted: {channel.name} ({channel.id})")
+
+        stats = ServerStats(self.bot, channel.guild)
+        if stats.isEnabled():
+            await stats.update()
 
     @commands.Cog.listener()
     async def on_guild_update(self, before: discord.Guild, after: discord.Guild):
@@ -198,6 +214,10 @@ class GuildEventsCog(commands.Cog):
         if log_channel is not None and enabled:
             await log_channel.send(content=None, embed=embed)
 
+        stats = ServerStats(self.bot, role.guild)
+        if stats.isEnabled():
+            await stats.update()
+
     @commands.Cog.listener()
     async def on_guild_role_delete(self, role: discord.Role):
         server_settings = ServerSettings(role.guild).getServerSettings()
@@ -211,6 +231,10 @@ class GuildEventsCog(commands.Cog):
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar_url)
         if log_channel is not None and enabled:
             await log_channel.send(content=None, embed=embed)
+
+        stats = ServerStats(self.bot, role.guild)
+        if stats.isEnabled():
+            await stats.update()
 
     @commands.Cog.listener()
     async def on_guild_role_update(self, before: discord.Role, after: discord.Role):
